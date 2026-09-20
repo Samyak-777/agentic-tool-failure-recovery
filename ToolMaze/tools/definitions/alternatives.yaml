@@ -1,0 +1,3410 @@
+# Tool Alternatives Relationship Table
+# Centralized management of all tool alternative relationships
+#
+# Unified path-based format:
+# - All alternatives are organized as multiple execution paths
+# - Each path contains one or more tools in sequence
+# - Parameter rules:
+#   - Direct params: {city: "city"} - takes from input
+#   - Constants: {from_currency: "'USD'"} - single quotes for string literals
+#   - References: {a: "$stock_data.price"} - $ prefix for previous tool outputs
+#
+# Complexity scope:
+# - C2 currently consumes only one_to_one / one_to_many
+# - many_to_many is reserved for C3
+
+alternatives:
+  # ============================================================================
+  # 1-to-1: Two tools that can substitute each other
+  # ============================================================================
+  one_to_one:
+    alt_iot_device_scan:
+      description: "Two methods for IoT device scanning"
+      domain: "IoT"
+      paths:
+        - path_id: "discover_smart"
+          tools:
+            - tool_name: "discover_smart_devices"
+              params: {location: "area"}
+
+        - path_id: "query_connected"
+          tools:
+            - tool_name: "query_connected_devices"
+              params: {area: "area"}
+
+    alt_iot_device_status:
+      description: "Two methods for querying IoT device status"
+      domain: "IoT"
+      paths:
+        - path_id: "get_status"
+          tools:
+            - tool_name: "get_iot_device_status"
+              params: {device_id: "device_id"}
+
+        - path_id: "get_light"
+          tools:
+            - tool_name: "get_light_status"
+              params: {light_id: "device_id"}
+
+    alt_office_communication:
+      description: "Two methods for office communication"
+      domain: "Office"
+      paths:
+        - path_id: "email"
+          tools:
+            - tool_name: "send_email"
+              params: {body: "message", recipients: "[user_id]"}
+
+        - path_id: "instant_message"
+          tools:
+            - tool_name: "send_instant_message"
+              params: {message: "message", user_id: "user_id"}
+
+    alt_smart_light_control:
+      description: "Two methods for smart light control"
+      domain: "IoT"
+      paths:
+        - path_id: "control_light"
+          tools:
+            - tool_name: "set_light_state"
+              params: {device_id: "device_id", brightness: "brightness"}
+
+        - path_id: "set_brightness"
+          tools:
+            - tool_name: "set_light_brightness"
+              params: {light_id: "device_id", brightness: "brightness"}
+
+    alt_shopping_checkout:
+      description: "Two methods for shopping checkout"
+      domain: "Shopping"
+      paths:
+        - path_id: "submit_order"
+          tools:
+            - tool_name: "submit_order"
+              params: {items: "items", payment_amount: "payment_amount", user_id: "user_id"}
+
+        - path_id: "generate_invoice"
+          tools:
+            - tool_name: "generate_payment_invoice"
+              params: {items: "items", payment_amount: "payment_amount", user_id: "user_id"}
+
+    alt_weather_provider_pair:
+      description: "Two alternative weather providers"
+      domain: "Travel"
+      paths:
+        - path_id: "weatherapi"
+          tools:
+            - tool_name: "get_weather_weatherapi"
+              params: {city: "city"}
+
+        - path_id: "visualcrossing"
+          tools:
+            - tool_name: "get_weather_visualcrossing"
+              params: {city: "city"}
+
+    alt_stock_price_provider_pair:
+      description: "Two alternative stock price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "alpha_vantage"
+          tools:
+            - tool_name: "get_stock_alpha_vantage"
+              params: {symbol: "ticker"}
+
+        - path_id: "finnhub"
+          tools:
+            - tool_name: "get_stock_finnhub"
+              params: {ticker: "ticker"}
+
+    alt_news_provider_pair:
+      description: "Two alternative news providers"
+      domain: "General"
+      paths:
+        - path_id: "gnews"
+          tools:
+            - tool_name: "get_news_gnews"
+              params: {category: "category"}
+
+        - path_id: "currents"
+          tools:
+            - tool_name: "get_news_currents"
+              params: {category: "category"}
+
+    alt_exchange_rate_provider_pair:
+      description: "Two alternative exchange rate providers"
+      domain: "Financial"
+      paths:
+        - path_id: "exchangerate"
+          tools:
+            - tool_name: "get_exchange_rate_exchangerate"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+        - path_id: "currencyapi"
+          tools:
+            - tool_name: "get_exchange_rate_currencyapi"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+    alt_crypto_price_provider_pair:
+      description: "Two alternative cryptocurrency price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "coingecko"
+          tools:
+            - tool_name: "get_crypto_price_coingecko"
+              params: {symbol: "symbol"}
+
+        - path_id: "coinmarketcap"
+          tools:
+            - tool_name: "get_crypto_price_coinmarketcap"
+              params: {symbol: "symbol"}
+
+    alt_flight_info_provider_pair:
+      description: "Two alternative flight information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "aviationstack"
+          tools:
+            - tool_name: "get_flight_info_aviationstack"
+              params: {flight_number: "flight_number"}
+
+        - path_id: "flightaware"
+          tools:
+            - tool_name: "get_flight_info_flightaware"
+              params: {flight_number: "flight_number"}
+
+    alt_hotel_info_provider_pair:
+      description: "Two alternative hotel information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "booking"
+          tools:
+            - tool_name: "get_hotel_info_booking"
+              params: {hotel_name: "hotel_name"}
+
+        - path_id: "expedia"
+          tools:
+            - tool_name: "get_hotel_info_expedia"
+              params: {hotel_name: "hotel_name"}
+
+    alt_account_balance_provider_pair:
+      description: "Two alternative account balance providers"
+      domain: "Financial"
+      paths:
+        - path_id: "bank_api"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+        - path_id: "broker_api"
+          tools:
+            - tool_name: "get_account_balance_broker_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+    alt_market_status_provider_pair:
+      description: "Two alternative market status providers"
+      domain: "Financial"
+      paths:
+        - path_id: "alpha"
+          tools:
+            - tool_name: "get_market_status_alpha"
+              params: {exchange: "exchange"}
+
+        - path_id: "polygon"
+          tools:
+            - tool_name: "get_market_status_polygon"
+              params: {exchange: "exchange"}
+
+    alt_contact_info_provider_pair:
+      description: "Two alternative contact information providers"
+      domain: "Office"
+      paths:
+        - path_id: "directory"
+          tools:
+            - tool_name: "get_contact_info_directory"
+              params: {name: "name"}
+
+        - path_id: "hris"
+          tools:
+            - tool_name: "get_contact_info_hris"
+              params: {name: "name"}
+
+    alt_availability_provider_pair:
+      description: "Two alternative calendar availability providers"
+      domain: "Office"
+      paths:
+        - path_id: "google_calendar"
+          tools:
+            - tool_name: "query_availability_google_calendar"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+        - path_id: "outlook_calendar"
+          tools:
+            - tool_name: "query_availability_outlook_calendar"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+    alt_meeting_room_provider_pair:
+      description: "Two alternative meeting room search providers"
+      domain: "Office"
+      paths:
+        - path_id: "office365"
+          tools:
+            - tool_name: "get_meeting_rooms_office365"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+        - path_id: "workplace"
+          tools:
+            - tool_name: "get_meeting_rooms_workplace"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+    alt_recommendation_provider_pair:
+      description: "Two alternative product recommendation providers"
+      domain: "Shopping"
+      paths:
+        - path_id: "collaborative"
+          tools:
+            - tool_name: "get_recommendations_collaborative"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+        - path_id: "content"
+          tools:
+            - tool_name: "get_recommendations_content"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+    alt_weather_openweather_weatherapi:
+      description: "Two alternative weather providers"
+      domain: "Travel"
+      paths:
+        - path_id: "openweather"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+
+        - path_id: "weatherapi"
+          tools:
+            - tool_name: "get_weather_weatherapi"
+              params: {city: "city"}
+
+    alt_weather_openweather_visualcrossing:
+      description: "Two alternative weather providers"
+      domain: "Travel"
+      paths:
+        - path_id: "openweather"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+
+        - path_id: "visualcrossing"
+          tools:
+            - tool_name: "get_weather_visualcrossing"
+              params: {city: "city"}
+
+    alt_stock_price_yahoo_alpha:
+      description: "Two alternative stock price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "yahoo_finance"
+          tools:
+            - tool_name: "get_stock_yahoo_finance"
+              params: {ticker: "ticker"}
+
+        - path_id: "alpha_vantage"
+          tools:
+            - tool_name: "get_stock_alpha_vantage"
+              params: {symbol: "ticker"}
+
+    alt_stock_price_yahoo_finnhub:
+      description: "Two alternative stock price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "yahoo_finance"
+          tools:
+            - tool_name: "get_stock_yahoo_finance"
+              params: {ticker: "ticker"}
+
+        - path_id: "finnhub"
+          tools:
+            - tool_name: "get_stock_finnhub"
+              params: {ticker: "ticker"}
+
+    alt_news_newsapi_gnews:
+      description: "Two alternative news providers"
+      domain: "General"
+      paths:
+        - path_id: "newsapi"
+          tools:
+            - tool_name: "get_news_newsapi"
+              params: {category: "category"}
+
+        - path_id: "gnews"
+          tools:
+            - tool_name: "get_news_gnews"
+              params: {category: "category"}
+
+    alt_news_newsapi_currents:
+      description: "Two alternative news providers"
+      domain: "General"
+      paths:
+        - path_id: "newsapi"
+          tools:
+            - tool_name: "get_news_newsapi"
+              params: {category: "category"}
+
+        - path_id: "currents"
+          tools:
+            - tool_name: "get_news_currents"
+              params: {category: "category"}
+
+    alt_exchange_rate_fixer_exchangerate:
+      description: "Two alternative exchange rate providers"
+      domain: "Financial"
+      paths:
+        - path_id: "fixer"
+          tools:
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+        - path_id: "exchangerate"
+          tools:
+            - tool_name: "get_exchange_rate_exchangerate"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+    alt_exchange_rate_fixer_currencyapi:
+      description: "Two alternative exchange rate providers"
+      domain: "Financial"
+      paths:
+        - path_id: "fixer"
+          tools:
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+        - path_id: "currencyapi"
+          tools:
+            - tool_name: "get_exchange_rate_currencyapi"
+              params: {from_currency: "from_currency", to_currency: "to_currency"}
+
+    alt_crypto_price_default_coingecko:
+      description: "Two alternative cryptocurrency price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_crypto_price"
+              params: {symbol: "symbol"}
+
+        - path_id: "coingecko"
+          tools:
+            - tool_name: "get_crypto_price_coingecko"
+              params: {symbol: "symbol"}
+
+    alt_crypto_price_default_coinmarketcap:
+      description: "Two alternative cryptocurrency price providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_crypto_price"
+              params: {symbol: "symbol"}
+
+        - path_id: "coinmarketcap"
+          tools:
+            - tool_name: "get_crypto_price_coinmarketcap"
+              params: {symbol: "symbol"}
+
+    alt_flight_info_default_aviationstack:
+      description: "Two alternative flight information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_flight_info"
+              params: {flight_number: "flight_number"}
+
+        - path_id: "aviationstack"
+          tools:
+            - tool_name: "get_flight_info_aviationstack"
+              params: {flight_number: "flight_number"}
+
+    alt_flight_info_default_flightaware:
+      description: "Two alternative flight information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_flight_info"
+              params: {flight_number: "flight_number"}
+
+        - path_id: "flightaware"
+          tools:
+            - tool_name: "get_flight_info_flightaware"
+              params: {flight_number: "flight_number"}
+
+    alt_hotel_info_default_booking:
+      description: "Two alternative hotel information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_hotel_info"
+              params: {hotel_name: "hotel_name"}
+
+        - path_id: "booking"
+          tools:
+            - tool_name: "get_hotel_info_booking"
+              params: {hotel_name: "hotel_name"}
+
+    alt_hotel_info_default_expedia:
+      description: "Two alternative hotel information providers"
+      domain: "Travel"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_hotel_info"
+              params: {hotel_name: "hotel_name"}
+
+        - path_id: "expedia"
+          tools:
+            - tool_name: "get_hotel_info_expedia"
+              params: {hotel_name: "hotel_name"}
+
+    alt_account_balance_default_bank_api:
+      description: "Two alternative account balance providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_account_balance"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+        - path_id: "bank_api"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+    alt_account_balance_default_broker_api:
+      description: "Two alternative account balance providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_account_balance"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+        - path_id: "broker_api"
+          tools:
+            - tool_name: "get_account_balance_broker_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+
+    alt_market_status_default_alpha:
+      description: "Two alternative market status providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_market_status"
+              params: {exchange: "exchange"}
+
+        - path_id: "alpha"
+          tools:
+            - tool_name: "get_market_status_alpha"
+              params: {exchange: "exchange"}
+
+    alt_market_status_default_polygon:
+      description: "Two alternative market status providers"
+      domain: "Financial"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_market_status"
+              params: {exchange: "exchange"}
+
+        - path_id: "polygon"
+          tools:
+            - tool_name: "get_market_status_polygon"
+              params: {exchange: "exchange"}
+
+    alt_contact_info_default_directory:
+      description: "Two alternative contact information providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_contact_info"
+              params: {name: "name"}
+
+        - path_id: "directory"
+          tools:
+            - tool_name: "get_contact_info_directory"
+              params: {name: "name"}
+
+    alt_contact_info_default_hris:
+      description: "Two alternative contact information providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_contact_info"
+              params: {name: "name"}
+
+        - path_id: "hris"
+          tools:
+            - tool_name: "get_contact_info_hris"
+              params: {name: "name"}
+
+    alt_availability_default_google:
+      description: "Two alternative calendar availability providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "query_availability"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+        - path_id: "google_calendar"
+          tools:
+            - tool_name: "query_availability_google_calendar"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+    alt_availability_default_outlook:
+      description: "Two alternative calendar availability providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "query_availability"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+        - path_id: "outlook_calendar"
+          tools:
+            - tool_name: "query_availability_outlook_calendar"
+              params: {item_id: "item_id", start_date: "start_date"}
+
+    alt_meeting_room_default_office365:
+      description: "Two alternative meeting room search providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_meeting_rooms"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+        - path_id: "office365"
+          tools:
+            - tool_name: "get_meeting_rooms_office365"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+    alt_meeting_room_default_workplace:
+      description: "Two alternative meeting room search providers"
+      domain: "Office"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_meeting_rooms"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+        - path_id: "workplace"
+          tools:
+            - tool_name: "get_meeting_rooms_workplace"
+              params: {min_capacity: "min_capacity", date: "date", start_time: "start_time"}
+
+    alt_recommendation_default_collaborative:
+      description: "Two alternative product recommendation providers"
+      domain: "Shopping"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_recommendations"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+        - path_id: "collaborative"
+          tools:
+            - tool_name: "get_recommendations_collaborative"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+    alt_recommendation_default_content:
+      description: "Two alternative product recommendation providers"
+      domain: "Shopping"
+      paths:
+        - path_id: "default_provider"
+          tools:
+            - tool_name: "get_recommendations"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+        - path_id: "content"
+          tools:
+            - tool_name: "get_recommendations_content"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+
+  # ============================================================================
+  # 1-to-N: One high-level tool can be decomposed into multiple steps
+  # ============================================================================
+  one_to_many:
+    alt_smart_light_full_control:
+      description: "Composition alternative for complete smart light control"
+      domain: "IoT"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "set_light_state"
+              params: {device_id: "device_id", state: "state", brightness: "brightness"}
+
+        - path_id: "toggle_then_adjust"
+          tools:
+            - tool_name: "set_power_state"
+              params: {device_id: "device_id", state: "state"}
+              output: "power_result"
+
+            - tool_name: "update_device_config"
+              params: {device_id: "device_id", property: "'brightness'", value: "brightness"}
+              output: "adjust_result"
+
+    alt_quick_buy:
+      description: "Composition alternative for quick buy (reserve + finalize)"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "express_checkout"
+              params: {product_id: "product_id", user_id: "user_id"}
+
+        - path_id: "reserve_then_finalize"
+          tools:
+            - tool_name: "hold_inventory"
+              params: {product_id: "product_id", user_id: "user_id"}
+              output: "reservation_data"
+
+            - tool_name: "confirm_order"
+              params: {reservation_id: "$reservation_data.reservation_id"}
+              output: "order_result"
+
+    alt_discounted_checkout:
+      description: "Composition alternative for applying the best coupon before checkout"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "submit_order_with_best_discount"
+              params: {items: "items", user_id: "user_id", payment_method: "payment_method"}
+
+        - path_id: "coupon_then_submit"
+          tools:
+            - tool_name: "get_available_coupons"
+              params: {user_id: "user_id"}
+              output: "coupon_data"
+
+            - tool_name: "optimize_discount"
+              params: {items: "items", user_id: "user_id", coupons_list: "$coupon_data.coupons"}
+              output: "discount_data"
+
+            - tool_name: "submit_order"
+              params: {items: "items", payment_amount: "$discount_data.final_total", user_id: "user_id", payment_method: "payment_method"}
+              output: "order_data"
+
+    alt_meeting_room_booking:
+      description: "Composition alternative for booking a suitable meeting room"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "book_best_meeting_room"
+              params: {attendees: "attendees", date: "date", start_time: "start_time", end_time: "end_time"}
+
+        - path_id: "search_then_book"
+          tools:
+            - tool_name: "get_meeting_rooms"
+              params: {min_capacity: "attendees", date: "date", start_time: "start_time"}
+              output: "room_data"
+
+            - tool_name: "select_meeting_room"
+              params: {rooms: "$room_data.rooms", attendees: "attendees"}
+              output: "selected_room"
+
+            - tool_name: "book_meeting_room"
+              params: {room_name: "$selected_room.room_name", attendees: "attendees", date: "date", start_time: "start_time", end_time: "end_time"}
+              output: "booking_data"
+
+    alt_safe_buy_order:
+      description: "Composition alternative for risk-checked buy execution"
+      domain: "Financial"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "place_buy_order_with_risk_check"
+              params: {amount: "amount"}
+
+        - path_id: "check_then_execute"
+          tools:
+            - tool_name: "assess_trade_risk"
+              params: {amount: "amount"}
+              output: "risk_data"
+
+            - tool_name: "place_buy_order"
+              params: {risk_token: "$risk_data.risk_token", price: "amount"}
+              output: "order_data"
+
+    alt_flight_booking:
+      description: "Composition alternative for checking flight status before booking"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "book_flight_with_status_check"
+              params: {flight_number: "flight_number", passenger_name: "passenger_name", seat_class: "seat_class"}
+
+        - path_id: "status_then_book"
+          tools:
+            - tool_name: "get_flight_info"
+              params: {flight_number: "flight_number"}
+              output: "flight_data"
+
+            - tool_name: "book_flight"
+              params: {flight_number: "flight_number", passenger_name: "passenger_name", seat_class: "seat_class"}
+              output: "booking_data"
+
+    alt_hotel_booking:
+      description: "Composition alternative for checking hotel availability before booking"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "book_available_hotel"
+              params: {hotel_name: "hotel_name", check_in_date: "check_in_date", check_out_date: "check_out_date", guest_name: "guest_name", room_type: "room_type"}
+
+        - path_id: "check_then_book"
+          tools:
+            - tool_name: "get_hotel_info"
+              params: {hotel_name: "hotel_name"}
+              output: "hotel_data"
+
+            - tool_name: "book_hotel"
+              params: {hotel_name: "hotel_name", check_in_date: "check_in_date", check_out_date: "check_out_date", guest_name: "guest_name", room_type: "room_type"}
+              output: "booking_data"
+  
+    alt_recommended_add_to_cart:
+      description: "Composition alternative for selecting the best recommendation before adding to cart"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "add_best_recommendation_to_cart"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+
+        - path_id: "recommend_select_add"
+          tools:
+            - tool_name: "get_recommendations"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "add_to_cart"
+              params: {product_id: "$selected_product.product_id", quantity: "quantity", user_id: "user_id"}
+              output: "cart_data"
+
+    alt_email_contact_lookup:
+      description: "Composition alternative for looking up a contact before sending email"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "email_contact_by_name"
+              params: {name: "name", body: "body", subject: "subject"}
+
+        - path_id: "lookup_then_email"
+          tools:
+            - tool_name: "get_contact_info"
+              params: {name: "name"}
+              output: "contact_data"
+
+            - tool_name: "send_email"
+              params: {body: "body", recipients: "[$contact_data.email]", subject: "subject"}
+              output: "email_data"
+
+    alt_contact_alert_lookup:
+      description: "Composition alternative for looking up a contact before sending a push alert"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "push_alert_contact_by_name"
+              params: {name: "name", message: "message", priority: "priority", channel: "channel"}
+
+        - path_id: "lookup_then_alert"
+          tools:
+            - tool_name: "get_contact_info"
+              params: {name: "name"}
+              output: "contact_data"
+
+            - tool_name: "push_alert"
+              params: {message: "message", user_id: "$contact_data.user_id", priority: "priority", channel: "channel"}
+              output: "alert_data"
+
+    alt_recommended_hold:
+      description: "Composition alternative for reserving the best recommendation"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+
+        - path_id: "recommend_select_hold"
+          tools:
+            - tool_name: "get_recommendations"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params: {product_id: "$selected_product.product_id", quantity: "quantity", user_id: "user_id"}
+              output: "reservation_data"
+
+    alt_invoice_generation:
+      description: "Composition alternative for calculating cart total before invoice generation"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "generate_invoice_from_cart"
+              params: {items: "items", user_id: "user_id", coupon_code: "coupon_code", email: "email", payment_gateway: "payment_gateway"}
+
+        - path_id: "summarize_then_invoice"
+          tools:
+            - tool_name: "get_cart_summary"
+              params: {items: "items", user_id: "user_id", coupon_code: "coupon_code"}
+              output: "cart_data"
+
+            - tool_name: "generate_payment_invoice"
+              params: {items: "items", payment_amount: "$cart_data.final_total", user_id: "user_id", email: "email", payment_gateway: "payment_gateway"}
+              output: "invoice_data"
+
+    alt_discounted_invoice:
+      description: "Composition alternative for applying the best coupon before invoice generation"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "generate_invoice_with_best_discount"
+              params: {items: "items", user_id: "user_id", email: "email", payment_gateway: "payment_gateway"}
+
+        - path_id: "coupon_then_invoice"
+          tools:
+            - tool_name: "get_available_coupons"
+              params: {user_id: "user_id"}
+              output: "coupon_data"
+
+            - tool_name: "optimize_discount"
+              params: {items: "items", user_id: "user_id", coupons_list: "$coupon_data.coupons"}
+              output: "discount_data"
+
+            - tool_name: "generate_payment_invoice"
+              params: {items: "items", payment_amount: "$discount_data.final_total", user_id: "user_id", email: "email", payment_gateway: "payment_gateway"}
+              output: "invoice_data"
+
+    alt_meeting_with_reminder:
+      description: "Composition alternative for scheduling a meeting and creating a reminder"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "schedule_meeting_with_reminder"
+              params: {start_time: "start_time", title: "title", participants: "participants", end_time: "end_time", description: "description", priority: "priority"}
+
+        - path_id: "schedule_then_remind"
+          tools:
+            - tool_name: "schedule_meeting"
+              params: {start_time: "start_time", title: "title", participants: "participants", end_time: "end_time"}
+              output: "meeting_data"
+
+            - tool_name: "create_reminder"
+              params: {datetime: "$meeting_data.start_time", title: "$meeting_data.title", description: "description", priority: "priority"}
+              output: "reminder_data"
+
+    alt_document_notification:
+      description: "Composition alternative for creating a document and notifying a user"
+      domain: "General"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_document_and_alert"
+              params: {content: "content", title: "title", tags: "tags", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "create_then_notify"
+          tools:
+            - tool_name: "create_document"
+              params: {content: "content", title: "title", tags: "tags"}
+              output: "document_data"
+
+            - tool_name: "push_alert"
+              params: {message: "$document_data.title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "alert_data"
+
+    alt_backup_notification:
+      description: "Composition alternative for backing up a workspace and notifying a user"
+      domain: "General"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "snapshot_workspace_and_alert"
+              params: {workspace_path: "workspace_path", backup_name: "backup_name", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "backup_then_notify"
+          tools:
+            - tool_name: "snapshot_workspace"
+              params: {workspace_path: "workspace_path", backup_name: "backup_name"}
+              output: "backup_data"
+
+            - tool_name: "push_alert"
+              params: {message: "$backup_data.backup_id", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "alert_data"
+
+    alt_contact_alert_routed:
+      description: "Composition alternative for resolving a contact and routing a push alert through a normalized contact payload"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "push_alert_contact_by_name"
+              params: {name: "name", message: "message", priority: "priority", channel: "channel"}
+
+        - path_id: "lookup_build_route"
+          tools:
+            - tool_name: "get_contact_info"
+              params: {name: "name"}
+              output: "contact_data"
+
+            - tool_name: "build_contact_alert_payload"
+              params: {contact_data: "$contact_data", message: "message", priority: "priority", channel: "channel"}
+              output: "alert_payload"
+
+            - tool_name: "push_alert_to_contact"
+              params:
+                user_id: "$alert_payload.user_id"
+                recipient_name: "$alert_payload.recipient_name"
+                message: "$alert_payload.message"
+                priority: "$alert_payload.priority"
+                channel: "$alert_payload.channel"
+              output: "alert_result"
+
+    alt_shortlisted_room_booking:
+      description: "Composition alternative for shortlisting a suitable meeting room and reserving it"
+      domain: "Office"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "reserve_best_shortlisted_room"
+              params: {attendees: "attendees", date: "date", start_time: "start_time", end_time: "end_time"}
+
+        - path_id: "search_shortlist_build_reserve"
+          tools:
+            - tool_name: "get_meeting_rooms"
+              params: {min_capacity: "attendees", date: "date", start_time: "start_time"}
+              output: "room_data"
+
+            - tool_name: "shortlist_meeting_rooms"
+              params: {rooms: "$room_data.rooms", attendees: "attendees"}
+              output: "shortlist_data"
+
+            - tool_name: "build_shortlist_reservation_request"
+              params: {shortlist_data: "$shortlist_data", date: "date", start_time: "start_time", end_time: "end_time", attendees: "attendees"}
+              output: "reservation_request"
+
+            - tool_name: "reserve_shortlisted_room"
+              params:
+                room_name: "$reservation_request.room_name"
+                selection_reason: "$reservation_request.selection_reason"
+                date: "$reservation_request.date"
+                start_time: "$reservation_request.start_time"
+                end_time: "$reservation_request.end_time"
+                attendees: "$reservation_request.attendees"
+              output: "booking_data"
+
+    alt_gnews_digest_notification:
+      description: "Composition alternative for building a text-first GNews digest document and notifying the user"
+      domain: "General"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_gnews_digest_and_alert"
+              params: {category: "category", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "fetch_build_notify"
+          tools:
+            - tool_name: "get_news_gnews"
+              params: {category: "category"}
+              output: "news_data"
+
+            - tool_name: "build_news_text_report"
+              params: {news_data: "$news_data", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_snapshot_report_notification:
+      description: "Composition alternative for snapshotting a workspace, building a text report, and notifying the user"
+      domain: "General"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "snapshot_workspace_report_and_alert"
+              params: {workspace_path: "workspace_path", backup_name: "backup_name", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "snapshot_build_notify"
+          tools:
+            - tool_name: "snapshot_workspace"
+              params: {workspace_path: "workspace_path", backup_name: "backup_name"}
+              output: "snapshot_data"
+
+            - tool_name: "build_snapshot_text_report"
+              params: {snapshot_data: "$snapshot_data", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_weather_brief_notification:
+      description: "Composition alternative for building a text weather brief document and notifying the user"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_weather_brief_and_alert"
+              params: {city: "city", to_unit: "to_unit", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "fetch_convert_build_notify"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+              output: "weather_data"
+
+            - tool_name: "temperature_converter"
+              params: {value: "$weather_data.temperature_celsius", from_unit: "'celsius'", to_unit: "to_unit"}
+              output: "converted_data"
+
+            - tool_name: "build_weather_text_report"
+              params: {weather_data: "$weather_data", converted_data: "$converted_data", city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_weather_structured_notification:
+      description: "Composition alternative for building a structured weather brief document and notifying the user"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_weather_data_and_alert"
+              params: {city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+
+        - path_id: "fetch_build_structured_notify"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+              output: "weather_data"
+
+            - tool_name: "build_weather_data_payload"
+              params: {weather_data: "$weather_data", city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+    alt_balance_report_notification:
+      description: "Composition alternative for building a text balance report document and notifying the user"
+      domain: "Financial"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_balance_report_and_alert"
+              params: {user_id: "user_id", account_type: "account_type", target_currency: "target_currency", title: "title", priority: "priority", channel: "channel"}
+
+        - path_id: "fetch_convert_build_notify"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+              output: "balance_data"
+
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "$balance_data.currency", to_currency: "target_currency"}
+              output: "rate_data"
+
+            - tool_name: "build_balance_text_report"
+              params: {balance_data: "$balance_data", rate_data: "$rate_data", target_currency: "target_currency", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_balance_structured_notification:
+      description: "Composition alternative for building a structured balance report document and notifying the user"
+      domain: "Financial"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "create_balance_data_and_alert"
+              params: {user_id: "user_id", account_type: "account_type", target_currency: "target_currency", title: "title", priority: "priority", channel: "channel"}
+
+        - path_id: "fetch_build_structured_notify"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+              output: "balance_data"
+
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "$balance_data.currency", to_currency: "target_currency"}
+              output: "rate_data"
+
+            - tool_name: "build_balance_data_payload"
+              params: {balance_data: "$balance_data", rate_data: "$rate_data", target_currency: "target_currency", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+    alt_best_recommendation_invoice:
+      description: "Composition alternative for holding the best recommendation and generating an invoice"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "generate_invoice_for_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category", email: "email", payment_gateway: "payment_gateway"}
+
+        - path_id: "hold_build_invoice"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_invoice_from_hold"
+              params: {hold_data: "$hold_data", quantity: "quantity", user_id: "user_id", email: "email", payment_gateway: "payment_gateway"}
+              output: "invoice_request"
+
+            - tool_name: "generate_invoice_from_hold"
+              params:
+                items: "$invoice_request.items"
+                payment_amount: "$invoice_request.payment_amount"
+                user_id: "$invoice_request.user_id"
+                email: "$invoice_request.email"
+                payment_gateway: "$invoice_request.payment_gateway"
+                reservation_id: "$invoice_request.reservation_id"
+              output: "invoice_result"
+
+    alt_best_recommendation_checkout:
+      description: "Composition alternative for holding the best recommendation and confirming checkout"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated"
+          tools:
+            - tool_name: "checkout_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+
+        - path_id: "hold_build_checkout"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_checkout_from_hold"
+              params: {hold_data: "$hold_data", quantity: "quantity"}
+              output: "checkout_request"
+
+            - tool_name: "confirm_held_recommendation_order"
+              params:
+                reservation_id: "$checkout_request.reservation_id"
+                product_id: "$checkout_request.product_id"
+                quantity: "$checkout_request.quantity"
+              output: "order_result"
+
+    alt_gnews_digest_payload_notification:
+      description: "Composition alternative for building a GNews digest payload before creating a document and alert"
+      domain: "General"
+      paths:
+        - path_id: "integrated_payload_then_notify"
+          tools:
+            - tool_name: "build_gnews_digest_report_payload"
+              params: {category: "category", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+        - path_id: "fetch_build_notify"
+          tools:
+            - tool_name: "get_news_gnews"
+              params: {category: "category"}
+              output: "news_data"
+
+            - tool_name: "build_news_text_report"
+              params: {news_data: "$news_data", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_weather_brief_payload_notification:
+      description: "Composition alternative for building a weather brief payload before creating a document and alert"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated_payload_then_notify"
+          tools:
+            - tool_name: "build_weather_brief_payload"
+              params: {city: "city", to_unit: "to_unit", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+        - path_id: "fetch_convert_build_notify"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+              output: "weather_data"
+
+            - tool_name: "temperature_converter"
+              params: {value: "$weather_data.temperature_celsius", from_unit: "'celsius'", to_unit: "to_unit"}
+              output: "converted_data"
+
+            - tool_name: "build_weather_text_report"
+              params: {weather_data: "$weather_data", converted_data: "$converted_data", city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_weather_structured_payload_notification:
+      description: "Composition alternative for building a structured weather payload before creating a document and alert"
+      domain: "Travel"
+      paths:
+        - path_id: "integrated_payload_then_notify"
+          tools:
+            - tool_name: "build_weather_structured_payload"
+              params: {city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+        - path_id: "fetch_build_structured_notify"
+          tools:
+            - tool_name: "get_weather_openweather"
+              params: {city: "city"}
+              output: "weather_data"
+
+            - tool_name: "build_weather_data_payload"
+              params: {weather_data: "$weather_data", city: "city", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+    alt_balance_report_payload_notification:
+      description: "Composition alternative for building a text balance payload before creating a document and alert"
+      domain: "Financial"
+      paths:
+        - path_id: "integrated_payload_then_notify"
+          tools:
+            - tool_name: "build_balance_report_payload"
+              params: {user_id: "user_id", account_type: "account_type", target_currency: "target_currency", title: "title", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+        - path_id: "fetch_convert_build_notify"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+              output: "balance_data"
+
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "$balance_data.currency", to_currency: "target_currency"}
+              output: "rate_data"
+
+            - tool_name: "build_balance_text_report"
+              params: {balance_data: "$balance_data", rate_data: "$rate_data", target_currency: "target_currency", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                content: "$report_payload.content"
+                title: "$report_payload.title"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+              output: "notify_result"
+
+    alt_balance_structured_payload_notification:
+      description: "Composition alternative for building a structured balance payload before creating a document and alert"
+      domain: "Financial"
+      paths:
+        - path_id: "integrated_payload_then_notify"
+          tools:
+            - tool_name: "build_balance_structured_payload"
+              params: {user_id: "user_id", account_type: "account_type", target_currency: "target_currency", title: "title", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+        - path_id: "fetch_build_structured_notify"
+          tools:
+            - tool_name: "get_account_balance_bank_api"
+              params: {user_id: "user_id", account_type: "account_type"}
+              output: "balance_data"
+
+            - tool_name: "get_exchange_rate_fixer"
+              params: {from_currency: "$balance_data.currency", to_currency: "target_currency"}
+              output: "rate_data"
+
+            - tool_name: "build_balance_data_payload"
+              params: {balance_data: "$balance_data", rate_data: "$rate_data", target_currency: "target_currency", title: "title", user_id: "user_id", priority: "priority", channel: "channel"}
+              output: "payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$payload.data"
+                title: "$payload.title"
+                tags: "$payload.tags"
+                user_id: "$payload.user_id"
+                priority: "$payload.priority"
+                channel: "$payload.channel"
+              output: "notify_result"
+
+    alt_best_recommendation_invoice_prepared:
+      description: "Composition alternative for building a recommended-product invoice request before invoice generation"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated_prepare_then_invoice"
+          tools:
+            - tool_name: "build_recommended_invoice_request"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category", email: "email", payment_gateway: "payment_gateway"}
+              output: "invoice_request"
+
+            - tool_name: "generate_invoice_from_hold"
+              params:
+                items: "$invoice_request.items"
+                payment_amount: "$invoice_request.payment_amount"
+                user_id: "$invoice_request.user_id"
+                email: "$invoice_request.email"
+                payment_gateway: "$invoice_request.payment_gateway"
+                reservation_id: "$invoice_request.reservation_id"
+              output: "invoice_result"
+
+        - path_id: "hold_build_invoice"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_invoice_from_hold"
+              params: {hold_data: "$hold_data", quantity: "quantity", user_id: "user_id", email: "email", payment_gateway: "payment_gateway"}
+              output: "invoice_request"
+
+            - tool_name: "generate_invoice_from_hold"
+              params:
+                items: "$invoice_request.items"
+                payment_amount: "$invoice_request.payment_amount"
+                user_id: "$invoice_request.user_id"
+                email: "$invoice_request.email"
+                payment_gateway: "$invoice_request.payment_gateway"
+                reservation_id: "$invoice_request.reservation_id"
+              output: "invoice_result"
+
+    alt_best_recommendation_checkout_prepared:
+      description: "Composition alternative for building a recommended-product checkout request before order confirmation"
+      domain: "Shopping"
+      paths:
+        - path_id: "integrated_prepare_then_checkout"
+          tools:
+            - tool_name: "build_recommended_checkout_request"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "checkout_request"
+
+            - tool_name: "confirm_held_recommendation_order"
+              params:
+                reservation_id: "$checkout_request.reservation_id"
+                product_id: "$checkout_request.product_id"
+                quantity: "$checkout_request.quantity"
+              output: "order_result"
+
+        - path_id: "hold_build_checkout"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_checkout_from_hold"
+              params: {hold_data: "$hold_data", quantity: "quantity"}
+              output: "checkout_request"
+
+            - tool_name: "confirm_held_recommendation_order"
+              params:
+                reservation_id: "$checkout_request.reservation_id"
+                product_id: "$checkout_request.product_id"
+                quantity: "$checkout_request.quantity"
+              output: "order_result"
+
+    alt_shortlisted_room_request_booking:
+      description: "Composition alternative for building a shortlisted room reservation request before booking"
+      domain: "Office"
+      paths:
+        - path_id: "integrated_prepare_then_reserve"
+          tools:
+            - tool_name: "build_shortlisted_room_reservation_request"
+              params: {attendees: "attendees", date: "date", start_time: "start_time", end_time: "end_time"}
+              output: "reservation_request"
+
+            - tool_name: "reserve_shortlisted_room"
+              params:
+                room_name: "$reservation_request.room_name"
+                selection_reason: "$reservation_request.selection_reason"
+                date: "$reservation_request.date"
+                start_time: "$reservation_request.start_time"
+                end_time: "$reservation_request.end_time"
+                attendees: "$reservation_request.attendees"
+              output: "booking_data"
+
+        - path_id: "search_shortlist_build_reserve"
+          tools:
+            - tool_name: "get_meeting_rooms"
+              params: {min_capacity: "attendees", date: "date", start_time: "start_time"}
+              output: "room_data"
+
+            - tool_name: "shortlist_meeting_rooms"
+              params: {rooms: "$room_data.rooms", attendees: "attendees"}
+              output: "shortlist_data"
+
+            - tool_name: "build_shortlist_reservation_request"
+              params: {shortlist_data: "$shortlist_data", date: "date", start_time: "start_time", end_time: "end_time", attendees: "attendees"}
+              output: "reservation_request"
+
+            - tool_name: "reserve_shortlisted_room"
+              params:
+                room_name: "$reservation_request.room_name"
+                selection_reason: "$reservation_request.selection_reason"
+                date: "$reservation_request.date"
+                start_time: "$reservation_request.start_time"
+                end_time: "$reservation_request.end_time"
+                attendees: "$reservation_request.attendees"
+              output: "booking_data"
+
+  # ====================================================================================================
+  # N-to-N: The functionality achieved by N tools can be equivalently performed by other N tools
+  # Reserved for C3; not sampled or validated as C2 alternatives
+  # ====================================================================================================
+  many_to_many:
+    alt_recommended_substitute_purchase:
+      description: "Two fully distinct purchase paths that both buy the best substitute product."
+      domain: "Shopping"
+      paths:
+        - path_id: "trending_hold_confirm"
+          tools:
+            - tool_name: "get_recommendations_trending"
+              params:
+                product_id: "product_id"
+                category: "category"
+                user_id: "user_id"
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params:
+                product_id: "$selected_product.product_id"
+                user_id: "user_id"
+                quantity: "quantity"
+              output: "hold_result"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_result.reservation_id"
+                product_id: "$selected_product.product_id"
+                quantity: "quantity"
+
+        - path_id: "cart_then_checkout"
+          tools:
+            - tool_name: "add_best_recommendation_to_cart"
+              params:
+                product_id: "product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                category: "category"
+              output: "cart_result"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$cart_result.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_best_recommendation_checkout:
+      description: "Two distinct paths to buy the best recommended substitute product."
+      domain: "Shopping"
+      paths:
+        - path_id: "hold_best_then_confirm"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_data.reservation_id"
+                product_id: "$hold_data.recommended_product_id"
+                quantity: "quantity"
+
+        - path_id: "best_cart_then_express"
+          tools:
+            - tool_name: "add_best_recommendation_to_cart"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "cart_data"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$cart_data.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_collaborative_recommendation_purchase:
+      description: "Two distinct paths to purchase a collaborative recommendation."
+      domain: "Shopping"
+      paths:
+        - path_id: "collaborative_select_hold_confirm"
+          tools:
+            - tool_name: "get_recommendations_collaborative"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params: {product_id: "$selected_product.product_id", user_id: "user_id", quantity: "quantity"}
+              output: "hold_result"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_result.reservation_id"
+                product_id: "$selected_product.product_id"
+                quantity: "quantity"
+
+        - path_id: "best_cart_then_express"
+          tools:
+            - tool_name: "add_best_recommendation_to_cart"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "cart_data"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$cart_data.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_content_recommendation_purchase:
+      description: "Two distinct paths to purchase a content-based recommendation."
+      domain: "Shopping"
+      paths:
+        - path_id: "content_select_hold_confirm"
+          tools:
+            - tool_name: "get_recommendations_content"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params: {product_id: "$selected_product.product_id", user_id: "user_id", quantity: "quantity"}
+              output: "hold_result"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_result.reservation_id"
+                product_id: "$selected_product.product_id"
+                quantity: "quantity"
+
+        - path_id: "best_hold_then_express"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$hold_data.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_invoice_coupon_vs_summary_chain:
+      description: "Two fully coupled invoice-generation strategies that derive payable totals through either coupon optimization or cart-summary normalization."
+      domain: "Shopping"
+      paths:
+        - path_id: "coupon_optimize_invoice"
+          tools:
+            - tool_name: "get_available_coupons"
+              params: {user_id: "user_id"}
+              output: "coupon_data"
+
+            - tool_name: "optimize_discount"
+              params:
+                items: "items"
+                coupons_list: "$coupon_data.coupons"
+                user_id: "user_id"
+              output: "discount_data"
+
+            - tool_name: "generate_payment_invoice"
+              params:
+                items: "items"
+                payment_amount: "$discount_data.final_total"
+                user_id: "user_id"
+                email: "email"
+                payment_gateway: "payment_gateway"
+
+        - path_id: "summary_derived_invoice"
+          tools:
+            - tool_name: "get_cart_summary"
+              params:
+                items: "items"
+                user_id: "user_id"
+                coupon_code: "coupon_code"
+              output: "summary_data"
+
+            - tool_name: "build_invoice_from_summary"
+              params:
+                cart_summary: "$summary_data"
+                items: "items"
+                user_id: "user_id"
+                email: "email"
+                payment_gateway: "payment_gateway"
+              output: "invoice_payload"
+
+            - tool_name: "generate_invoice_from_summary"
+              params:
+                items: "$invoice_payload.items"
+                payment_amount: "$invoice_payload.payment_amount"
+                user_id: "$invoice_payload.user_id"
+                email: "$invoice_payload.email"
+                payment_gateway: "$invoice_payload.payment_gateway"
+                subtotal: "$invoice_payload.subtotal"
+                discount: "$invoice_payload.discount"
+                coupon_status: "$invoice_payload.coupon_status"
+
+    alt_checkout_coupon_vs_summary_chain:
+      description: "Two fully coupled checkout strategies that submit an order through either coupon optimization or cart-summary normalization."
+      domain: "Shopping"
+      paths:
+        - path_id: "coupon_optimize_submit"
+          tools:
+            - tool_name: "get_available_coupons"
+              params: {user_id: "user_id"}
+              output: "coupon_data"
+
+            - tool_name: "optimize_discount"
+              params:
+                items: "items"
+                coupons_list: "$coupon_data.coupons"
+                user_id: "user_id"
+              output: "discount_data"
+
+            - tool_name: "submit_order"
+              params:
+                items: "items"
+                payment_amount: "$discount_data.final_total"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+        - path_id: "summary_derived_submit"
+          tools:
+            - tool_name: "get_cart_summary"
+              params:
+                items: "items"
+                user_id: "user_id"
+                coupon_code: "coupon_code"
+              output: "summary_data"
+
+            - tool_name: "build_checkout_from_summary"
+              params:
+                cart_summary: "$summary_data"
+                items: "items"
+                user_id: "user_id"
+                payment_method: "payment_method"
+              output: "checkout_payload"
+
+            - tool_name: "submit_order_from_summary"
+              params:
+                items: "$checkout_payload.items"
+                payment_amount: "$checkout_payload.payment_amount"
+                user_id: "$checkout_payload.user_id"
+                payment_method: "$checkout_payload.payment_method"
+                subtotal: "$checkout_payload.subtotal"
+                discount: "$checkout_payload.discount"
+                coupon_status: "$checkout_payload.coupon_status"
+
+    alt_popularity_substitute_purchase:
+      description: "Two fully coupled substitute-purchase strategies that either pick a popularity-based recommendation or directly build the best cart checkout path."
+      domain: "Shopping"
+      paths:
+        - path_id: "popularity_select_hold_confirm"
+          tools:
+            - tool_name: "get_recommendations_popularity"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params: {product_id: "$selected_product.product_id", user_id: "user_id", quantity: "quantity"}
+              output: "hold_result"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_result.reservation_id"
+                product_id: "$selected_product.product_id"
+                quantity: "quantity"
+
+        - path_id: "best_cart_then_express"
+          tools:
+            - tool_name: "add_best_recommendation_to_cart"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "cart_data"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$cart_data.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_trending_substitute_purchase:
+      description: "Two fully coupled substitute-purchase strategies that either pick a trending recommendation or directly hold the best recommendation before express checkout."
+      domain: "Shopping"
+      paths:
+        - path_id: "trending_select_hold_confirm"
+          tools:
+            - tool_name: "get_recommendations_trending"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "hold_inventory"
+              params: {product_id: "$selected_product.product_id", user_id: "user_id", quantity: "quantity"}
+              output: "hold_result"
+
+            - tool_name: "confirm_order"
+              params:
+                reservation_id: "$hold_result.reservation_id"
+                product_id: "$selected_product.product_id"
+                quantity: "quantity"
+
+        - path_id: "best_hold_then_express"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "express_checkout"
+              params:
+                product_id: "$hold_data.recommended_product_id"
+                quantity: "quantity"
+                user_id: "user_id"
+                payment_method: "payment_method"
+
+    alt_collaborative_invoice_vs_hold_invoice:
+      description: "Two fully coupled recommendation-to-invoice strategies that either derive invoice items from collaborative selection or from a held recommendation."
+      domain: "Shopping"
+      paths:
+        - path_id: "collaborative_selection_invoice"
+          tools:
+            - tool_name: "get_recommendations_collaborative"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "build_cart_items_from_selection"
+              params:
+                selected_product: "$selected_product"
+                quantity: "quantity"
+              output: "cart_items_data"
+
+            - tool_name: "get_cart_summary"
+              params:
+                items: "$cart_items_data.items"
+                user_id: "user_id"
+                coupon_code: "coupon_code"
+              output: "summary_data"
+
+            - tool_name: "build_invoice_from_summary"
+              params:
+                cart_summary: "$summary_data"
+                items: "$cart_items_data.items"
+                user_id: "user_id"
+                email: "email"
+                payment_gateway: "payment_gateway"
+              output: "invoice_payload"
+
+            - tool_name: "generate_invoice_from_summary"
+              params:
+                items: "$invoice_payload.items"
+                payment_amount: "$invoice_payload.payment_amount"
+                user_id: "$invoice_payload.user_id"
+                email: "$invoice_payload.email"
+                payment_gateway: "$invoice_payload.payment_gateway"
+                subtotal: "$invoice_payload.subtotal"
+                discount: "$invoice_payload.discount"
+                coupon_status: "$invoice_payload.coupon_status"
+
+        - path_id: "held_recommendation_invoice"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_invoice_from_hold"
+              params:
+                hold_data: "$hold_data"
+                quantity: "quantity"
+                user_id: "user_id"
+                email: "email"
+                payment_gateway: "payment_gateway"
+              output: "invoice_payload"
+
+            - tool_name: "generate_invoice_from_hold"
+              params:
+                items: "$invoice_payload.items"
+                payment_amount: "$invoice_payload.payment_amount"
+                user_id: "$invoice_payload.user_id"
+                email: "$invoice_payload.email"
+                payment_gateway: "$invoice_payload.payment_gateway"
+                reservation_id: "$invoice_payload.reservation_id"
+
+    alt_content_checkout_vs_hold_confirm:
+      description: "Two fully coupled recommendation purchase strategies that either summarize a selected content recommendation into checkout or confirm a held recommendation directly."
+      domain: "Shopping"
+      paths:
+        - path_id: "content_selection_checkout"
+          tools:
+            - tool_name: "get_recommendations_content"
+              params: {product_id: "product_id", category: "category", user_id: "user_id"}
+              output: "recommendation_data"
+
+            - tool_name: "select_recommendation"
+              params: {similar_products: "$recommendation_data.similar_products", quantity: "quantity"}
+              output: "selected_product"
+
+            - tool_name: "build_cart_items_from_selection"
+              params:
+                selected_product: "$selected_product"
+                quantity: "quantity"
+              output: "cart_items_data"
+
+            - tool_name: "get_cart_summary"
+              params:
+                items: "$cart_items_data.items"
+                user_id: "user_id"
+                coupon_code: "coupon_code"
+              output: "summary_data"
+
+            - tool_name: "build_checkout_from_summary"
+              params:
+                cart_summary: "$summary_data"
+                items: "$cart_items_data.items"
+                user_id: "user_id"
+                payment_method: "payment_method"
+              output: "checkout_payload"
+
+            - tool_name: "submit_order_from_summary"
+              params:
+                items: "$checkout_payload.items"
+                payment_amount: "$checkout_payload.payment_amount"
+                user_id: "$checkout_payload.user_id"
+                payment_method: "$checkout_payload.payment_method"
+                subtotal: "$checkout_payload.subtotal"
+                discount: "$checkout_payload.discount"
+                coupon_status: "$checkout_payload.coupon_status"
+
+        - path_id: "held_recommendation_confirm"
+          tools:
+            - tool_name: "hold_best_recommendation"
+              params: {product_id: "product_id", quantity: "quantity", user_id: "user_id", category: "category"}
+              output: "hold_data"
+
+            - tool_name: "build_checkout_from_hold"
+              params:
+                hold_data: "$hold_data"
+                quantity: "quantity"
+              output: "checkout_payload"
+
+            - tool_name: "confirm_held_recommendation_order"
+              params:
+                reservation_id: "$checkout_payload.reservation_id"
+                product_id: "$checkout_payload.product_id"
+                quantity: "$checkout_payload.quantity"
+
+    alt_storage_inventory_vs_snapshot_report:
+      description: "Two fully coupled archival strategies that either turn a storage listing into a structured archive note or turn a workspace snapshot into a text report."
+      domain: "General"
+      paths:
+        - path_id: "storage_listing_archive"
+          tools:
+            - tool_name: "browse_storage"
+              params: {folder_path: "target_path", extension: "extension"}
+              output: "storage_data"
+
+            - tool_name: "build_storage_archive_payload"
+              params:
+                storage_data: "$storage_data"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_payload"
+
+            - tool_name: "create_document_and_alert_from_data"
+              params:
+                data: "$archive_payload.data"
+                title: "$archive_payload.title"
+                tags: "$archive_payload.tags"
+                user_id: "$archive_payload.user_id"
+                priority: "$archive_payload.priority"
+                channel: "$archive_payload.channel"
+
+        - path_id: "workspace_snapshot_report"
+          tools:
+            - tool_name: "snapshot_workspace"
+              params: {workspace_path: "target_path", backup_name: "backup_name"}
+              output: "snapshot_data"
+
+            - tool_name: "build_snapshot_text_report"
+              params:
+                snapshot_data: "$snapshot_data"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "report_payload"
+
+            - tool_name: "create_document_and_alert"
+              params:
+                title: "$report_payload.title"
+                content: "$report_payload.content"
+                tags: "$report_payload.tags"
+                user_id: "$report_payload.user_id"
+                priority: "$report_payload.priority"
+                channel: "$report_payload.channel"
+
+    alt_contact_email_vs_im_notification:
+      description: "Two fully coupled colleague-notification strategies that either resolve a contact into an email payload or resolve an employee into an instant-message payload."
+      domain: "Office"
+      paths:
+        - path_id: "crm_email_notify"
+          tools:
+            - tool_name: "get_contact_info_crm"
+              params: {name: "target_name"}
+              output: "contact_data"
+
+            - tool_name: "build_contact_email_payload"
+              params:
+                contact_data: "$contact_data"
+                subject: "subject"
+                message: "message"
+              output: "email_payload"
+
+            - tool_name: "send_email"
+              params:
+                recipients: "$email_payload.recipients"
+                subject: "$email_payload.subject"
+                body: "$email_payload.body"
+
+        - path_id: "employee_im_notify"
+          tools:
+            - tool_name: "get_employee_id"
+              params: {name: "target_name"}
+              output: "employee_data"
+
+            - tool_name: "build_employee_im_payload"
+              params:
+                employee_data: "$employee_data"
+                message: "message"
+              output: "im_payload"
+
+            - tool_name: "send_instant_message"
+              params:
+                user_id: "$im_payload.user_id"
+                message: "$im_payload.message"
+
+    alt_quote_sell_vs_converted_sell:
+      description: "Two fully coupled sell-order strategies that either build a sell request from a direct equity quote or build a sell request from a converted quote."
+      domain: "Financial"
+      paths:
+        - path_id: "yahoo_quote_sell"
+          tools:
+            - tool_name: "get_stock_yahoo_finance"
+              params: {ticker: "ticker"}
+              output: "quote_data"
+
+            - tool_name: "build_equity_sell_request"
+              params:
+                quote_data: "$quote_data"
+                ticker: "ticker"
+                quantity: "quantity"
+              output: "sell_request"
+
+            - tool_name: "place_sell_order_from_quote"
+              params:
+                ticker: "$sell_request.ticker"
+                quantity: "$sell_request.quantity"
+                price: "$sell_request.price"
+
+        - path_id: "converted_quote_sell"
+          tools:
+            - tool_name: "get_stock_price_and_convert"
+              params: {ticker: "ticker", target_currency: "target_currency"}
+              output: "converted_quote"
+
+            - tool_name: "build_converted_sell_request"
+              params:
+                converted_quote: "$converted_quote"
+                ticker: "ticker"
+                quantity: "quantity"
+              output: "sell_request"
+
+            - tool_name: "place_sell_order_from_converted_quote"
+              params:
+                ticker: "$sell_request.ticker"
+                quantity: "$sell_request.quantity"
+                price_usd: "$sell_request.price_usd"
+                converted_price: "$sell_request.converted_price"
+                target_currency: "$sell_request.target_currency"
+
+    alt_iot_device_resolution_2to2:
+      description: "Two fully coupled 2-tool chains to resolve an IoT device reference. One isolates the device from a local network discovery scan, while the other resolves it from a cloud-connected status query."
+      domain: "IoT"
+      paths:
+        - path_id: "discovered_network_resolution"
+          tools:
+            - tool_name: "discover_smart_devices"
+              params: 
+                location: "area"
+              output: "discovery_data"
+
+            - tool_name: "select_discovered_device_by_type"
+              params: 
+                discovery_data: "$discovery_data"
+                device_type: "target_device_type"
+              output: "device_ref"
+
+        - path_id: "connected_cloud_resolution"
+          tools:
+            - tool_name: "query_connected_devices"
+              params: 
+                area: "area"
+                device_type: "target_device_type"
+              output: "connected_data"
+
+            - tool_name: "resolve_connected_device_by_type"
+              params: 
+                connected_data: "$connected_data"
+                device_type: "target_device_type"
+              output: "device_ref"
+
+    alt_contact_identity_resolution_2to2:
+      description: "Two fully coupled 2-tool chains to resolve a colleague identity profile. One path derives the profile from directory contact data, while the other derives it from an employee record."
+      domain: "Office"
+      paths:
+        - path_id: "directory_contact_identity"
+          tools:
+            - tool_name: "get_contact_info_directory"
+              params:
+                name: "name"
+              output: "contact_data"
+
+            - tool_name: "resolve_directory_contact_identity"
+              params:
+                contact_data: "$contact_data"
+                name: "name"
+              output: "identity_profile"
+
+        - path_id: "employee_record_identity"
+          tools:
+            - tool_name: "get_employee_id"
+              params:
+                name: "name"
+              output: "employee_data"
+
+            - tool_name: "resolve_employee_record_identity"
+              params:
+                employee_data: "$employee_data"
+                name: "name"
+              output: "identity_profile"
+
+    alt_quote_profile_resolution_2to2:
+      description: "Two fully coupled 2-tool chains to resolve an equity quote profile. One path uses a direct USD quote, while the other uses a converted multi-currency quote."
+      domain: "Financial"
+      paths:
+        - path_id: "direct_quote_profile"
+          tools:
+            - tool_name: "get_stock_yahoo_finance"
+              params:
+                ticker: "ticker"
+              output: "quote_data"
+
+            - tool_name: "resolve_direct_quote_profile"
+              params:
+                quote_data: "$quote_data"
+                ticker: "ticker"
+              output: "quote_profile"
+
+        - path_id: "converted_quote_profile"
+          tools:
+            - tool_name: "get_stock_price_and_convert"
+              params:
+                ticker: "ticker"
+                target_currency: "target_currency"
+              output: "converted_quote"
+
+            - tool_name: "resolve_converted_quote_profile"
+              params:
+                converted_quote: "$converted_quote"
+                ticker: "ticker"
+              output: "quote_profile"
+
+    alt_lock_reference_resolution_2to2:
+      description: "Two fully coupled 2-tool chains to resolve a smart-lock reference. One path isolates the lock from a local network discovery scan, while the other resolves it from a cloud-connected status query."
+      domain: "IoT"
+      paths:
+        - path_id: "discovered_lock_resolution"
+          tools:
+            - tool_name: "discover_smart_devices"
+              params:
+                location: "area"
+              output: "discovery_data"
+
+            - tool_name: "select_discovered_device_by_type"
+              params:
+                discovery_data: "$discovery_data"
+                device_type: "'smart_lock'"
+              output: "device_ref"
+
+        - path_id: "connected_lock_resolution"
+          tools:
+            - tool_name: "query_connected_devices"
+              params:
+                area: "area"
+                device_type: "'smart_lock'"
+              output: "connected_data"
+
+            - tool_name: "resolve_connected_device_by_type"
+              params:
+                connected_data: "$connected_data"
+                device_type: "'smart_lock'"
+              output: "device_ref"
+
+    alt_contact_dispatch_native_2to2:
+      description: "Two fully coupled native communication strategies. One path resolves a directory-native contact card and sends an email from that card, while the other resolves an employee-chat handle and sends an instant message from that handle."
+      domain: "Office"
+      paths:
+        - path_id: "directory_email_native"
+          tools:
+            - tool_name: "get_directory_contact_card_native"
+              params:
+                name: "name"
+              output: "contact_card"
+
+            - tool_name: "send_directory_card_email_native"
+              params:
+                contact_card: "$contact_card"
+                subject: "subject"
+                message: "message"
+              output: "dispatch_result"
+
+        - path_id: "employee_chat_native"
+          tools:
+            - tool_name: "get_employee_chat_handle_native"
+              params:
+                name: "name"
+              output: "employee_handle"
+
+            - tool_name: "send_employee_chat_message_native"
+              params:
+                employee_handle: "$employee_handle"
+                message: "message"
+              output: "dispatch_result"
+
+    alt_quote_archive_native_2to2:
+      description: "Two fully coupled native quote-archival strategies. One path fetches a direct quote snapshot and archives it as a text-first note, while the other fetches an FX-adjusted quote ticket and archives it as structured data."
+      domain: "Financial"
+      paths:
+        - path_id: "quote_snapshot_archive_native"
+          tools:
+            - tool_name: "get_quote_snapshot_native"
+              params:
+                ticker: "ticker"
+              output: "quote_snapshot"
+
+            - tool_name: "archive_quote_snapshot_native"
+              params:
+                quote_snapshot: "$quote_snapshot"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "fx_quote_ticket_archive_native"
+          tools:
+            - tool_name: "get_fx_quote_ticket_native"
+              params:
+                ticker: "ticker"
+                target_currency: "target_currency"
+              output: "quote_ticket"
+
+            - tool_name: "archive_fx_quote_ticket_native"
+              params:
+                quote_ticket: "$quote_ticket"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_flight_notice_native_2to2:
+      description: "Two fully coupled native flight-notice strategies. One path reads an aviation-style gate board and publishes a gate notice, while the other reads a trip timeline and publishes a timeline notice."
+      domain: "Travel"
+      paths:
+        - path_id: "gate_board_notice_native"
+          tools:
+            - tool_name: "get_aviationstack_gate_board_native"
+              params:
+                flight_number: "flight_number"
+              output: "gate_board"
+
+            - tool_name: "publish_gate_board_notice_native"
+              params:
+                gate_board: "$gate_board"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "trip_timeline_notice_native"
+          tools:
+            - tool_name: "get_flightaware_trip_timeline_native"
+              params:
+                flight_number: "flight_number"
+              output: "trip_timeline"
+
+            - tool_name: "publish_trip_timeline_notice_native"
+              params:
+                trip_timeline: "$trip_timeline"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_news_archive_native_2to2:
+      description: "Two fully coupled native news-archival strategies. One path retrieves a digest-card bundle from GNews and archives that bundle, while the other retrieves a bulletin pack from Currents and archives that pack."
+      domain: "General"
+      paths:
+        - path_id: "gnews_digest_archive_native"
+          tools:
+            - tool_name: "get_gnews_digest_cards_native"
+              params:
+                category: "category"
+              output: "digest_cards"
+
+            - tool_name: "archive_gnews_digest_cards_native"
+              params:
+                digest_cards: "$digest_cards"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "currents_pack_archive_native"
+          tools:
+            - tool_name: "get_currents_bulletin_pack_native"
+              params:
+                category: "category"
+              output: "bulletin_pack"
+
+            - tool_name: "archive_currents_bulletin_pack_native"
+              params:
+                bulletin_pack: "$bulletin_pack"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_light_control_native_2to2:
+      description: "Two fully coupled native smart-light control strategies. One path reads a mesh-native light snapshot and applies a mesh scene, while the other reads a bridge-native light payload and applies a bridge scene."
+      domain: "IoT"
+      paths:
+        - path_id: "mesh_scene_native"
+          tools:
+            - tool_name: "get_light_mesh_snapshot_native"
+              params:
+                light_id: "device_id"
+              output: "mesh_snapshot"
+
+            - tool_name: "apply_light_mesh_scene_native"
+              params:
+                mesh_snapshot: "$mesh_snapshot"
+                brightness: "brightness"
+              output: "control_result"
+
+        - path_id: "bridge_scene_native"
+          tools:
+            - tool_name: "get_light_bridge_payload_native"
+              params:
+                device_id: "device_id"
+              output: "bridge_payload"
+
+            - tool_name: "apply_light_bridge_scene_native"
+              params:
+                bridge_payload: "$bridge_payload"
+                brightness: "brightness"
+              output: "control_result"
+
+    alt_room_booking_native_2to2:
+      description: "Two fully coupled native room-booking strategies. One path retrieves an Office365-native room ticket and reserves from that ticket, while the other retrieves a Workplace-native room pass and reserves from that pass."
+      domain: "Office"
+      paths:
+        - path_id: "office365_room_booking_native"
+          tools:
+            - tool_name: "get_office365_room_ticket_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_ticket"
+
+            - tool_name: "reserve_office365_room_ticket_native"
+              params:
+                room_ticket: "$room_ticket"
+                end_time: "end_time"
+                attendees: "attendees"
+              output: "booking_result"
+
+        - path_id: "workplace_room_booking_native"
+          tools:
+            - tool_name: "get_workplace_room_pass_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_pass"
+
+            - tool_name: "reserve_workplace_room_pass_native"
+              params:
+                room_pass: "$room_pass"
+                end_time: "end_time"
+                attendees: "attendees"
+              output: "booking_result"
+
+    alt_balance_archive_native_2to2:
+      description: "Two fully coupled native balance-archival strategies. One path retrieves a bank-native balance sheet and archives that sheet, while the other retrieves a broker-native balance ledger and archives that ledger."
+      domain: "Financial"
+      paths:
+        - path_id: "bank_balance_archive_native"
+          tools:
+            - tool_name: "get_bank_balance_sheet_native"
+              params:
+                user_id: "user_id"
+                account_type: "account_type"
+              output: "balance_sheet"
+
+            - tool_name: "archive_bank_balance_sheet_native"
+              params:
+                balance_sheet: "$balance_sheet"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "broker_balance_archive_native"
+          tools:
+            - tool_name: "get_broker_balance_ledger_native"
+              params:
+                user_id: "user_id"
+                account_type: "account_type"
+              output: "balance_ledger"
+
+            - tool_name: "archive_broker_balance_ledger_native"
+              params:
+                balance_ledger: "$balance_ledger"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_market_notice_native_2to2:
+      description: "Two fully coupled native market-notice strategies. One path retrieves an Alpha-native market window and publishes from that window, while the other retrieves a Polygon-native market board and publishes from that board."
+      domain: "Financial"
+      paths:
+        - path_id: "alpha_market_notice_native"
+          tools:
+            - tool_name: "get_alpha_market_window_native"
+              params:
+                exchange: "exchange"
+              output: "market_window"
+
+            - tool_name: "publish_alpha_market_window_native"
+              params:
+                market_window: "$market_window"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "polygon_market_notice_native"
+          tools:
+            - tool_name: "get_polygon_market_board_native"
+              params:
+                exchange: "exchange"
+              output: "market_board"
+
+            - tool_name: "publish_polygon_market_board_native"
+              params:
+                market_board: "$market_board"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_hotel_archive_native_2to2:
+      description: "Two fully coupled native hotel-archival strategies. One path retrieves a Booking-native stay sheet and archives that sheet, while the other retrieves an Expedia-native lodging packet and archives that packet."
+      domain: "Travel"
+      paths:
+        - path_id: "booking_stay_archive_native"
+          tools:
+            - tool_name: "get_booking_stay_sheet_native"
+              params:
+                hotel_name: "hotel_name"
+              output: "stay_sheet"
+
+            - tool_name: "archive_booking_stay_sheet_native"
+              params:
+                stay_sheet: "$stay_sheet"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "expedia_lodging_archive_native"
+          tools:
+            - tool_name: "get_expedia_lodging_packet_native"
+              params:
+                hotel_name: "hotel_name"
+              output: "lodging_packet"
+
+            - tool_name: "archive_expedia_lodging_packet_native"
+              params:
+                lodging_packet: "$lodging_packet"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_weather_notice_native_2to2:
+      description: "Two fully coupled native weather-notice strategies. One path retrieves a WeatherAPI-native alert card and publishes from that card, while the other retrieves a Visual Crossing-native forecast chip and publishes from that chip."
+      domain: "Travel"
+      paths:
+        - path_id: "weatherapi_notice_native"
+          tools:
+            - tool_name: "get_weatherapi_alert_card_native"
+              params:
+                city: "city"
+              output: "alert_card"
+
+            - tool_name: "publish_weatherapi_alert_card_native"
+              params:
+                alert_card: "$alert_card"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "visualcrossing_notice_native"
+          tools:
+            - tool_name: "get_visualcrossing_forecast_chip_native"
+              params:
+                city: "city"
+              output: "forecast_chip"
+
+            - tool_name: "publish_visualcrossing_forecast_chip_native"
+              params:
+                forecast_chip: "$forecast_chip"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_time_archive_native_2to2:
+      description: "Two fully coupled native time-archival strategies. One path retrieves a UTC-style moment card and archives that card, while the other retrieves a local-time capsule and archives that capsule."
+      domain: "General"
+      paths:
+        - path_id: "utc_moment_archive_native"
+          tools:
+            - tool_name: "get_utc_moment_card_native"
+              params:
+                timezone: "timezone"
+              output: "moment_card"
+
+            - tool_name: "archive_utc_moment_card_native"
+              params:
+                moment_card: "$moment_card"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "local_capsule_archive_native"
+          tools:
+            - tool_name: "get_local_time_capsule_native"
+              params:
+                timezone: "timezone"
+              output: "time_capsule"
+
+            - tool_name: "archive_local_time_capsule_native"
+              params:
+                time_capsule: "$time_capsule"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_room_archive_native_2to2:
+      description: "Two fully coupled native room-archival strategies. One path retrieves an Office365-native room ticket and archives that ticket, while the other retrieves a Workplace-native room pass and archives that pass."
+      domain: "Office"
+      paths:
+        - path_id: "office365_room_archive_native"
+          tools:
+            - tool_name: "get_office365_room_ticket_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_ticket"
+
+            - tool_name: "archive_office365_room_ticket_native"
+              params:
+                room_ticket: "$room_ticket"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "workplace_room_archive_native"
+          tools:
+            - tool_name: "get_workplace_room_pass_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_pass"
+
+            - tool_name: "archive_workplace_room_pass_native"
+              params:
+                room_pass: "$room_pass"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_availability_notice_native_2to2:
+      description: "Two fully coupled native availability-notice strategies. One path retrieves a Google Calendar-native slot ticket and publishes from that ticket, while the other retrieves an Outlook-native slot pass and publishes from that pass."
+      domain: "Office"
+      paths:
+        - path_id: "google_slot_notice_native"
+          tools:
+            - tool_name: "get_google_slot_ticket_native"
+              params:
+                item_id: "item_id"
+                start_date: "start_date"
+              output: "slot_ticket"
+
+            - tool_name: "publish_google_slot_ticket_native"
+              params:
+                slot_ticket: "$slot_ticket"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "outlook_slot_notice_native"
+          tools:
+            - tool_name: "get_outlook_slot_pass_native"
+              params:
+                item_id: "item_id"
+                start_date: "start_date"
+              output: "slot_pass"
+
+            - tool_name: "publish_outlook_slot_pass_native"
+              params:
+                slot_pass: "$slot_pass"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_balance_notice_native_2to2:
+      description: "Two fully coupled native balance-notice strategies. One path retrieves a bank-native balance sheet and publishes from that sheet, while the other retrieves a broker-native balance ledger and publishes from that ledger."
+      domain: "Financial"
+      paths:
+        - path_id: "bank_balance_notice_native"
+          tools:
+            - tool_name: "get_bank_balance_sheet_native"
+              params:
+                user_id: "user_id"
+                account_type: "account_type"
+              output: "balance_sheet"
+
+            - tool_name: "publish_bank_balance_sheet_native"
+              params:
+                balance_sheet: "$balance_sheet"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "broker_balance_notice_native"
+          tools:
+            - tool_name: "get_broker_balance_ledger_native"
+              params:
+                user_id: "user_id"
+                account_type: "account_type"
+              output: "balance_ledger"
+
+            - tool_name: "publish_broker_balance_ledger_native"
+              params:
+                balance_ledger: "$balance_ledger"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_market_archive_native_2to2:
+      description: "Two fully coupled native market-archival strategies. One path retrieves an Alpha-native market window and archives that window, while the other retrieves a Polygon-native market board and archives that board."
+      domain: "Financial"
+      paths:
+        - path_id: "alpha_market_archive_native"
+          tools:
+            - tool_name: "get_alpha_market_window_native"
+              params:
+                exchange: "exchange"
+              output: "market_window"
+
+            - tool_name: "archive_alpha_market_window_native"
+              params:
+                market_window: "$market_window"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "polygon_market_archive_native"
+          tools:
+            - tool_name: "get_polygon_market_board_native"
+              params:
+                exchange: "exchange"
+              output: "market_board"
+
+            - tool_name: "archive_polygon_market_board_native"
+              params:
+                market_board: "$market_board"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_hotel_notice_native_2to2:
+      description: "Two fully coupled native hotel-notice strategies. One path retrieves a Booking-native stay sheet and publishes from that sheet, while the other retrieves an Expedia-native lodging packet and publishes from that packet."
+      domain: "Travel"
+      paths:
+        - path_id: "booking_stay_notice_native"
+          tools:
+            - tool_name: "get_booking_stay_sheet_native"
+              params:
+                hotel_name: "hotel_name"
+              output: "stay_sheet"
+
+            - tool_name: "publish_booking_stay_sheet_native"
+              params:
+                stay_sheet: "$stay_sheet"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "expedia_lodging_notice_native"
+          tools:
+            - tool_name: "get_expedia_lodging_packet_native"
+              params:
+                hotel_name: "hotel_name"
+              output: "lodging_packet"
+
+            - tool_name: "publish_expedia_lodging_packet_native"
+              params:
+                lodging_packet: "$lodging_packet"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_weather_archive_native_2to2:
+      description: "Two fully coupled native weather-archival strategies. One path retrieves a WeatherAPI-native alert card and archives that card, while the other retrieves a Visual Crossing-native forecast chip and archives that chip."
+      domain: "Travel"
+      paths:
+        - path_id: "weatherapi_archive_native"
+          tools:
+            - tool_name: "get_weatherapi_alert_card_native"
+              params:
+                city: "city"
+              output: "alert_card"
+
+            - tool_name: "archive_weatherapi_alert_card_native"
+              params:
+                alert_card: "$alert_card"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "visualcrossing_archive_native"
+          tools:
+            - tool_name: "get_visualcrossing_forecast_chip_native"
+              params:
+                city: "city"
+              output: "forecast_chip"
+
+            - tool_name: "archive_visualcrossing_forecast_chip_native"
+              params:
+                forecast_chip: "$forecast_chip"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_news_notice_native_2to2:
+      description: "Two fully coupled native news-notice strategies. One path retrieves a GNews-native digest card bundle and publishes from that bundle, while the other retrieves a Currents-native bulletin pack and publishes from that pack."
+      domain: "General"
+      paths:
+        - path_id: "gnews_notice_native"
+          tools:
+            - tool_name: "get_gnews_digest_cards_native"
+              params:
+                category: "category"
+              output: "digest_cards"
+
+            - tool_name: "publish_gnews_digest_cards_native"
+              params:
+                digest_cards: "$digest_cards"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "currents_notice_native"
+          tools:
+            - tool_name: "get_currents_bulletin_pack_native"
+              params:
+                category: "category"
+              output: "bulletin_pack"
+
+            - tool_name: "publish_currents_bulletin_pack_native"
+              params:
+                bulletin_pack: "$bulletin_pack"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_time_notice_native_2to2:
+      description: "Two fully coupled native time-notice strategies. One path retrieves a UTC-style moment card and publishes from that card, while the other retrieves a local-time capsule and publishes from that capsule."
+      domain: "General"
+      paths:
+        - path_id: "utc_moment_notice_native"
+          tools:
+            - tool_name: "get_utc_moment_card_native"
+              params:
+                timezone: "timezone"
+              output: "moment_card"
+
+            - tool_name: "publish_utc_moment_card_native"
+              params:
+                moment_card: "$moment_card"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "local_capsule_notice_native"
+          tools:
+            - tool_name: "get_local_time_capsule_native"
+              params:
+                timezone: "timezone"
+              output: "time_capsule"
+
+            - tool_name: "publish_local_time_capsule_native"
+              params:
+                time_capsule: "$time_capsule"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_light_archive_native_2to2:
+      description: "Two fully coupled native light-archival strategies. One path retrieves a mesh-native light snapshot and archives that snapshot, while the other retrieves a bridge-native light payload and archives that payload."
+      domain: "IoT"
+      paths:
+        - path_id: "mesh_light_archive_native"
+          tools:
+            - tool_name: "get_light_mesh_snapshot_native"
+              params:
+                light_id: "device_id"
+              output: "mesh_snapshot"
+
+            - tool_name: "archive_light_mesh_snapshot_native"
+              params:
+                mesh_snapshot: "$mesh_snapshot"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "bridge_light_archive_native"
+          tools:
+            - tool_name: "get_light_bridge_payload_native"
+              params:
+                device_id: "device_id"
+              output: "bridge_payload"
+
+            - tool_name: "archive_light_bridge_payload_native"
+              params:
+                bridge_payload: "$bridge_payload"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_lock_control_native_2to2:
+      description: "Two fully coupled native lock-control strategies. One path retrieves a discovered-lock ticket and applies control from that ticket, while the other retrieves a connected-lock pass and applies control from that pass."
+      domain: "IoT"
+      paths:
+        - path_id: "discovered_lock_control_native"
+          tools:
+            - tool_name: "get_discovered_lock_ticket_native"
+              params:
+                area: "area"
+              output: "lock_ticket"
+
+            - tool_name: "apply_discovered_lock_ticket_native"
+              params:
+                lock_ticket: "$lock_ticket"
+                state: "state"
+                pin_code: "pin_code"
+              output: "control_result"
+
+        - path_id: "connected_lock_control_native"
+          tools:
+            - tool_name: "get_connected_lock_pass_native"
+              params:
+                area: "area"
+              output: "lock_pass"
+
+            - tool_name: "apply_connected_lock_pass_native"
+              params:
+                lock_pass: "$lock_pass"
+                state: "state"
+                pin_code: "pin_code"
+              output: "control_result"
+
+    alt_contact_archive_native_2to2:
+      description: "Two fully coupled native contact-archival strategies. One path retrieves a directory-native contact card and archives that card, while the other retrieves an employee-chat native handle and archives that handle."
+      domain: "Office"
+      paths:
+        - path_id: "directory_contact_archive_native"
+          tools:
+            - tool_name: "get_directory_contact_card_native"
+              params:
+                name: "name"
+              output: "contact_card"
+
+            - tool_name: "archive_directory_contact_card_native"
+              params:
+                contact_card: "$contact_card"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "employee_handle_archive_native"
+          tools:
+            - tool_name: "get_employee_chat_handle_native"
+              params:
+                name: "name"
+              output: "chat_handle"
+
+            - tool_name: "archive_employee_chat_handle_native"
+              params:
+                chat_handle: "$chat_handle"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_contact_notice_native_2to2:
+      description: "Two fully coupled native contact-notice strategies. One path retrieves a directory-native contact card and publishes from that card, while the other retrieves an employee-chat native handle and publishes from that handle."
+      domain: "Office"
+      paths:
+        - path_id: "directory_contact_notice_native"
+          tools:
+            - tool_name: "get_directory_contact_card_native"
+              params:
+                name: "name"
+              output: "contact_card"
+
+            - tool_name: "publish_directory_contact_card_native"
+              params:
+                contact_card: "$contact_card"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "employee_handle_notice_native"
+          tools:
+            - tool_name: "get_employee_chat_handle_native"
+              params:
+                name: "name"
+              output: "chat_handle"
+
+            - tool_name: "publish_employee_chat_handle_native"
+              params:
+                chat_handle: "$chat_handle"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_quote_notice_native_2to2:
+      description: "Two fully coupled native quote-notice strategies. One path retrieves a direct-quote native snapshot and publishes from that snapshot, while the other retrieves an FX-quote native ticket and publishes from that ticket."
+      domain: "Financial"
+      paths:
+        - path_id: "direct_quote_notice_native"
+          tools:
+            - tool_name: "get_quote_snapshot_native"
+              params:
+                ticker: "ticker"
+              output: "quote_snapshot"
+
+            - tool_name: "publish_quote_snapshot_native"
+              params:
+                quote_snapshot: "$quote_snapshot"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "fx_quote_notice_native"
+          tools:
+            - tool_name: "get_fx_quote_ticket_native"
+              params:
+                ticker: "ticker"
+                target_currency: "target_currency"
+              output: "fx_quote_ticket"
+
+            - tool_name: "publish_fx_quote_ticket_native"
+              params:
+                fx_quote_ticket: "$fx_quote_ticket"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_quote_sell_native_2to2:
+      description: "Two fully coupled native quote-execution strategies. One path retrieves a direct-quote native snapshot and executes a sell order from that snapshot, while the other retrieves an FX-quote native ticket and executes a sell order from that ticket."
+      domain: "Financial"
+      paths:
+        - path_id: "direct_quote_sell_native"
+          tools:
+            - tool_name: "get_quote_snapshot_native"
+              params:
+                ticker: "ticker"
+              output: "quote_snapshot"
+
+            - tool_name: "execute_quote_snapshot_sell_native"
+              params:
+                quote_snapshot: "$quote_snapshot"
+                quantity: "quantity"
+              output: "sell_result"
+
+        - path_id: "fx_quote_sell_native"
+          tools:
+            - tool_name: "get_fx_quote_ticket_native"
+              params:
+                ticker: "ticker"
+                target_currency: "target_currency"
+              output: "fx_quote_ticket"
+
+            - tool_name: "execute_fx_quote_ticket_sell_native"
+              params:
+                fx_quote_ticket: "$fx_quote_ticket"
+                quantity: "quantity"
+              output: "sell_result"
+
+    alt_flight_archive_native_2to2:
+      description: "Two fully coupled native flight-archival strategies. One path retrieves an AviationStack-native gate board and archives that board, while the other retrieves a FlightAware-native trip timeline and archives that timeline."
+      domain: "Travel"
+      paths:
+        - path_id: "aviationstack_archive_native"
+          tools:
+            - tool_name: "get_aviationstack_gate_board_native"
+              params:
+                flight_number: "flight_number"
+              output: "gate_board"
+
+            - tool_name: "archive_aviationstack_gate_board_native"
+              params:
+                gate_board: "$gate_board"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "flightaware_archive_native"
+          tools:
+            - tool_name: "get_flightaware_trip_timeline_native"
+              params:
+                flight_number: "flight_number"
+              output: "trip_timeline"
+
+            - tool_name: "archive_flightaware_trip_timeline_native"
+              params:
+                trip_timeline: "$trip_timeline"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_weather_advisory_native_2to2:
+      description: "Two fully coupled native weather-advisory strategies. One path retrieves a WeatherAPI-native alert card and publishes a travel advisory from that card, while the other retrieves a Visual Crossing-native forecast chip and publishes a travel advisory from that chip."
+      domain: "Travel"
+      paths:
+        - path_id: "weatherapi_advisory_native"
+          tools:
+            - tool_name: "get_weatherapi_alert_card_native"
+              params:
+                city: "city"
+              output: "alert_card"
+
+            - tool_name: "publish_weatherapi_travel_advisory_native"
+              params:
+                alert_card: "$alert_card"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "visualcrossing_advisory_native"
+          tools:
+            - tool_name: "get_visualcrossing_forecast_chip_native"
+              params:
+                city: "city"
+              output: "forecast_chip"
+
+            - tool_name: "publish_visualcrossing_travel_advisory_native"
+              params:
+                forecast_chip: "$forecast_chip"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_light_notice_native_2to2:
+      description: "Two fully coupled native light-notice strategies. One path retrieves a mesh-native light snapshot and publishes from that snapshot, while the other retrieves a bridge-native light payload and publishes from that payload."
+      domain: "IoT"
+      paths:
+        - path_id: "mesh_light_notice_native"
+          tools:
+            - tool_name: "get_light_mesh_snapshot_native"
+              params:
+                light_id: "device_id"
+              output: "mesh_snapshot"
+
+            - tool_name: "publish_light_mesh_snapshot_native"
+              params:
+                mesh_snapshot: "$mesh_snapshot"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "bridge_light_notice_native"
+          tools:
+            - tool_name: "get_light_bridge_payload_native"
+              params:
+                device_id: "device_id"
+              output: "bridge_payload"
+
+            - tool_name: "publish_light_bridge_payload_native"
+              params:
+                bridge_payload: "$bridge_payload"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_lock_archive_native_2to2:
+      description: "Two fully coupled native lock-archival strategies. One path retrieves a discovered-lock ticket and archives that ticket, while the other retrieves a connected-lock pass and archives that pass."
+      domain: "IoT"
+      paths:
+        - path_id: "discovered_lock_archive_native"
+          tools:
+            - tool_name: "get_discovered_lock_ticket_native"
+              params:
+                area: "area"
+              output: "lock_ticket"
+
+            - tool_name: "archive_discovered_lock_ticket_native"
+              params:
+                lock_ticket: "$lock_ticket"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "connected_lock_archive_native"
+          tools:
+            - tool_name: "get_connected_lock_pass_native"
+              params:
+                area: "area"
+              output: "lock_pass"
+
+            - tool_name: "archive_connected_lock_pass_native"
+              params:
+                lock_pass: "$lock_pass"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+    alt_room_notice_native_2to2:
+      description: "Two fully coupled native room-notice strategies. One path retrieves an Office365-native room ticket and publishes from that ticket, while the other retrieves a Workplace-native room pass and publishes from that pass."
+      domain: "Office"
+      paths:
+        - path_id: "office365_room_notice_native"
+          tools:
+            - tool_name: "get_office365_room_ticket_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_ticket"
+
+            - tool_name: "publish_office365_room_ticket_native"
+              params:
+                room_ticket: "$room_ticket"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+        - path_id: "workplace_room_notice_native"
+          tools:
+            - tool_name: "get_workplace_room_pass_native"
+              params:
+                min_capacity: "min_capacity"
+                date: "date"
+                start_time: "start_time"
+              output: "room_pass"
+
+            - tool_name: "publish_workplace_room_pass_native"
+              params:
+                room_pass: "$room_pass"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "notice_result"
+
+    alt_availability_archive_native_2to2:
+      description: "Two fully coupled native availability-archival strategies. One path retrieves a Google Calendar-native slot ticket and archives that ticket, while the other retrieves an Outlook-native slot pass and archives that pass."
+      domain: "Office"
+      paths:
+        - path_id: "google_slot_archive_native"
+          tools:
+            - tool_name: "get_google_slot_ticket_native"
+              params:
+                item_id: "item_id"
+                start_date: "start_date"
+              output: "slot_ticket"
+
+            - tool_name: "archive_google_slot_ticket_native"
+              params:
+                slot_ticket: "$slot_ticket"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"
+
+        - path_id: "outlook_slot_archive_native"
+          tools:
+            - tool_name: "get_outlook_slot_pass_native"
+              params:
+                item_id: "item_id"
+                start_date: "start_date"
+              output: "slot_pass"
+
+            - tool_name: "archive_outlook_slot_pass_native"
+              params:
+                slot_pass: "$slot_pass"
+                title: "title"
+                user_id: "user_id"
+                priority: "priority"
+                channel: "channel"
+              output: "archive_result"

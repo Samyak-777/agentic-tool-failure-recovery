@@ -1,0 +1,3243 @@
+tools:
+- name: get_exchange_rate_fixer
+  description: Get exchange rate using Fixer.io API
+  category: Processor
+  domain: Financial
+  substitutes:
+  - get_exchange_rate_exchangerate
+  - get_exchange_rate_currencyapi
+  paradigms:
+    function_call:
+      spec:
+        name: get_exchange_rate_fixer
+        description: Get exchange rate using Fixer.io API, data sourced from European Central Bank
+        parameters:
+          type: object
+          properties:
+            from_currency:
+              type: string
+              description: 'Source currency code, e.g.: USD, EUR, JPY'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+            to_currency:
+              type: string
+              description: 'Target currency code, e.g.: USD, EUR, JPY'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+            from:
+              type: string
+              description: Alias for from_currency
+            to:
+              type: string
+              description: Alias for to_currency
+          required:
+          - from_currency
+          - to_currency
+    mcp:
+      prompt_signature: 'get_exchange_rate_fixer(from_currency: string, to_currency: string, from: string = '''', to: string = '''') -> dict'
+      prompt_description: Get currency exchange rate using Fixer.io API. Parameters 'from_currency' and 'to_currency' are currency code strings. Returns a dictionary containing 'rate' key, indicating how much target currency equals 1 unit of source currency.
+      output_schema:
+        rate:
+          type: number
+- name: get_exchange_rate_exchangerate
+  description: Get exchange rate using ExchangeRate-API
+  category: Processor
+  domain: Financial
+  substitutes:
+  - get_exchange_rate_fixer
+  - get_exchange_rate_currencyapi
+  paradigms:
+    function_call:
+      spec:
+        name: get_exchange_rate_exchangerate
+        description: Get exchange rate using ExchangeRate-API, high free tier quota and fast update frequency
+        parameters:
+          type: object
+          properties:
+            from_currency:
+              type: string
+              description: 'Source currency code, e.g.: USD, EUR, JPY'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+            to_currency:
+              type: string
+              description: 'Target currency code, e.g.: USD, EUR, JPY'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+          required:
+          - from_currency
+          - to_currency
+    mcp:
+      prompt_signature: 'get_exchange_rate_exchangerate(from_currency: string, to_currency: string) -> dict'
+      prompt_description: Get currency exchange rate using ExchangeRate-API. Parameters 'from_currency' and 'to_currency' are currency code strings. Returns a dictionary containing 'rate' key.
+      output_schema:
+        rate:
+          type: number
+- name: get_exchange_rate_currencyapi
+  description: Get exchange rate using CurrencyAPI
+  category: Processor
+  domain: Financial
+  substitutes:
+  - get_exchange_rate_fixer
+  - get_exchange_rate_exchangerate
+  paradigms:
+    function_call:
+      spec:
+        name: get_exchange_rate_currencyapi
+        description: Get exchange rate using CurrencyAPI, supports cryptocurrency and diverse data sources
+        parameters:
+          type: object
+          properties:
+            from_currency:
+              type: string
+              description: 'Source currency code, e.g.: USD, EUR, JPY, BTC'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+              - BTC
+            to_currency:
+              type: string
+              description: 'Target currency code, e.g.: USD, EUR, JPY, BTC'
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+              - BTC
+          required:
+          - from_currency
+          - to_currency
+    mcp:
+      prompt_signature: 'get_exchange_rate_currencyapi(from_currency: string, to_currency: string) -> dict'
+      prompt_description: Get currency exchange rate using CurrencyAPI. Supports both fiat and cryptocurrency. Parameters 'from_currency' and 'to_currency' are currency code strings. Returns a dictionary containing 'rate' key.
+      output_schema:
+        rate:
+          type: number
+- name: get_stock_price_and_convert
+  description: Get stock price and convert to specified currency (advanced combined tool)
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: get_stock_price_and_convert
+        description: Get stock price and directly convert to specified currency, this is an advanced combined tool
+        parameters:
+          type: object
+          properties:
+            ticker:
+              type: string
+              description: 'Stock ticker symbol, e.g.: AAPL, GOOGL'
+            target_currency:
+              type: string
+              description: 'Target currency code, e.g.: EUR, JPY, CNY'
+          required:
+          - ticker
+          - target_currency
+    mcp:
+      prompt_signature: 'get_stock_price_and_convert(ticker: string, target_currency: string) -> dict'
+      prompt_description: Get stock price and convert to specified currency. Parameter 'ticker' is the stock symbol, 'target_currency' is the target currency code. Returns a dictionary containing 'price' (converted price) and 'currency' (currency unit) keys.
+      output_schema:
+        price:
+          type: number
+        currency:
+          type: string
+        ticker:
+          type: string
+        price_usd:
+          type: number
+        rate:
+          type: number
+- name: temperature_converter
+  description: Temperature unit conversion tool
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: temperature_converter
+        description: Convert temperature between Celsius and Fahrenheit
+        parameters:
+          type: object
+          properties:
+            value:
+              type: number
+              description: Temperature value
+            from_unit:
+              type: string
+              description: Source temperature unit, 'celsius' or 'fahrenheit'
+              enum:
+              - celsius
+              - fahrenheit
+            to_unit:
+              type: string
+              description: Target temperature unit, 'celsius' or 'fahrenheit'
+              enum:
+              - celsius
+              - fahrenheit
+          required:
+          - value
+    mcp:
+      prompt_signature: 'temperature_converter(value: number, from_unit: string = ''fahrenheit'', to_unit: string = ''celsius'') -> dict'
+      prompt_description: Convert temperature unit. Parameter 'value' is the temperature value, 'from_unit' and 'to_unit' are temperature units ('celsius' or 'fahrenheit'). Returns a dictionary containing 'converted_value' (converted temperature) and 'unit' keys.
+      output_schema:
+        converted_value:
+          type: number
+        from_unit:
+          type: string
+        to_unit:
+          type: string
+        original_value:
+          type: number
+- name: analyze_text
+  description: Analyze text and return various statistics
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: analyze_text
+        description: Analyze text content and return character count, word count, and other statistics
+        parameters:
+          type: object
+          properties:
+            text:
+              type: string
+              description: Text content to analyze
+          required:
+          - text
+    mcp:
+      prompt_signature: 'analyze_text(text: string) -> dict'
+      prompt_description: Analyze text. Parameter 'text' is the text content string. Returns a dictionary containing 'raw_content', 'character_count', 'word_count', 'line_count', 'alphabetic_count', 'digit_count', 'whitespace_count', 'longest_word', 'longest_word_length', and 'average_word_length' keys.
+      output_schema:
+        raw_content:
+          type: string
+        character_count:
+          type: integer
+        word_count:
+          type: integer
+        line_count:
+          type: integer
+        alphabetic_count:
+          type: integer
+        digit_count:
+          type: integer
+        whitespace_count:
+          type: integer
+        longest_word:
+          type: string
+        longest_word_length:
+          type: integer
+        average_word_length:
+          type: number
+- name: order_items
+  description: Sort a list of items in ascending or descending order
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: order_items
+        description: Sort a list of items in specified order
+        parameters:
+          type: object
+          properties:
+            items:
+              type: array
+              items: {}
+              description: List of items to sort
+            order:
+              type: string
+              description: 'Sort order: ''asc'' for ascending or ''desc'' for descending (default: ''desc'')'
+              enum:
+              - asc
+              - desc
+            key:
+              type: string
+              description: If items are dictionaries, sort by this key (optional, automatically detected if not provided)
+          required:
+          - items
+    mcp:
+      prompt_signature: 'order_items(items: list, order: string = ''asc'', key: string = None) -> dict'
+      prompt_description: Sort list items. Parameter 'items' is the list to sort, 'order' is the sort order, 'key' is optional for sorting dictionaries (automatically detected if not provided). Returns a dictionary containing 'sorted_items', 'count', and 'order' keys.
+      output_schema:
+        sorted_items:
+          type: array
+        count:
+          type: integer
+        order:
+          type: string
+- name: diagnose_device_health
+  description: Batch analyze multiple IoT devices (3+) to identify those with health issues
+  category: Processor
+  domain: IoT
+  substitutes: []
+  usage_note: ONLY use when analyzing 3 or more devices simultaneously. For single device checks, use the status information directly from get_iot_device_status.
+  paradigms:
+    function_call:
+      spec:
+        name: diagnose_device_health
+        description: Analyze a list of device status objects and return those that are offline, low battery, or reporting errors using the Device Health Diagnostics API.
+        parameters:
+          type: object
+          properties:
+            devices_data:
+              type: array
+              items:
+                type: object
+                description: output from get_iot_device_status
+              description: List of device status dictionaries
+            status_criteria:
+              type: string
+              description: 'Criteria to filter by: ''offline'', ''low_battery'', ''error'', ''all_issues'''
+              enum:
+              - offline
+              - low_battery
+              - error
+              - all_issues
+          required:
+          - devices_data
+    mcp:
+      prompt_signature: 'diagnose_device_health(devices_data: list, status_criteria: string = ''all_issues'') -> dict'
+      prompt_description: Diagnose device health issues. 'devices_data' is a list of device objects output from status type function. 'status_criteria' defaults to 'all_issues'. Returns a dictionary with 'abnormal_devices' (list), 'count', and 'issues_found' keys.
+      output_schema:
+        count:
+          type: integer
+        status_criteria:
+          type: string
+        abnormal_devices:
+          type: array
+- name: get_cart_summary
+  description: Calculate total price with coupons applied
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: get_cart_summary
+        description: Calculate the cart subtotal, apply any valid coupon code, and return the final total using the Shopping Cart API.
+        parameters:
+          type: object
+          properties:
+            items:
+              type: array
+              description: List of cart items, each with product_id and quantity
+              items:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                    description: Product identifier
+                  quantity:
+                    type: integer
+                    description: Quantity in cart
+                required:
+                - product_id
+                - quantity
+            user_id:
+              type: string
+              description: User identifier
+            coupon_code:
+              type: string
+              description: Optional coupon code (e.g., 'SAVE10')
+              enum:
+              - SAVE15
+              - WELCOME10
+          required:
+          - items
+    mcp:
+      prompt_signature: 'get_cart_summary(items: list[dict], coupon_code: string = None, user_id: string = ''default_user'') -> dict'
+      prompt_description: Get cart summary with specified items and optional coupon. Returns subtotal, discount, and final_total.
+      output_schema:
+        total:
+          type: number
+        items:
+          type: array
+- name: optimize_discount
+  description: Analyze available coupons to find the best discount for current cart
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: optimize_discount
+        description: Evaluate a list of coupons against the current cart contents to determine which one offers the maximum savings using the Discount Optimization Engine.
+        parameters:
+          type: object
+          properties:
+            items:
+              type: array
+              description: List of cart items, each with product_id and quantity
+              items:
+                type: object
+                properties:
+                  product_id:
+                    type: string
+                    description: Product identifier
+                  quantity:
+                    type: integer
+                    description: Quantity in cart
+                required:
+                - product_id
+                - quantity
+            user_id:
+              type: string
+              description: User identifier
+            coupons_list:
+              type: array
+              items:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    description: coupon code
+                required:
+                - code
+              description: List of coupon objects (usually the output from get_available_coupons)
+          required:
+          - items
+          - coupons_list
+    mcp:
+      prompt_signature: 'optimize_discount(items: list[dict], coupons_list: list, user_id: string = ''default_user'') -> dict'
+      prompt_description: Optimize discount selection for specified items. Calculates max savings based on cart total. Returns cart_subtotal, best_coupon_code, estimated_savings, and final_total.
+      output_schema:
+        best_coupon:
+          type: string
+- name: estimate_trading_cost
+  description: Calculate estimated fees for a trade
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: estimate_trading_cost
+        description: Calculate the transaction fee based on trade amount and asset type.
+        parameters:
+          type: object
+          properties:
+            amount:
+              type: number
+              description: Total transaction amount
+            asset_type:
+              type: string
+              description: Type of asset being traded
+              enum:
+              - stock
+              - crypto
+              - forex
+            user_tier:
+              type: string
+              description: User membership tier
+              enum:
+              - standard
+              - vip
+              default: standard
+          required:
+          - amount
+    mcp:
+      prompt_signature: 'estimate_trading_cost(amount: number, asset_type: string = ''stock'', user_tier: string = ''standard'') -> dict'
+      prompt_description: Calculate fee. Returns a dictionary containing 'amount' (original value), 'fee_rate' (percentage string), 'fee_amount' (rounded to two decimal places), 'total_cost' (amount plus fee), and 'currency' (fixed as 'USD').
+      output_schema:
+        amount:
+          type: number
+        fee_rate:
+          type: string
+        fee_amount:
+          type: number
+        total_cost:
+          type: number
+        currency:
+          type: string
+- name: assess_trade_risk
+  description: Assess risk level for a proposed transaction
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: assess_trade_risk
+        description: Perform risk analysis on a transaction. Required step before execution.
+        parameters:
+          type: object
+          properties:
+            amount:
+              type: number
+              description: Transaction amount
+          required:
+          - amount
+    mcp:
+      prompt_signature: 'assess_trade_risk(amount: number) -> dict'
+      prompt_description: Verify risk. Returns decision ('approved'/'rejected') and a risk_token if approved.
+      output_schema:
+        decision:
+          type: string
+        risk_token:
+          type: string
+        reason:
+          type: string
+- name: find_meeting_time
+  description: Find a common time slot for multiple users
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: find_meeting_time
+        description: Calculate the first available common time slot for a group of users.
+        parameters:
+          type: object
+          properties:
+            user_ids:
+              type: array
+              items:
+                type: string
+              description: List of user IDs to coordinate
+              enum:
+              - - u_alice
+                - u_bob
+              - - u_alice
+                - u_charlie
+              - - u_bob
+                - u_david
+              - - u_alice
+                - u_bob
+                - u_charlie
+            duration_minutes:
+              type: integer
+              description: 'Required meeting duration in minutes (Default: 60)'
+              default: 60
+            preferred_date:
+              type: string
+              description: Preferred date
+              default: ''
+              enum:
+              - '2024-10-24'
+          required:
+          - user_ids
+    mcp:
+      prompt_signature: 'find_meeting_time(user_ids: list, duration_minutes: int = 60, date: string = ''2024-10-24'', preferred_date: string = '''', start_time: string = '''') -> dict'
+      prompt_description: Find common slot. Returns a dictionary containing 'status' (success or failure), 'date', 'users_checked' (list of IDs), and 'duration_minutes' (integer); if successful, it includes a 'recommended_slot' dictionary (with 'start_time' and 'end_time') and a 'message' string.
+      output_schema:
+        status:
+          type: string
+        date:
+          type: string
+        users_checked:
+          type: array
+        duration_minutes:
+          type: integer
+        recommended_slot:
+          type: object
+        message:
+          type: string
+- name: select_meeting_room
+  description: Choose the best meeting room from a list of available rooms
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: select_meeting_room
+        description: Pick the smallest available room that can accommodate the requested attendee count.
+        parameters:
+          type: object
+          properties:
+            rooms:
+              type: array
+              description: List of room objects, usually the output of get_meeting_rooms
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Room name
+                  capacity:
+                    type: integer
+                    description: Room capacity
+                required:
+                - name
+                - capacity
+            attendees:
+              type: integer
+              description: Number of attendees that must fit in the room
+          required:
+          - rooms
+          - attendees
+    mcp:
+      prompt_signature: 'select_meeting_room(rooms: list, attendees: int) -> dict'
+      prompt_description: Select the best room from a candidate list. Returns room_name, capacity, equipment, and selection_reason.
+      output_schema:
+        room_name:
+          type: string
+        capacity:
+          type: integer
+        equipment:
+          type: array
+        selection_reason:
+          type: string
+- name: get_field_value
+  description: Extract a specific value from complex nested data structures (3+ levels deep) or perform filtering operations
+  category: Processor
+  domain: General
+  substitutes: []
+  usage_note: ONLY use when dealing with deeply nested data or complex filtering. For simple list[0] or dict['key'] access, reference directly in arg_bindings instead.
+  paradigms:
+    function_call:
+      spec:
+        name: get_field_value
+        description: Extracts a specific field from the previous step's output. Returns the result wrapped in an 'extracted_value' key.
+        parameters:
+          type: object
+          properties:
+            data:
+              description: The specific output field from the previous step to process (e.g., 'headlines', 'product_list', 'metadata'). Can be a List or Dictionary. Do NOT try to reference the entire step output.
+            target_field:
+              type: string
+              description: The specific key to extract. If omitted, extracts the first available value.
+              default: null
+            index:
+              type: integer
+              description: 'If data is a list, the index to extract (default: 0).'
+              default: 0
+            field_name:
+              type: string
+              description: Alias for target_field
+              default: ''
+          required:
+          - data
+    mcp:
+      prompt_signature: 'get_field_value(data: any, target_field: string = None, index: int = 0, field_name: string = '''') -> dict'
+      prompt_description: 'Extract data. Input ''data'' must be a REFERENCE to a specific output field from the previous step (e.g. step_1.results). Returns {''extracted_value'': <value>}.'
+      output_schema:
+        source_type:
+          type: string
+        extracted_value:
+          type: string
+- name: convert_datetime
+  description: Convert Unix timestamp to human-readable datetime string (YYYY-MM-DD HH:MM)
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: convert_datetime
+        description: Convert integer Unix timestamp to formatted datetime string
+        parameters:
+          type: object
+          properties:
+            timestamp:
+              type: integer
+              description: Unix timestamp in seconds
+          required:
+          - timestamp
+    mcp:
+      prompt_signature: 'convert_datetime(timestamp: int) -> str'
+      prompt_description: Convert Unix timestamp to 'YYYY-MM-DD HH:MM' string format. Returns a dictionary containing 'success' (boolean), 'original_timestamp' (integer), and 'formatted_time' (a string in 'YYYY-MM-DD HH:MM' format); if validation fails, it returns 'success' as False and an 'error' message.
+      output_schema:
+        original_timestamp:
+          type: integer
+        formatted_time:
+          type: string
+- name: select_recommendation
+  description: Choose the best recommendation from a list of candidate products
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: select_recommendation
+        description: Select the best recommendation with sufficient stock, preferring higher relevance and lower price.
+        parameters:
+          type: object
+          properties:
+            similar_products:
+              type: array
+              description: List of recommended product objects, usually from get_recommendations
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Product ID
+                  name:
+                    type: string
+                    description: Product name
+                  price:
+                    type: number
+                    description: Product price
+                  stock:
+                    type: integer
+                    description: Available stock
+                  relevance_score:
+                    type: integer
+                    description: Recommendation relevance score
+                required:
+                - id
+            quantity:
+              type: integer
+              description: Required quantity to ensure enough stock is available
+              default: 1
+          required:
+          - similar_products
+    mcp:
+      prompt_signature: 'select_recommendation(similar_products: list, quantity: int = 1) -> dict'
+      prompt_description: Select the best recommendation from a candidate list. Returns product_id, name, price, relevance_score, available_stock, and selection_reason.
+      output_schema:
+        product_id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        relevance_score:
+          type: integer
+        available_stock:
+          type: integer
+        selection_reason:
+          type: string
+- name: stringify_data
+  description: Convert arbitrary structured data into a string for downstream text-oriented tools
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: stringify_data
+        description: Serialize arbitrary input data to plain text. Returns serialized_text and source_type.
+        parameters:
+          type: object
+          properties:
+            data:
+              description: Any input value to serialize, such as object, array, string, or number
+          required:
+          - data
+    mcp:
+      prompt_signature: 'stringify_data(data: any) -> dict'
+      prompt_description: Serialize arbitrary input data into plain text. Returns serialized_text, source_type, and preview.
+      output_schema:
+        serialized_text:
+          type: string
+        source_type:
+          type: string
+        preview:
+          type: string
+- name: shortlist_meeting_rooms
+  description: Rank room candidates from a provider-specific room list and choose a shortlist winner
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: shortlist_meeting_rooms
+        description: Rank available meeting rooms and choose the best shortlist candidate for the attendee count.
+        parameters:
+          type: object
+          properties:
+            rooms:
+              type: array
+              description: Room candidates returned by a meeting-room provider
+              items:
+                type: object
+            attendees:
+              type: integer
+              description: Required attendee count
+          required:
+          - rooms
+          - attendees
+    mcp:
+      prompt_signature: 'shortlist_meeting_rooms(rooms: list, attendees: int) -> dict'
+      prompt_description: Select a ranked room candidate from a room list. Returns room_name, capacity, equipment, and selection_reason.
+      output_schema:
+        room_name:
+          type: string
+        capacity:
+          type: integer
+        equipment:
+          type: array
+        selection_reason:
+          type: string
+- name: build_flight_booking_request
+  description: Transform flight lookup data into a normalized booking request payload
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_flight_booking_request
+        description: Normalize flight lookup output and passenger details into a booking request for standard booking.
+        parameters:
+          type: object
+          properties:
+            flight_data:
+              type: object
+              description: Flight information object from a lookup tool
+            passenger_name:
+              type: string
+              description: Passenger full name
+            seat_class:
+              type: string
+              description: Desired seat class
+              enum:
+              - economy
+              - business
+              - first
+              default: economy
+          required:
+          - flight_data
+          - passenger_name
+    mcp:
+      prompt_signature: 'build_flight_booking_request(flight_data: dict, passenger_name: string, seat_class: string = ''economy'') -> dict'
+      prompt_description: Build a normalized flight booking request from flight lookup data. Returns flight_number, passenger_name, seat_class, route_summary, and booking_ready.
+      output_schema:
+        flight_number:
+          type: string
+        passenger_name:
+          type: string
+        seat_class:
+          type: string
+        route_summary:
+          type: string
+        booking_ready:
+          type: boolean
+- name: build_checked_flight_request
+  description: Transform flight lookup data into a normalized request for checked booking
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_checked_flight_request
+        description: Normalize flight lookup output and passenger details into a checked-booking request with status context.
+        parameters:
+          type: object
+          properties:
+            flight_data:
+              type: object
+              description: Flight information object from a lookup tool
+            passenger_name:
+              type: string
+              description: Passenger full name
+            seat_class:
+              type: string
+              description: Desired seat class
+              enum:
+              - economy
+              - business
+              - first
+              default: economy
+          required:
+          - flight_data
+          - passenger_name
+    mcp:
+      prompt_signature: 'build_checked_flight_request(flight_data: dict, passenger_name: string, seat_class: string = ''economy'') -> dict'
+      prompt_description: Build a checked-flight booking request from flight lookup data. Returns flight_number, passenger_name, seat_class, current_status, and booking_ready.
+      output_schema:
+        flight_number:
+          type: string
+        passenger_name:
+          type: string
+        seat_class:
+          type: string
+        current_status:
+          type: string
+        booking_ready:
+          type: boolean
+- name: build_hotel_booking_request
+  description: Transform hotel lookup data into a normalized hotel booking request payload
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_hotel_booking_request
+        description: Normalize hotel lookup output and stay details into a booking request for standard hotel booking.
+        parameters:
+          type: object
+          properties:
+            hotel_data:
+              type: object
+              description: Hotel information object from a hotel lookup tool
+            check_in_date:
+              type: string
+              description: Check-in date in YYYY-MM-DD format
+            check_out_date:
+              type: string
+              description: Check-out date in YYYY-MM-DD format
+            guest_name:
+              type: string
+              description: Guest full name
+            room_type:
+              type: string
+              description: Desired room type
+              enum:
+              - standard
+              - deluxe
+              - suite
+              default: standard
+          required:
+          - hotel_data
+          - check_in_date
+          - check_out_date
+          - guest_name
+    mcp:
+      prompt_signature: 'build_hotel_booking_request(hotel_data: dict, check_in_date: string, check_out_date: string, guest_name: string, room_type: string = ''standard'') -> dict'
+      prompt_description: Build a normalized hotel booking request. Returns hotel_name, guest_name, room_type, check_in_date, check_out_date, and booking_ready.
+      output_schema:
+        hotel_name:
+          type: string
+        guest_name:
+          type: string
+        check_in_date:
+          type: string
+        check_out_date:
+          type: string
+        room_type:
+          type: string
+        nightly_price:
+          type: number
+        location:
+          type: string
+        booking_ready:
+          type: boolean
+- name: build_available_hotel_request
+  description: Transform hotel lookup data into a normalized request for availability-checked booking
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_available_hotel_request
+        description: Normalize hotel lookup output and stay details into a checked-booking request that keeps availability context.
+        parameters:
+          type: object
+          properties:
+            hotel_data:
+              type: object
+              description: Hotel information object from a hotel lookup tool
+            check_in_date:
+              type: string
+              description: Check-in date in YYYY-MM-DD format
+            check_out_date:
+              type: string
+              description: Check-out date in YYYY-MM-DD format
+            guest_name:
+              type: string
+              description: Guest full name
+            room_type:
+              type: string
+              description: Desired room type
+              enum:
+              - standard
+              - deluxe
+              - suite
+              default: standard
+          required:
+          - hotel_data
+          - check_in_date
+          - check_out_date
+          - guest_name
+    mcp:
+      prompt_signature: 'build_available_hotel_request(hotel_data: dict, check_in_date: string, check_out_date: string, guest_name: string, room_type: string = ''standard'') -> dict'
+      prompt_description: Build an availability-aware hotel booking request. Returns hotel_name, guest_name, room_type, availability, check_in_date, check_out_date, and booking_ready.
+      output_schema:
+        hotel_name:
+          type: string
+        guest_name:
+          type: string
+        check_in_date:
+          type: string
+        check_out_date:
+          type: string
+        room_type:
+          type: string
+        availability:
+          type: string
+        booking_ready:
+          type: boolean
+- name: build_invoice_from_summary
+  description: Convert a cart summary into a normalized invoice generation payload
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_invoice_from_summary
+        description: Turn a cart summary and checkout metadata into a normalized invoice payload.
+        parameters:
+          type: object
+          properties:
+            cart_summary:
+              type: object
+              description: Cart summary object from get_cart_summary
+            items:
+              type: array
+              description: Original cart items
+              items:
+                type: object
+            user_id:
+              type: string
+              description: User identifier
+            email:
+              type: string
+              description: Invoice email address
+            payment_gateway:
+              type: string
+              description: Payment gateway
+          required:
+          - cart_summary
+          - items
+          - user_id
+          - email
+          - payment_gateway
+    mcp:
+      prompt_signature: 'build_invoice_from_summary(cart_summary: dict, items: list, user_id: string, email: string, payment_gateway: string) -> dict'
+      prompt_description: Build an invoice payload from cart summary data. Returns items, payment_amount, user_id, email, payment_gateway, subtotal, discount, and coupon_status.
+      output_schema:
+        items:
+          type: array
+        payment_amount:
+          type: number
+        user_id:
+          type: string
+        email:
+          type: string
+        payment_gateway:
+          type: string
+        subtotal:
+          type: number
+        discount:
+          type: number
+        coupon_status:
+          type: string
+- name: build_checkout_from_summary
+  description: Convert a cart summary into a normalized order submission payload
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_checkout_from_summary
+        description: Turn a cart summary and checkout metadata into a normalized order-submission payload.
+        parameters:
+          type: object
+          properties:
+            cart_summary:
+              type: object
+              description: Cart summary object from get_cart_summary
+            items:
+              type: array
+              description: Original cart items
+              items:
+                type: object
+            user_id:
+              type: string
+              description: User identifier
+            payment_method:
+              type: string
+              description: Payment method
+          required:
+          - cart_summary
+          - items
+          - user_id
+          - payment_method
+    mcp:
+      prompt_signature: 'build_checkout_from_summary(cart_summary: dict, items: list, user_id: string, payment_method: string) -> dict'
+      prompt_description: Build an order submission payload from cart summary data. Returns items, payment_amount, user_id, payment_method, subtotal, discount, and coupon_status.
+      output_schema:
+        items:
+          type: array
+        payment_amount:
+          type: number
+        user_id:
+          type: string
+        payment_method:
+          type: string
+        subtotal:
+          type: number
+        discount:
+          type: number
+        coupon_status:
+          type: string
+- name: compute_trade_amount
+  description: Convert quoted asset price data and a quantity into a notional trade amount
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: compute_trade_amount
+        description: Calculate trade notional amount from quote data and quantity.
+        parameters:
+          type: object
+          properties:
+            price_data:
+              type: object
+              description: Asset quote object containing price_usd
+            quantity:
+              type: number
+              description: Desired trade quantity
+          required:
+          - price_data
+          - quantity
+    mcp:
+      prompt_signature: 'compute_trade_amount(price_data: dict, quantity: number) -> dict'
+      prompt_description: Calculate trade amount from quote data. Returns symbol, unit_price, quantity, and amount.
+      output_schema:
+        symbol:
+          type: string
+        unit_price:
+          type: number
+        quantity:
+          type: number
+        amount:
+          type: number
+- name: build_cart_items_from_selection
+  description: Convert a selected recommendation into a normalized cart item list
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_cart_items_from_selection
+        description: Convert a selected recommendation result into a one-item cart payload.
+        parameters:
+          type: object
+          properties:
+            selected_product:
+              type: object
+              description: Selected recommendation object containing product_id
+            quantity:
+              type: integer
+              description: Purchase quantity
+              default: 1
+          required:
+          - selected_product
+    mcp:
+      prompt_signature: 'build_cart_items_from_selection(selected_product: dict, quantity: int = 1) -> dict'
+      prompt_description: Build a normalized cart item list from a selected recommendation. Returns items, product_id, and quantity.
+      output_schema:
+        items:
+          type: array
+        product_id:
+          type: string
+        quantity:
+          type: integer
+- name: build_invoice_from_hold
+  description: Convert a held recommendation result into a normalized invoice payload
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_invoice_from_hold
+        description: Convert a hold result into an invoice payload with derived payment amount.
+        parameters:
+          type: object
+          properties:
+            hold_data:
+              type: object
+              description: Hold result from hold_best_recommendation
+            quantity:
+              type: integer
+              description: Purchase quantity
+              default: 1
+            user_id:
+              type: string
+              description: User identifier
+            email:
+              type: string
+              description: Invoice email
+            payment_gateway:
+              type: string
+              description: Payment gateway
+          required:
+          - hold_data
+          - user_id
+          - email
+          - payment_gateway
+    mcp:
+      prompt_signature: 'build_invoice_from_hold(hold_data: dict, quantity: int = 1, user_id: string, email: string, payment_gateway: string) -> dict'
+      prompt_description: Build an invoice payload from a held recommendation. Returns items, payment_amount, reservation_id, user_id, email, and payment_gateway.
+      output_schema:
+        items:
+          type: array
+        payment_amount:
+          type: number
+        reservation_id:
+          type: string
+        user_id:
+          type: string
+        email:
+          type: string
+        payment_gateway:
+          type: string
+- name: build_checkout_from_hold
+  description: Convert a held recommendation result into a normalized held-order confirmation payload
+  category: Processor
+  domain: Shopping
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_checkout_from_hold
+        description: Convert a hold result into a checkout payload for confirming the reserved recommendation.
+        parameters:
+          type: object
+          properties:
+            hold_data:
+              type: object
+              description: Hold result from hold_best_recommendation
+            quantity:
+              type: integer
+              description: Purchase quantity
+              default: 1
+          required:
+          - hold_data
+    mcp:
+      prompt_signature: 'build_checkout_from_hold(hold_data: dict, quantity: int = 1) -> dict'
+      prompt_description: Build a held-order confirmation payload. Returns reservation_id, product_id, quantity, and reservation metadata.
+      output_schema:
+        reservation_id:
+          type: string
+        product_id:
+          type: string
+        quantity:
+          type: integer
+- name: prepare_equity_risk_order
+  description: Combine market state and equity quote into a risk-review order context
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: prepare_equity_risk_order
+        description: Combine market status, quote, and quantity into an equity order context for risk review.
+        parameters:
+          type: object
+          properties:
+            market_data:
+              type: object
+              description: Market status object
+            stock_data:
+              type: object
+              description: Stock quote object containing price_usd
+            ticker:
+              type: string
+              description: Equity ticker
+            quantity:
+              type: number
+              description: Order quantity
+          required:
+          - market_data
+          - stock_data
+          - ticker
+          - quantity
+    mcp:
+      prompt_signature: 'prepare_equity_risk_order(market_data: dict, stock_data: dict, ticker: string, quantity: number) -> dict'
+      prompt_description: Build a risk-review equity order context. Returns amount, limit_price, ticker, quantity, and market_session.
+      output_schema:
+        ticker:
+          type: string
+        quantity:
+          type: number
+        limit_price:
+          type: number
+        amount:
+          type: number
+        market_session:
+          type: string
+- name: prepare_equity_cost_order
+  description: Combine market state and equity quote into a cost-checked order context
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: prepare_equity_cost_order
+        description: Combine market status, quote, and quantity into an equity order context for fee estimation and checked execution.
+        parameters:
+          type: object
+          properties:
+            market_data:
+              type: object
+              description: Market status object
+            stock_data:
+              type: object
+              description: Stock quote object containing price_usd
+            ticker:
+              type: string
+              description: Equity ticker
+            quantity:
+              type: number
+              description: Order quantity
+          required:
+          - market_data
+          - stock_data
+          - ticker
+          - quantity
+    mcp:
+      prompt_signature: 'prepare_equity_cost_order(market_data: dict, stock_data: dict, ticker: string, quantity: number) -> dict'
+      prompt_description: Build a cost-checked equity order context. Returns amount, ticker, quantity, unit_price, and market_session.
+      output_schema:
+        ticker:
+          type: string
+        quantity:
+          type: number
+        unit_price:
+          type: number
+        amount:
+          type: number
+        market_session:
+          type: string
+- name: extract_first_slot_start
+  description: Extract the first start_time field from a free-slot list
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: extract_first_slot_start
+        description: Extract the first slot start_time from an availability free_slots list.
+        parameters:
+          type: object
+          properties:
+            slots:
+              type: array
+              description: Availability slot list
+              items:
+                type: object
+          required:
+          - slots
+    mcp:
+      prompt_signature: 'extract_first_slot_start(slots: list) -> dict'
+      prompt_description: Extract the first start_time from a slot list. Returns extracted_value and slot_index.
+      output_schema:
+        extracted_value:
+          type: string
+        slot_index:
+          type: integer
+- name: select_discovered_device_by_type
+  description: Select the first discovered IoT device matching a requested device type
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: select_discovered_device_by_type
+        description: Select the first discovered device that matches the requested IoT device type.
+        parameters:
+          type: object
+          properties:
+            discovery_data:
+              type: object
+              description: Discovery result from discover_smart_devices
+            device_type:
+              type: string
+              description: Target device type to select
+              enum:
+              - smart_light
+              - thermostat
+              - media_player
+              - smart_lock
+          required:
+          - discovery_data
+          - device_type
+    mcp:
+      prompt_signature: 'select_discovered_device_by_type(discovery_data: dict, device_type: string) -> dict'
+      prompt_description: Select the first discovered device matching the requested device type. Returns device_id, device_type, device_name, and location.
+      output_schema:
+        device_type:
+          type: string
+        location:
+          type: string
+- name: resolve_connected_device_by_type
+  description: Resolve a connected IoT device ID by requested device type
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: resolve_connected_device_by_type
+        description: Resolve the first connected device ID that matches the requested IoT device type.
+        parameters:
+          type: object
+          properties:
+            connected_data:
+              type: object
+              description: Connected-device result from query_connected_devices
+            device_type:
+              type: string
+              description: Target device type to resolve
+              enum:
+              - smart_light
+              - thermostat
+              - media_player
+              - smart_lock
+          required:
+          - connected_data
+          - device_type
+    mcp:
+      prompt_signature: 'resolve_connected_device_by_type(connected_data: dict, device_type: string) -> dict'
+      prompt_description: Resolve the first connected device ID that matches the requested device type. Returns device_id, device_type, and area.
+      output_schema:
+        device_type:
+          type: string
+        area:
+          type: string
+- name: build_light_scene_request
+  description: Build a normalized smart-light scene request from device status and desired scene settings
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_light_scene_request
+        description: Build a normalized light-scene request for downstream light-control actions.
+        parameters:
+          type: object
+          properties:
+            device_status:
+              type: object
+              description: Device status object from get_iot_device_status
+            brightness:
+              type: integer
+              description: Target brightness level
+            color:
+              type: string
+              description: Target light color
+              default: white
+            state:
+              type: string
+              description: Desired light state
+              enum:
+              - true
+              - false
+              default: true
+          required:
+          - device_status
+          - brightness
+    mcp:
+      prompt_signature: 'build_light_scene_request(device_status: dict, brightness: int, color: string = ''white'', state: string = ''on'') -> dict'
+      prompt_description: Build a normalized smart-light scene request. Returns device_id, state, brightness, and color.
+      output_schema:
+        device_id:
+          type: string
+        state:
+          type: string
+        brightness:
+          type: integer
+        color:
+          type: string
+        current_power_state:
+          type: string
+- name: build_light_brightness_request
+  description: Build a normalized light-brightness request from current light status
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_light_brightness_request
+        description: Build a brightness-only request for downstream light-brightness actions.
+        parameters:
+          type: object
+          properties:
+            light_status:
+              type: object
+              description: Light status object from get_light_status
+            brightness:
+              type: integer
+              description: Target brightness level
+          required:
+          - light_status
+          - brightness
+    mcp:
+      prompt_signature: 'build_light_brightness_request(light_status: dict, brightness: int) -> dict'
+      prompt_description: Build a normalized light-brightness request. Returns light_id and brightness.
+      output_schema:
+        light_id:
+          type: string
+        brightness:
+          type: integer
+        current_power_state:
+          type: string
+- name: build_temperature_adjustment_request
+  description: Build a normalized thermostat adjustment request from current device status
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_temperature_adjustment_request
+        description: Build a normalized thermostat adjustment request for HVAC control.
+        parameters:
+          type: object
+          properties:
+            device_status:
+              type: object
+              description: Thermostat status object from get_iot_device_status
+            temperature:
+              type: number
+              description: Target temperature in Celsius
+            mode:
+              type: string
+              description: Desired HVAC mode
+              enum:
+              - cool
+              - heat
+              - fan
+              - false
+              - auto
+              - eco
+              default: cool
+          required:
+          - device_status
+          - temperature
+    mcp:
+      prompt_signature: 'build_temperature_adjustment_request(device_status: dict, temperature: number, mode: string = ''cool'') -> dict'
+      prompt_description: Build a normalized HVAC adjustment request. Returns device_id, temperature, and mode.
+      output_schema:
+        device_id:
+          type: string
+        temperature:
+          type: number
+        mode:
+          type: string
+        current_temperature:
+          type: number
+- name: build_device_config_request
+  description: Build a normalized generic device-config update request
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_device_config_request
+        description: Build a normalized device-config update request for downstream config actions.
+        parameters:
+          type: object
+          properties:
+            device_ref:
+              type: object
+              description: Device reference object containing device_id
+            property:
+              type: string
+              description: Config property to update
+              enum:
+              - brightness
+              - color
+              - temperature
+              - volume
+            value:
+              description: Config value to write
+          required:
+          - device_ref
+          - property
+          - value
+    mcp:
+      prompt_signature: 'build_device_config_request(device_ref: dict, property: string, value: any) -> dict'
+      prompt_description: Build a normalized device-config update request. Returns device_id, property, and value.
+      output_schema:
+        device_id:
+          type: string
+        property:
+          type: string
+        value:
+          type: string
+- name: build_device_restart_request
+  description: Build a normalized device restart request from current device status
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_device_restart_request
+        description: Build a normalized restart request for a selected IoT device.
+        parameters:
+          type: object
+          properties:
+            device_status:
+              type: object
+              description: Device status object containing device_id
+          required:
+          - device_status
+    mcp:
+      prompt_signature: 'build_device_restart_request(device_status: dict) -> dict'
+      prompt_description: Build a normalized restart request. Returns device_id and restart_reason.
+      output_schema:
+        device_id:
+          type: string
+        restart_reason:
+          type: string
+- name: build_power_restore_request
+  description: Build a normalized device power-restore request
+  category: Processor
+  domain: IoT
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_power_restore_request
+        description: Build a normalized power-restore request for a selected IoT device.
+        parameters:
+          type: object
+          properties:
+            device_ref:
+              type: object
+              description: Device reference object containing device_id
+            state:
+              type: string
+              description: Desired power state
+              enum:
+              - true
+              - false
+              default: true
+          required:
+          - device_ref
+    mcp:
+      prompt_signature: 'build_power_restore_request(device_ref: dict, state: string = ''on'') -> dict'
+      prompt_description: Build a normalized power-restore request. Returns device_id and state.
+      output_schema:
+        device_id:
+          type: string
+        state:
+          type: string
+- name: build_news_text_report
+  description: Build a text-based news digest payload from retrieved headlines
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_news_text_report
+        description: Build a text-first document-and-alert payload from structured news headlines.
+        parameters:
+          type: object
+          properties:
+            news_data:
+              type: object
+              description: News result containing category and headlines
+            title:
+              type: string
+              description: Digest title
+              default: News Digest
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - news_data
+    mcp:
+      prompt_signature: 'build_news_text_report(news_data: dict, title: string = ''News Digest'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text-based news digest payload. Returns title, content, tags, user_id, priority, and channel.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_news_data_payload
+  description: Build a structured news digest payload for data-first document creation
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_news_data_payload
+        description: Build a structured document-and-alert payload from retrieved headlines.
+        parameters:
+          type: object
+          properties:
+            news_data:
+              type: object
+              description: News result containing category and headlines
+            title:
+              type: string
+              description: Digest title
+              default: News Digest
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - news_data
+    mcp:
+      prompt_signature: 'build_news_data_payload(news_data: dict, title: string = ''News Digest'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured news digest payload. Returns data, title, tags, user_id, priority, and channel.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_storage_archive_payload
+  description: Build a structured storage-archive payload from a storage listing
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_storage_archive_payload
+        description: Build a structured archive payload from a storage listing for downstream document creation.
+        parameters:
+          type: object
+          properties:
+            storage_data:
+              type: object
+              description: Storage listing result from browse_storage
+            title:
+              type: string
+              description: Archive note title
+              default: Storage Archive
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - storage_data
+    mcp:
+      prompt_signature: 'build_storage_archive_payload(storage_data: dict, title: string = ''Storage Archive'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured storage-archive payload. Returns data, title, tags, user_id, priority, and channel.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_snapshot_text_report
+  description: Build a text-based snapshot report payload from a workspace snapshot result
+  category: Processor
+  domain: General
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_snapshot_text_report
+        description: Build a text-based document-and-alert payload from a workspace snapshot result.
+        parameters:
+          type: object
+          properties:
+            snapshot_data:
+              type: object
+              description: Snapshot result from snapshot_workspace
+            title:
+              type: string
+              description: Snapshot report title
+              default: Workspace Snapshot
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - snapshot_data
+    mcp:
+      prompt_signature: 'build_snapshot_text_report(snapshot_data: dict, title: string = ''Workspace Snapshot'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text-based snapshot report payload. Returns title, content, tags, user_id, priority, and channel.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_contact_email_payload
+  description: Build a normalized email payload from resolved contact information
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_contact_email_payload
+        description: Build a normalized email payload from resolved contact information and message text.
+        parameters:
+          type: object
+          properties:
+            contact_data:
+              type: object
+              description: Contact result containing email and name
+            subject:
+              type: string
+              description: Email subject
+              default: Update
+            message:
+              type: string
+              description: Message body text
+          required:
+          - contact_data
+          - message
+    mcp:
+      prompt_signature: 'build_contact_email_payload(contact_data: dict, message: string, subject: string = ''Update'') -> dict'
+      prompt_description: Build a normalized email payload. Returns recipients, subject, and body.
+      output_schema:
+        recipients:
+          type: array
+        subject:
+          type: string
+        body:
+          type: string
+- name: build_employee_im_payload
+  description: Build a normalized instant-message payload from resolved employee information
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_employee_im_payload
+        description: Build a normalized instant-message payload from resolved employee information.
+        parameters:
+          type: object
+          properties:
+            employee_data:
+              type: object
+              description: Employee result containing user_id
+            message:
+              type: string
+              description: Instant message content
+          required:
+          - employee_data
+          - message
+    mcp:
+      prompt_signature: 'build_employee_im_payload(employee_data: dict, message: string) -> dict'
+      prompt_description: Build a normalized instant-message payload. Returns user_id and message.
+      output_schema:
+        user_id:
+          type: string
+        message:
+          type: string
+- name: build_meeting_request_from_slot
+  description: Build a normalized meeting request from an availability query and extracted slot
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_meeting_request_from_slot
+        description: Build a normalized meeting request from contact info, availability data, and an extracted slot.
+        parameters:
+          type: object
+          properties:
+            contact_data:
+              type: object
+              description: Contact result containing email
+            availability_data:
+              type: object
+              description: Availability result containing query_date and free_slots
+            slot_data:
+              type: object
+              description: Extracted slot result containing extracted_value
+            title:
+              type: string
+              description: Meeting title
+              default: Meeting
+            end_time:
+              type: string
+              description: Optional explicit meeting end time
+              default: ''
+          required:
+          - contact_data
+          - availability_data
+          - slot_data
+    mcp:
+      prompt_signature: 'build_meeting_request_from_slot(contact_data: dict, availability_data: dict, slot_data: dict, title: string = ''Meeting'', end_time: string = '''') -> dict'
+      prompt_description: Build a normalized meeting request. Returns participants, start_time, end_time, and title.
+      output_schema:
+        participants:
+          type: array
+        start_time:
+          type: string
+        end_time:
+          type: string
+        title:
+          type: string
+- name: build_meeting_reminder_request
+  description: Build a normalized meeting-with-reminder request from a recommended meeting slot
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_meeting_reminder_request
+        description: Build a normalized meeting-with-reminder request from contact info and a recommended meeting slot.
+        parameters:
+          type: object
+          properties:
+            contact_data:
+              type: object
+              description: Contact result containing email
+            meeting_slot:
+              type: object
+              description: Meeting-slot result from find_meeting_time
+            title:
+              type: string
+              description: Meeting title
+              default: Meeting
+            description:
+              type: string
+              description: Reminder description
+              default: ''
+            priority:
+              type: string
+              description: Reminder priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+          required:
+          - contact_data
+          - meeting_slot
+    mcp:
+      prompt_signature: 'build_meeting_reminder_request(contact_data: dict, meeting_slot: dict, title: string = ''Meeting'', description: string = '''', priority: string = ''medium'') -> dict'
+      prompt_description: Build a normalized meeting-with-reminder request. Returns participants, start_time, end_time, title, description, and priority.
+      output_schema:
+        participants:
+          type: array
+        start_time:
+          type: string
+        end_time:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+- name: build_room_booking_request
+  description: Build a normalized room-booking request from a selected meeting room
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_room_booking_request
+        description: Build a normalized room-booking request from a selected meeting room.
+        parameters:
+          type: object
+          properties:
+            selection_data:
+              type: object
+              description: Room selection result containing room_name
+            date:
+              type: string
+              description: Booking date
+            start_time:
+              type: string
+              description: Booking start time
+            end_time:
+              type: string
+              description: Booking end time
+            attendees:
+              type: integer
+              description: Number of attendees
+          required:
+          - selection_data
+          - date
+          - start_time
+          - end_time
+          - attendees
+    mcp:
+      prompt_signature: 'build_room_booking_request(selection_data: dict, date: string, start_time: string, end_time: string, attendees: int) -> dict'
+      prompt_description: Build a normalized room-booking request. Returns room_name, date, start_time, end_time, and attendees.
+      output_schema:
+        room_name:
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        attendees:
+          type: integer
+        selection_reason:
+          type: string
+- name: build_shortlist_reservation_request
+  description: Build a normalized shortlist-based room reservation request
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_shortlist_reservation_request
+        description: Build a normalized room reservation request from a shortlisted-room result.
+        parameters:
+          type: object
+          properties:
+            shortlist_data:
+              type: object
+              description: Shortlist result containing room_name and selection_reason
+            date:
+              type: string
+              description: Booking date
+            start_time:
+              type: string
+              description: Booking start time
+            end_time:
+              type: string
+              description: Booking end time
+            attendees:
+              type: integer
+              description: Number of attendees
+          required:
+          - shortlist_data
+          - date
+          - start_time
+          - end_time
+          - attendees
+    mcp:
+      prompt_signature: 'build_shortlist_reservation_request(shortlist_data: dict, date: string, start_time: string, end_time: string, attendees: int) -> dict'
+      prompt_description: Build a shortlist-based room reservation request. Returns room_name, selection_reason, date, start_time, end_time, and attendees.
+      output_schema:
+        room_name:
+          type: string
+        selection_reason:
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        attendees:
+          type: integer
+- name: build_contact_alert_payload
+  description: Build a normalized push-alert payload from resolved contact information
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_contact_alert_payload
+        description: Build a normalized push-alert payload from resolved contact information and message text.
+        parameters:
+          type: object
+          properties:
+            contact_data:
+              type: object
+              description: Contact result containing user_id
+            message:
+              type: string
+              description: Alert message
+            priority:
+              type: string
+              description: Alert priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Alert channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - contact_data
+          - message
+    mcp:
+      prompt_signature: 'build_contact_alert_payload(contact_data: dict, message: string, priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a normalized push-alert payload. Returns user_id, recipient_name, message, priority, and channel.
+      output_schema:
+        user_id:
+          type: string
+        recipient_name:
+          type: string
+        message:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_balance_text_report
+  description: Build a text-based balance report from account balance and FX rate data
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_balance_text_report
+        description: Build a text-first balance report payload from account balance and FX rate data.
+        parameters:
+          type: object
+          properties:
+            balance_data:
+              type: object
+              description: Account balance result
+            rate_data:
+              type: object
+              description: FX rate result containing rate
+            target_currency:
+              type: string
+              description: Target currency code
+            title:
+              type: string
+              description: Report title
+              default: Balance Report
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - balance_data
+          - rate_data
+          - target_currency
+    mcp:
+      prompt_signature: 'build_balance_text_report(balance_data: dict, rate_data: dict, target_currency: string, title: string = ''Balance Report'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text-based balance report. Returns title, content, tags, user_id, priority, and channel.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_balance_data_payload
+  description: Build a structured balance report payload from account balance and FX rate data
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_balance_data_payload
+        description: Build a structured balance report payload from account balance and FX rate data.
+        parameters:
+          type: object
+          properties:
+            balance_data:
+              type: object
+              description: Account balance result
+            rate_data:
+              type: object
+              description: FX rate result containing rate
+            target_currency:
+              type: string
+              description: Target currency code
+            title:
+              type: string
+              description: Report title
+              default: Balance Report
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - balance_data
+          - rate_data
+          - target_currency
+    mcp:
+      prompt_signature: 'build_balance_data_payload(balance_data: dict, rate_data: dict, target_currency: string, title: string = ''Balance Report'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured balance report payload. Returns data, title, tags, user_id, priority, and channel.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_equity_sell_request
+  description: Build a normalized sell-order request from an equity quote
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_equity_sell_request
+        description: Build a normalized sell-order request from an equity quote.
+        parameters:
+          type: object
+          properties:
+            quote_data:
+              type: object
+              description: Equity quote result containing price_usd
+            ticker:
+              type: string
+              description: Equity ticker
+            quantity:
+              type: number
+              description: Sell quantity
+          required:
+          - quote_data
+          - ticker
+          - quantity
+    mcp:
+      prompt_signature: 'build_equity_sell_request(quote_data: dict, ticker: string, quantity: number) -> dict'
+      prompt_description: Build a normalized sell-order request from an equity quote. Returns ticker, quantity, and price.
+      output_schema:
+        ticker:
+          type: string
+        quantity:
+          type: number
+        price:
+          type: number
+- name: build_converted_sell_request
+  description: Build a normalized sell-order request from a converted equity quote
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_converted_sell_request
+        description: Build a normalized sell-order request from a converted equity quote.
+        parameters:
+          type: object
+          properties:
+            converted_quote:
+              type: object
+              description: Converted quote result from get_stock_price_and_convert
+            ticker:
+              type: string
+              description: Equity ticker
+            quantity:
+              type: number
+              description: Sell quantity
+          required:
+          - converted_quote
+          - ticker
+          - quantity
+    mcp:
+      prompt_signature: 'build_converted_sell_request(converted_quote: dict, ticker: string, quantity: number) -> dict'
+      prompt_description: Build a normalized sell-order request from a converted quote. Returns ticker, quantity, price_usd, converted_price, and target_currency.
+      output_schema:
+        ticker:
+          type: string
+        quantity:
+          type: number
+        price_usd:
+          type: number
+        converted_price:
+          type: number
+        target_currency:
+          type: string
+- name: build_weather_text_report
+  description: Build a text-based travel weather briefing payload
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_weather_text_report
+        description: Build a text-first travel weather briefing from weather data and a converted temperature.
+        parameters:
+          type: object
+          properties:
+            weather_data:
+              type: object
+              description: Weather result containing temperature_celsius and condition
+            converted_data:
+              type: object
+              description: Temperature conversion result
+            city:
+              type: string
+              description: Target city
+            title:
+              type: string
+              description: Briefing title
+              default: Travel Weather Brief
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - weather_data
+          - converted_data
+          - city
+    mcp:
+      prompt_signature: 'build_weather_text_report(weather_data: dict, converted_data: dict, city: string, title: string = ''Travel Weather Brief'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text-based weather briefing. Returns title, content, tags, user_id, priority, and channel.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_weather_data_payload
+  description: Build a structured travel weather briefing payload
+  category: Processor
+  domain: Travel
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_weather_data_payload
+        description: Build a structured travel weather briefing from weather data.
+        parameters:
+          type: object
+          properties:
+            weather_data:
+              type: object
+              description: Weather result containing temperature_celsius and condition
+            city:
+              type: string
+              description: Target city
+            title:
+              type: string
+              description: Briefing title
+              default: Travel Weather Brief
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - weather_data
+          - city
+    mcp:
+      prompt_signature: 'build_weather_data_payload(weather_data: dict, city: string, title: string = ''Travel Weather Brief'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured weather briefing payload. Returns data, title, tags, user_id, priority, and channel.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+- name: build_gnews_digest_report_payload
+  description: Fetch a GNews digest and build a text-first report payload
+  category: Processor
+  domain: General
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_gnews_digest_report_payload
+        description: Fetch a GNews digest and build a text-first report payload in one processor step.
+        parameters:
+          type: object
+          properties:
+            category:
+              type: string
+              description: News category
+              enum:
+              - technology
+              - business
+              - sports
+              - health
+            title:
+              type: string
+              description: Digest title
+              default: News Digest
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - category
+    mcp:
+      prompt_signature: 'build_gnews_digest_report_payload(category: string, title: string = ''News Digest'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a GNews digest report payload. Returns title, content, tags, user_id, priority, channel, digest_category, and headline_count.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+        digest_category:
+          type: string
+        headline_count:
+          type: integer
+- name: build_weather_brief_payload
+  description: Fetch weather, convert temperature, and build a text weather brief payload
+  category: Processor
+  domain: Travel
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_weather_brief_payload
+        description: Fetch weather, convert temperature, and build a text travel weather brief in one processor step.
+        parameters:
+          type: object
+          properties:
+            city:
+              type: string
+              description: City name
+              enum:
+              - Tokyo
+              - Paris
+              - New York
+              - Beijing
+              - London
+              - Sydney
+              - Shanghai
+            to_unit:
+              type: string
+              description: Target temperature unit
+              enum:
+              - fahrenheit
+              - celsius
+              default: fahrenheit
+            title:
+              type: string
+              description: Brief title
+              default: Travel Weather Brief
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - city
+    mcp:
+      prompt_signature: 'build_weather_brief_payload(city: string, to_unit: string = ''fahrenheit'', title: string = ''Travel Weather Brief'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text weather brief payload. Returns title, content, tags, user_id, priority, channel, city, and converted_unit.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+        city:
+          type: string
+        converted_unit:
+          type: string
+- name: build_weather_structured_payload
+  description: Fetch weather and build a structured weather payload
+  category: Processor
+  domain: Travel
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_weather_structured_payload
+        description: Fetch weather and build a structured travel weather payload in one processor step.
+        parameters:
+          type: object
+          properties:
+            city:
+              type: string
+              description: City name
+              enum:
+              - Tokyo
+              - Paris
+              - New York
+              - Beijing
+              - London
+              - Sydney
+              - Shanghai
+            title:
+              type: string
+              description: Brief title
+              default: Travel Weather Brief
+            user_id:
+              type: string
+              description: Target user identifier
+              default: default_user
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - city
+    mcp:
+      prompt_signature: 'build_weather_structured_payload(city: string, title: string = ''Travel Weather Brief'', user_id: string = ''default_user'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured weather payload. Returns data, title, tags, user_id, priority, channel, and city.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+        city:
+          type: string
+- name: build_balance_report_payload
+  description: Fetch account balance, convert currency, and build a text balance report payload
+  category: Processor
+  domain: Financial
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_balance_report_payload
+        description: Fetch account balance, convert currency, and build a text balance report in one processor step.
+        parameters:
+          type: object
+          properties:
+            user_id:
+              type: string
+              description: User identifier
+              default: default_user
+            account_type:
+              type: string
+              description: Account type
+              enum:
+              - checking
+              - savings
+              - investment
+              default: checking
+            target_currency:
+              type: string
+              description: Target currency
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+            title:
+              type: string
+              description: Report title
+              default: Balance Report
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - user_id
+          - target_currency
+    mcp:
+      prompt_signature: 'build_balance_report_payload(user_id: string, target_currency: string, account_type: string = ''checking'', title: string = ''Balance Report'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a text balance report payload. Returns title, content, tags, user_id, priority, channel, account_type, and target_currency.
+      output_schema:
+        title:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+        account_type:
+          type: string
+        target_currency:
+          type: string
+- name: build_balance_structured_payload
+  description: Fetch account balance, convert currency, and build a structured balance payload
+  category: Processor
+  domain: Financial
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_balance_structured_payload
+        description: Fetch account balance, convert currency, and build a structured balance payload in one processor step.
+        parameters:
+          type: object
+          properties:
+            user_id:
+              type: string
+              description: User identifier
+              default: default_user
+            account_type:
+              type: string
+              description: Account type
+              enum:
+              - checking
+              - savings
+              - investment
+              default: checking
+            target_currency:
+              type: string
+              description: Target currency
+              enum:
+              - USD
+              - EUR
+              - JPY
+              - GBP
+              - CNY
+            title:
+              type: string
+              description: Report title
+              default: Balance Report
+            priority:
+              type: string
+              description: Notification priority
+              enum:
+              - low
+              - medium
+              - high
+              default: medium
+            channel:
+              type: string
+              description: Notification channel
+              enum:
+              - app
+              - sms
+              - email
+              default: app
+          required:
+          - user_id
+          - target_currency
+    mcp:
+      prompt_signature: 'build_balance_structured_payload(user_id: string, target_currency: string, account_type: string = ''checking'', title: string = ''Balance Report'', priority: string = ''medium'', channel: string = ''app'') -> dict'
+      prompt_description: Build a structured balance payload. Returns data, title, tags, user_id, priority, channel, account_type, and target_currency.
+      output_schema:
+        data:
+          type: object
+        title:
+          type: string
+        tags:
+          type: array
+        user_id:
+          type: string
+        priority:
+          type: string
+        channel:
+          type: string
+        account_type:
+          type: string
+        target_currency:
+          type: string
+- name: build_recommended_invoice_request
+  description: Hold the best recommendation and build an invoice request
+  category: Processor
+  domain: Shopping
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_recommended_invoice_request
+        description: Hold the best recommendation and build an invoice request in one processor step.
+        parameters:
+          type: object
+          properties:
+            product_id:
+              type: string
+              description: Seed product ID
+              enum:
+              - p_sony_xm5_blk
+              - p_sony_xm5_slv
+              - p_apple_airpods
+              - p_coke_500
+            quantity:
+              type: integer
+              description: Quantity
+              default: 1
+            user_id:
+              type: string
+              description: User identifier
+              default: default_user
+            category:
+              type: string
+              description: Product category filter
+              default: ''
+            email:
+              type: string
+              description: Invoice email address
+              default: alice@company.com
+            payment_gateway:
+              type: string
+              description: Payment gateway
+              enum:
+              - stripe
+              - paypal
+              - square
+              - alipay
+              - wechat_pay
+              default: paypal
+          required:
+          - product_id
+          - user_id
+          - email
+          - payment_gateway
+    mcp:
+      prompt_signature: 'build_recommended_invoice_request(product_id: string, user_id: string, email: string, payment_gateway: string, quantity: integer = 1, category: string = '''') -> dict'
+      prompt_description: Build an invoice request for the best recommendation. Returns items, payment_amount, reservation_id, user_id, email, payment_gateway, and recommended product metadata.
+      output_schema:
+        items:
+          type: array
+        payment_amount:
+          type: number
+        reservation_id:
+          type: string
+        user_id:
+          type: string
+        email:
+          type: string
+        payment_gateway:
+          type: string
+        original_product_id:
+          type: string
+        recommended_product_id:
+          type: string
+- name: build_recommended_checkout_request
+  description: Hold the best recommendation and build a checkout request
+  category: Processor
+  domain: Shopping
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_recommended_checkout_request
+        description: Hold the best recommendation and build a checkout request in one processor step.
+        parameters:
+          type: object
+          properties:
+            product_id:
+              type: string
+              description: Seed product ID
+              enum:
+              - p_sony_xm5_blk
+              - p_sony_xm5_slv
+              - p_apple_airpods
+              - p_coke_500
+            quantity:
+              type: integer
+              description: Quantity
+              default: 1
+            user_id:
+              type: string
+              description: User identifier
+              default: default_user
+            category:
+              type: string
+              description: Product category filter
+              default: ''
+          required:
+          - product_id
+          - user_id
+    mcp:
+      prompt_signature: 'build_recommended_checkout_request(product_id: string, user_id: string, quantity: integer = 1, category: string = '''') -> dict'
+      prompt_description: Build a checkout request for the best recommendation. Returns reservation_id, product_id, quantity, and recommended product metadata.
+      output_schema:
+        reservation_id:
+          type: string
+        product_id:
+          type: string
+        quantity:
+          type: integer
+        original_product_id:
+          type: string
+        recommended_product_id:
+          type: string
+- name: build_shortlisted_room_reservation_request
+  description: Search meeting rooms, shortlist the best room, and build a reservation request
+  category: Processor
+  domain: Office
+  complexities:
+  - C2
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: build_shortlisted_room_reservation_request
+        description: Search meeting rooms, shortlist the best room, and build a reservation request in one processor step.
+        parameters:
+          type: object
+          properties:
+            attendees:
+              type: integer
+              description: Number of attendees
+              default: 6
+            date:
+              type: string
+              description: Meeting date (YYYY-MM-DD)
+              default: '2026-01-16'
+            start_time:
+              type: string
+              description: Meeting start time
+              default: 09:00
+            end_time:
+              type: string
+              description: Meeting end time
+              default: '10:00'
+          required:
+          - attendees
+          - date
+          - start_time
+          - end_time
+    mcp:
+      prompt_signature: 'build_shortlisted_room_reservation_request(attendees: integer, date: string, start_time: string, end_time: string) -> dict'
+      prompt_description: Build a room reservation request from shortlisted meeting rooms. Returns room_name, selection_reason, date, start_time, end_time, and attendees.
+      output_schema:
+        room_name:
+          type: string
+        selection_reason:
+          type: string
+        date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        attendees:
+          type: integer
+- name: resolve_directory_contact_identity
+  description: Resolve a normalized contact identity profile from directory contact data
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: resolve_directory_contact_identity
+        description: Resolve a normalized contact identity profile from directory contact data.
+        parameters:
+          type: object
+          properties:
+            contact_data:
+              type: object
+              description: Contact result containing name, user_id, department, and email
+            name:
+              type: string
+              description: Original requested name
+          required:
+          - contact_data
+    mcp:
+      prompt_signature: 'resolve_directory_contact_identity(contact_data: dict, name: string = "") -> dict'
+      prompt_description: Resolve a normalized contact identity profile from directory data. Returns display_name, user_id, department, contact_channel, and contact_value.
+      output_schema:
+        identity_method:
+          type: string
+        display_name:
+          type: string
+        user_id:
+          type: string
+        department:
+          type: string
+        contact_channel:
+          type: string
+        contact_value:
+          type: string
+- name: resolve_employee_record_identity
+  description: Resolve a normalized contact identity profile from an employee record
+  category: Processor
+  domain: Office
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: resolve_employee_record_identity
+        description: Resolve a normalized contact identity profile from an employee record.
+        parameters:
+          type: object
+          properties:
+            employee_data:
+              type: object
+              description: Employee result containing user_id and department
+            name:
+              type: string
+              description: Original requested name
+          required:
+          - employee_data
+    mcp:
+      prompt_signature: 'resolve_employee_record_identity(employee_data: dict, name: string = "") -> dict'
+      prompt_description: Resolve a normalized contact identity profile from employee data. Returns display_name, user_id, department, contact_channel, and contact_value.
+      output_schema:
+        identity_method:
+          type: string
+        display_name:
+          type: string
+        user_id:
+          type: string
+        department:
+          type: string
+        contact_channel:
+          type: string
+        contact_value:
+          type: string
+- name: resolve_direct_quote_profile
+  description: Resolve a normalized quote profile from a direct equity quote
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: resolve_direct_quote_profile
+        description: Resolve a normalized quote profile from a direct equity quote.
+        parameters:
+          type: object
+          properties:
+            quote_data:
+              type: object
+              description: Direct quote result containing price_usd
+            ticker:
+              type: string
+              description: Equity ticker
+          required:
+          - quote_data
+          - ticker
+    mcp:
+      prompt_signature: 'resolve_direct_quote_profile(quote_data: dict, ticker: string) -> dict'
+      prompt_description: Resolve a normalized quote profile from a direct quote. Returns ticker, reference_price_usd, display_price, display_currency, and pricing_mode.
+      output_schema:
+        pricing_mode:
+          type: string
+        ticker:
+          type: string
+        reference_price_usd:
+          type: number
+        display_price:
+          type: number
+        display_currency:
+          type: string
+- name: resolve_converted_quote_profile
+  description: Resolve a normalized quote profile from a converted equity quote
+  category: Processor
+  domain: Financial
+  substitutes: []
+  paradigms:
+    function_call:
+      spec:
+        name: resolve_converted_quote_profile
+        description: Resolve a normalized quote profile from a converted equity quote.
+        parameters:
+          type: object
+          properties:
+            converted_quote:
+              type: object
+              description: Converted quote result containing price, currency, and optionally price_usd
+            ticker:
+              type: string
+              description: Equity ticker
+          required:
+          - converted_quote
+          - ticker
+    mcp:
+      prompt_signature: 'resolve_converted_quote_profile(converted_quote: dict, ticker: string) -> dict'
+      prompt_description: Resolve a normalized quote profile from a converted quote. Returns ticker, reference_price_usd, display_price, display_currency, and pricing_mode.
+      output_schema:
+        pricing_mode:
+          type: string
+        ticker:
+          type: string
+        reference_price_usd:
+          type: number
+        display_price:
+          type: number
+        display_currency:
+          type: string
