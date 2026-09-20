@@ -1,4 +1,4 @@
-# 🛡️ Agentic Tool Failure Recovery (CARE)
+# Agentic Tool Failure Recovery
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
@@ -9,14 +9,7 @@
 
 ---
 
-## 👥 Team & Roles
-* **Samyak** — Architecture, Deployment & SOV
-* **Mrunmayee** — Evaluation, Metrics & RL Exploration
-* **Anupam Ayush** — Agent Modeling & Experimentation
-
----
-
-## 🎯 Project Overview
+## Project Overview
 Autonomous LLM agents fail drastically under real-world tool execution perturbations (silent corrupted returns, transient network drops, permanent service outages). Current models either hallucinate on corrupted outputs or enter infinite trial-and-error loops that blow up token cost.
 
 This repository implements:
@@ -26,7 +19,7 @@ This repository implements:
 
 ---
 
-## 🔄 Team Collaboration Workflow (Preventing Server Conflicts)
+## Team Collaboration Workflow (Preventing Server Conflicts)
 
 > ⚠️ **CRITICAL RULE:** **DO NOT** edit code directly on the college server!  
 > Direct edits on the server lead to file conflicts, overwritten work, and broken test runs.
@@ -55,7 +48,7 @@ This repository implements:
 
 ---
 
-## 🖥️ Server Environment & Paths (`10.18.1.16`)
+## Server Environment & Paths (`10.18.1.16`)
 
 The project environment is deployed on the server's 3.6 TB storage partition:
 
