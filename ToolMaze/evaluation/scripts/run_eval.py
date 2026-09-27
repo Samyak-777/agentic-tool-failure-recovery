@@ -309,7 +309,12 @@ def evaluate_single_task(
             # 步骤2：运行推理并保存结果
             logger.info(f"  → Running inference...")
             agent = create_agent(config)
-            engine = ExecutionEngine(task_json, agent, tools_dir=tools_dir)
+            engine = ExecutionEngine(
+                task_json,
+                agent,
+                tools_dir=tools_dir,
+                validation_config=config.get("validation"),
+            )
             trace_logger, token_usage = engine.run(max_rounds=config["execution"]["max_rounds"])
 
             inference_data = trace_logger.to_dict(token_usage=token_usage)
@@ -379,6 +384,10 @@ def main():
                         help="Maximum number of tasks to run (applied after --offset)")
     parser.add_argument("--inference-only", action="store_true",
                         help="Run inference only, skip judge and metrics")
+    parser.add_argument("--enable-validation", action="store_true", default=None,
+                        help="Enable Semantic Validation Layer (SVL)")
+    parser.add_argument("--disable-validation", action="store_true", default=None,
+                        help="Disable Semantic Validation Layer (SVL)")
 
     args = parser.parse_args()
 
@@ -395,6 +404,10 @@ def main():
         config["agent"]["model"] = args.model
     if args.no_parallel:
         config["evaluation"]["parallel"] = False
+    if args.enable_validation:
+        config.setdefault("validation", {})["enabled"] = True
+    elif args.disable_validation:
+        config.setdefault("validation", {})["enabled"] = False
     apply_task_data_overrides(config, args)
 
     # 初始化评测组件

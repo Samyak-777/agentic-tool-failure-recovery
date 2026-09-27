@@ -32,7 +32,7 @@ class TraceLogger:
         round_num: int,
         agent_action: Dict[str, Any],
         tool_result: Optional[Dict[str, Any]] = None,
-        perturbation_status: str = "clean"
+        validation_result: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Log one round of interaction in role/content message format."""
         action_type = agent_action.get("type")
@@ -65,16 +65,26 @@ class TraceLogger:
 
         # If tool result exists, log it as a tool message
         if tool_result is not None:
+            metadata: Dict[str, Any] = {
+                "perturbation_status": perturbation_status
+            }
+            if validation_result is not None:
+                metadata["validation"] = validation_result
             tool_msg = {
                 "role": "tool",
                 "name": agent_action.get("tool_name"),
                 "call_id": call_id or assistant_msg.get("tool_call", {}).get("id"),
                 "content": tool_result,
-                "metadata": {
-                    "perturbation_status": perturbation_status
-                }
+                "metadata": metadata
             }
             self.messages.append(tool_msg)
+
+    def log_validation(self, validation_result: Dict[str, Any]) -> None:
+        """Attach validation result to the most recent tool message."""
+        for msg in reversed(self.messages):
+            if msg.get("role") == "tool":
+                msg.setdefault("metadata", {})["validation"] = validation_result
+                break
 
     def to_dict(
         self,
