@@ -35,8 +35,8 @@ def run_sov_gemini_test(task_file: str, mode_label: str):
         max_tokens=4096
     )
 
-    # Configure Layer 1: SOV
-    validation_config = ValidationConfig.from_dict({
+    # Configure Layer 1: SOV as dictionary
+    validation_config = {
         "enabled": True,
         "fail_fast": False,
         "checkers": {
@@ -51,7 +51,7 @@ def run_sov_gemini_test(task_file: str, mode_label: str):
             "state": {"enabled": True},
             "llm": {"enabled": False}  # deterministic only
         }
-    })
+    }
 
     tools_dir = str(project_root / "ToolMaze" / "tools")
     engine = ExecutionEngine(
