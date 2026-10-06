@@ -26,16 +26,14 @@ def run_sov_gemini_test(task_file: str, mode_label: str):
     if not gemini_key:
         raise ValueError("GEMINI_API_KEY2 or GEMINI_API_KEY must be set!")
 
-    agent_config = {
-        "model": "gemini-3.8-flash",
-        "temperature": 0.0,
-        "max_tokens": 4096,
-        "api_key": gemini_key,
-        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai"
-    }
-
-    # Custom robust agent with backoff on 503
-    agent = OpenAIAgent(agent_config)
+    # Initialize OpenAIAgent with Gemini configuration
+    agent = OpenAIAgent(
+        model="gemini-3.8-flash",
+        api_key=gemini_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+        temperature=0.0,
+        max_tokens=4096
+    )
 
     # Configure Layer 1: SOV
     validation_config = ValidationConfig.from_dict({
