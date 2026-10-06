@@ -34,7 +34,25 @@
 - **DAG Templates**: `/mnt/data/toolmaze_project/ToolMaze/data/templates`
 - **Model Weights Storage**: `/mnt/data/toolmaze_project/models`
 
+- [x] Tested Layer 1 SOV with live Gemini API agent on server (`tools/test_sov_gemini.py`):
+  - Verified real multi-turn function calling with Gemini 3.8 Flash
+  - Verified SOV deterministic output interception & violation detection
+- [x] Designed and implemented **Layer 2: Structured Failure Diagnosis** (`ToolMaze/diagnosis/`):
+  - `taxonomy.py`: Hierarchical failure categories, persistence types (`TRANSIENT` vs `PERMANENT`), and `StructuredDiagnosis` model
+  - `engine.py`: StructuredDiagnosisEngine classifying failure category and root cause
+- [x] Designed and implemented **Layer 3: Failure-State Tracking, Tool Memory & Recovery Controller** (`ToolMaze/tool_memory/`):
+  - `registry.py`: `ToolHealthRegistry` (`HEALTHY`, `DEGRADED`, `BLACKLISTED`)
+  - `memory.py`: `ToolMemory` (cached outputs and tried argument signatures)
+  - `budget.py`: `BudgetTracker` (enforces max call and recovery allowances)
+  - `recovery_controller.py`: `RecoveryController` mapping diagnoses to concrete action pathways (`CONTINUE`, `RETRY`, `VERIFY`, `REROUTE`, `ABORT`)
+- [x] Created and verified end-to-end integration test suite (`tools/test_all_three_layers.py` and `ToolMaze/tests/test_layers_2_and_3.py`):
+  - Clean execution -> CONTINUE (PASSED)
+  - Transient anomaly -> RETRY (PASSED)
+  - Persistent anomaly -> BLACKLIST & REROUTE (PASSED)
+  - Budget cap -> ABORT (PASSED)
+- [x] Pushed all code to GitHub branch `feature/diagnosis-and-memory-layers` and deployed to server (`10.18.1.16`)
+
 ### Next Steps
-- [ ] Configure local vLLM model serving or baseline evaluation on C1 tasks
-- [ ] Run baseline evaluation on P0 (unperturbed)
-- [ ] Begin Phase 2: Agent Framework Implementation (CARE + SOV)
+- [ ] Connect RecoveryController output directly to agent prompt conditioning in `CAREAgent`
+- [ ] Implement Layer 4: DAG-Aware Alternative Path Selection
+- [ ] Run full benchmark evaluation across C1-C4 with all layers enabled
