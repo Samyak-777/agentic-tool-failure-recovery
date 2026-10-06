@@ -33,6 +33,8 @@ class TraceLogger:
         agent_action: Dict[str, Any],
         tool_result: Optional[Dict[str, Any]] = None,
         validation_result: Optional[Dict[str, Any]] = None,
+        perturbation_status: Optional[str] = None,
+        **kwargs
     ) -> None:
         """Log one round of interaction in role/content message format."""
         action_type = agent_action.get("type")

@@ -80,23 +80,31 @@ def run_sov_gemini_test(task_file: str, mode_label: str):
                 print(f"Execution terminated: {e}")
                 raise e
 
-    print("\n--- Execution Steps & SOV Validation Results ---")
-    for step in logger.steps:
-        print(f"\nStep {step.step_num}:")
-        print(f"  Agent Action: {step.agent_action.get('tool_name')} ({step.agent_action.get('arguments')})")
-        print(f"  Perturbation Status: {step.perturbation_status}")
-        print(f"  Raw Result: {str(step.tool_result)[:120]}...")
-        if step.validation_result:
-            print(f"  SOV Pipeline Status: {step.validation_result.get('pipeline_status')}")
-            violations = step.validation_result.get('violations', [])
-            print(f"  SOV Violations Count: {len(violations)}")
-            for v in violations:
-                print(f"    - [{v.get('checker_name')}] {v.get('message')}")
-        else:
-            print("  SOV Validation: None")
+    print("\n--- Execution Trace & SOV Validation Results ---")
+    for idx, msg in enumerate(logger.messages):
+        role = msg.get("role")
+        if role == "assistant" and "tool_call" in msg:
+            tc = msg["tool_call"]
+            print(f"\n[Turn {idx}] Agent Tool Call -> {tc.get('name')}: {tc.get('arguments')}")
+        elif role == "tool":
+            print(f"[Turn {idx}] Tool Return <- {msg.get('name')}")
+            meta = msg.get("metadata", {})
+            print(f"  Perturbation Status: {meta.get('perturbation_status')}")
+            print(f"  Content Snippet: {str(msg.get('content'))[:140]}...")
+            val = meta.get("validation")
+            if val:
+                print(f"  🛡️ SOV Pipeline Status: {val.get('pipeline_status')}")
+                violations = val.get("violations", [])
+                print(f"  🛡️ SOV Violations ({len(violations)}):")
+                for v in violations:
+                    print(f"    - [{v.get('checker_name')}] {v.get('message')}")
+            else:
+                print("  🛡️ SOV Validation: None")
+        elif role == "assistant":
+            print(f"\n[Turn {idx}] Final Answer -> {msg.get('content')}")
 
     print("\n--- Final Summary ---")
-    print(f"Total Steps: {len(logger.steps)}")
+    print(f"Total Turns: {len(logger.messages)}")
     print(f"Token Usage: {token_usage}")
     return logger
 
