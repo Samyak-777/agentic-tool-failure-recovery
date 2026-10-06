@@ -5,6 +5,7 @@ the perturbation information in the task JSON.
 """
 
 import sys
+import uuid
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
@@ -108,7 +109,8 @@ class ExecutionEngine:
         self,
         task_json: Dict[str, Any],
         agent: BaseAgent,
-        tools_dir: Optional[str] = None
+        tools_dir: Optional[str] = None,
+        validation_config: Optional[Any] = None
     ):
         """Initialize execution engine.
 
@@ -116,6 +118,7 @@ class ExecutionEngine:
             task_json: Complete task specification
             agent: Agent instance to evaluate
             tools_dir: Directory containing tool plugins
+            validation_config: Optional validation configuration (ValidationConfig or dict)
         """
         self.task_json = task_json
         self.agent = agent
@@ -138,6 +141,29 @@ class ExecutionEngine:
         self.task_id = task_json["task_id"]
         # 优先使用 user_input["query"] 作为实际用户查询
         user_input = task_json.get("user_input", {})
+
+        # SVL Initialization
+        self.validation_config = validation_config or task_json.get("validation")
+        self.semantic_validation_enabled = False
+        self.svl = None
+        self.execution_id = str(uuid.uuid4())
+        self._last_validation_result = None
+
+        if self.validation_config:
+            if isinstance(self.validation_config, dict):
+                self.semantic_validation_enabled = self.validation_config.get("enabled", False)
+            elif hasattr(self.validation_config, "enabled"):
+                self.semantic_validation_enabled = bool(self.validation_config.enabled)
+
+        if self.semantic_validation_enabled:
+            from semantic_validation import SemanticValidationPipeline, ValidationConfig
+            svl_cfg = (
+                self.validation_config
+                if isinstance(self.validation_config, ValidationConfig)
+                else ValidationConfig.from_dict(self.validation_config)
+            )
+            self.svl = SemanticValidationPipeline(svl_cfg, self.tool_loader)
+            self.svl.create_execution_state(self.execution_id, self.task_id)
         self.task_description = user_input.get("query", task_json.get("task_description", ""))
         self.mode = task_json.get("perturbation_mode", "P0")
         self.perturbation_point = task_json.get("perturbation_point", 0)
@@ -482,7 +508,8 @@ class ExecutionEngine:
                             round_num=round_num,
                             agent_action=tc_action_dict,
                             tool_result=tool_result,
-                            perturbation_status=perturbation_status
+                            perturbation_status=perturbation_status,
+                            validation_result=self._last_validation_result
                         )
 
                         self.agent.receive_tool_result(tc.tool_name, tool_result, tool_call_index=idx)
@@ -497,7 +524,8 @@ class ExecutionEngine:
                         round_num=round_num,
                         agent_action=action_dict,
                         tool_result=tool_result,
-                        perturbation_status=perturbation_status
+                        perturbation_status=perturbation_status,
+                        validation_result=self._last_validation_result
                     )
 
                     self.agent.receive_tool_result(action.tool_name, tool_result)
@@ -507,6 +535,10 @@ class ExecutionEngine:
 
         # 汇总 token 消耗
         token_usage = self.agent.get_token_usage().to_dict()
+
+        # 清理 SVL 状态
+        if self.svl is not None:
+            self.svl.destroy_execution_state(self.execution_id)
 
         return self.logger, token_usage
 
@@ -577,8 +609,40 @@ class ExecutionEngine:
                 status,
                 is_perturbed=True
             )
+
+            val_result = None
+            if self.svl is not None:
+                val_result = self.svl.validate(
+                    tool_name=tool_name,
+                    arguments=arguments,
+                    result=result,
+                    execution_id=self.execution_id,
+                    task_id=self.task_id,
+                    step=step,
+                    context=self.context,
+                )
+                if val_result.pipeline_status.value == "INVALID":
+                    result = val_result.to_agent_failure_payload(result)
+            self._last_validation_result = val_result.to_dict() if val_result else None
+
             return result, "perturbed"
 
         # 未触发扰动，执行真实工具
         result = self.tool_executor.execute(tool_name, arguments, self.context, step)
+
+        val_result = None
+        if self.svl is not None:
+            val_result = self.svl.validate(
+                tool_name=tool_name,
+                arguments=arguments,
+                result=result,
+                execution_id=self.execution_id,
+                task_id=self.task_id,
+                step=step,
+                context=self.context,
+            )
+            if val_result.pipeline_status.value == "INVALID":
+                result = val_result.to_agent_failure_payload(result)
+        self._last_validation_result = val_result.to_dict() if val_result else None
+
         return result, "clean"
