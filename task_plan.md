@@ -38,5 +38,9 @@
   - Verified P1 and P3 recovery: Baseline PRR = 0.00% vs CARE PRR = 100.00%
   - Slashed Recovery Cost (RC) from 1.00 down to 0.25 (P1) and 0.50 (P3)
 - [x] Verified Category C2 (Diamond DAG topology): CARE achieved 100% PRR on branching workflows
-- [ ] Scale evaluation across all 2,000 benchmark tasks (4,000 total runs for Baseline + CARE across C1–C4)
-- [ ] Format publication tables for research paper draft
+- [x] Implemented evaluation caching/resumption logic in `run_eval_care.py` to prevent duplicate computations across runs
+- [x] Launched full-scale benchmark execution suite (`run_full_benchmark_suite.sh`) in background on server:
+  - Phase 1: Qwen 3 (8B) Full Baseline vs CARE across C1, C2, C3, C4 (2,000 tasks / 4,000 runs)
+  - Phase 2: Llama 3.1 (8B) Baseline vs CARE across C1, C2
+  - Phase 3: Gemini / Gemma API with 4-key round-robin rotation across C1, C2
+- [ ] Monitor background run and collate complete comparative LaTeX publication tables
