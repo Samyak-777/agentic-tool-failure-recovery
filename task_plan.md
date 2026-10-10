@@ -41,6 +41,6 @@
 - [x] Implemented evaluation caching/resumption logic in `run_eval_care.py` to prevent duplicate computations across runs
 - [x] Launched full-scale benchmark execution suite (`run_full_benchmark_suite.sh`) in background on server:
   - Phase 1: Qwen 3 (8B) Full Baseline vs CARE across C1, C2, C3, C4 (2,000 tasks / 4,000 runs)
-  - Phase 2: Llama 3.1 (8B) Baseline vs CARE across C1, C2
-  - Phase 3: Gemini / Gemma API with 4-key round-robin rotation across C1, C2
+  - Phase 2: Llama 3.1 (8B) Full Baseline vs CARE across C1, C2, C3, C4
+  - Phase 3: Gemini / Gemma API Full Baseline vs CARE across C1, C2, C3, C4 with 4-key round-robin rotation
 - [ ] Monitor background run and collate complete comparative LaTeX publication tables
