@@ -244,6 +244,27 @@ def create_eval_agent(agent_type: str, config: Dict[str, Any], shared_pool: Opti
 def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool, agent_type="care"):
     task_id = task_json["task_id"]
     mode = task_json.get("perturbation_mode", "P0")
+
+    eval_file = saver.evaluations_dir / f"{task_id}_{mode}_eval.json"
+    inf_file = saver.inferences_dir / f"{task_id}_{mode}_inference.json"
+    if eval_file.exists() and inf_file.exists() and config.get("resume", True):
+        try:
+            with open(eval_file, "r", encoding="utf-8") as f:
+                judgement = json.load(f)
+            with open(inf_file, "r", encoding="utf-8") as f:
+                inf_data = json.load(f)
+            logger.info(f"[{agent_type.upper()}] Reusing existing result for {task_id} (Mode: {mode}) -> {'PASS' if judgement.get('pass') else 'FAIL'}")
+            return {
+                "task_id": task_id,
+                "mode": mode,
+                "passed": judgement.get("pass", False),
+                "judgement": judgement,
+                "task_json": task_json,
+                "inference_data": inf_data
+            }
+        except Exception as e:
+            logger.warning(f"Failed to read existing cache for {task_id}_{mode}: {e}")
+
     logger.info(f"[{agent_type.upper()}] Starting {task_id} (Mode: {mode})")
 
     try:
@@ -296,9 +317,11 @@ def main():
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--max-workers", type=int, default=2)
+    parser.add_argument("--no-resume", action="store_true", default=False, help="Disable caching and re-run all tasks")
     args, _ = parser.parse_known_args()
 
     config = load_config(args.config)
+    config["resume"] = not args.no_resume
     if args.category:
         config["data"]["task_category"] = args.category
         if args.category in DEFAULT_TASK_DIRS:
