@@ -87,8 +87,8 @@ class RotatingCompletions:
                     logger.warning(f"[Key #{key_idx+1}] Rate limit hit (429). Rotating to next key. Sleeping {sleep_time}s...")
                     time.sleep(sleep_time)
                     continue
-                elif "401" in err_str or "403" in err_str:
-                    logger.warning(f"[Key #{key_idx+1}] Auth error (401/403). Rotating to next key immediately...")
+                elif "401" in err_str or "403" in err_str or "404" in err_str or "not found" in err_str:
+                    logger.warning(f"[Key #{key_idx+1}] Key error / Model not enabled (401/403/404). Rotating to next key immediately...")
                     continue
                 raise
         raise Exception(f"Max retries exceeded across all keys. Last error: {last_error}")
