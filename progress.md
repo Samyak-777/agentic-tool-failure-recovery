@@ -103,9 +103,22 @@
     - Proves baseline agents almost universally over-trust corrupted data without validation
   - **P2 (Permanent Tool Removal)**: TSR = 60.00%, PRR = 80.46%, RC = 0.28
   - **P4 (Permanent Semantic Corruption)**: TSR = 26.00%, PRR = 42.53%, RC = 0.61
-- [x] Currently executing **Qwen 3 (8B) Category C1 CARE (500 tasks)**: 36 tasks evaluated in first 12 minutes (rate: ~3 tasks/min).
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C1 CARE (All 7 Layers Unified)**:
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P1 (Transient Server 503 Outage)**:
+    - TSR = **46.00%** (vs Baseline 6.00% — **7.6× higher!**)
+    - PRR = **92.59%** (75/81 recovered vs Baseline 6.82% — **13.5× improvement!**)
+    - Recovery Cost (RC) = **0.38** (vs Baseline 0.82 — **53.7% cost reduction!**)
+  - **P3 (Implicit Semantic Data Corruption)**:
+    - TSR = **19.00%** (vs Baseline 1.00% — **19× higher!**)
+    - PRR = **42.35%** (36/85 recovered vs Baseline 2.30% — **18.4× improvement!**)
+    - Recovery Cost (RC) = **0.67** (vs Baseline 0.86 — **22.1% cost reduction!**)
+  - **P2 (Permanent Tool Removal)**: TSR = 61.00%, PRR = 90.24% (74/82 recovered), RC = 0.46
+  - **P4 (Permanent Semantic Corruption)**: TSR = 36.00% (vs Baseline 26.00%), RC = 0.59
+- [x] **Category C1 1,000-Task Milestone Achieved**: Full 500-task Baseline + 500-task CARE completed.
+- [x] Actively executing **Qwen 3 (8B) Category C2 Baseline (500 tasks)**: 113 / 500 tasks completed (started 20:41 IST).
 
 ### Next Steps
-- [ ] Complete Qwen C1 CARE (500 tasks) and compare full-sample PRR gains over baseline
-- [ ] Progress through C2, C3, and C4 runs in background suite
-- [ ] Format complete comparative LaTeX tables for publication paper draft
+- [ ] Complete Qwen C2 Baseline and launch Qwen C2 CARE (Diamond DAG topology)
+- [ ] Progress through C3, C4, Llama 3.1, and Gemini rotating API pool
+- [ ] Collate full comparative tables (LaTeX) for publication paper draft
