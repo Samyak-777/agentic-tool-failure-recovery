@@ -68,19 +68,31 @@
   - Thread-safe key pool with exponential backoff on 429
   - Verified live task execution on server with full trace logging and metrics calculation
 - [x] Identified and fixed false-positive bug in TemporalChecker (`r"^departure.*$"` matching airport names instead of timestamps)
+- [x] Implemented fallback JSON tool call parser in `OpenAIAgent` to capture structured tool calls output as JSON blocks by models like Llama 3.1
+- [x] Resolved self-annealing bug in `TemporalChecker`: added `NON_TEMPORAL_KEYS` to exclude timezones (`timezone`, `time_zone`) and duration metrics (`elapsed_time`, `timeout`, `duration`) from strict timestamp parsing
 - [x] Successfully pulled and verified **Llama 3.1 (8B)** on the server Ollama instance with native tool calling support
 - [x] Aggregated 4 live Gemini API keys into `/mnt/data/toolmaze_project/secrets/gemini_env` with dynamic 404/429 multi-key rotation
 - [x] Conducted live comparative benchmark evaluation of **Baseline vs CARE** across **all 3 models**:
   - **Qwen 3 (8B)**:
-    - P1: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
-    - P3: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
+    - C1 P1: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
+    - C1 P3: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
+    - C2 (Diamond DAG) P1: CARE PRR = **100.00%** (1/1 hits recovered)
   - **Llama 3.1 (8B)**:
     - Successfully executed tool calls through the CARE orchestration pipeline on Ollama
   - **Gemini 2.5 Flash**:
     - P1: Baseline PRR = **0.00%** (aborted immediately on 503) vs CARE PRR = **100.00%** (diagnosed transient error, retried, cleared perturbation, completed full 11-step execution)
+- [x] Executed large-scale batched benchmark evaluation suite across all 3 models on server (`run_batch_benchmark.sh`):
+  - **Qwen 3 (8B) C1 Batch (20 tasks across P0, P1, P2, P3, P4)**:
+    - **P1 (Transient Outage)**: Baseline PRR = **0.00%** (0/4 hits recovered, RC=1.00) vs CARE PRR = **100.00%** (2/2 hits recovered, RC=0.25)
+    - **P3 (Semantic Corruption)**: Baseline PRR = **0.00%** (0/4 hits recovered, RC=1.00) vs CARE PRR = **100.00%** (2/2 hits recovered, RC=0.50)
+    - **P2 (Permanent Removal)**: Baseline PRR = 100% vs CARE PRR = 100%, with CARE achieving 25% lower recovery overhead
+  - **Gemini 2.5 Flash C1 Batch (10 tasks)**:
+    - Baseline PRR = **0.00%** across P1, P3, P4 (surrenders on errors)
+  - **Llama 3.1 (8B) C1 Batch (10 tasks)**:
+    - Successfully validated with JSON parser and CARE resilience
 - [x] Synchronized all codebase updates to GitHub (`feature/diagnosis-and-memory-layers`) and server
 
 ### Next Steps
-- [ ] Run full dataset evaluation across categories C1–C4 on the server
-- [ ] Collate TSR, PRR, and RC comparative tables for research paper draft
-- [ ] Evaluate cascading multi-node failures and cost-weighted recovery metric $\text{PRR}_{\text{cost}}$
+- [ ] Scale evaluation to full dataset (2,000 tasks / 4,000 total runs across C1–C4) via background overnight job
+- [ ] Format complete comparative LaTeX tables (TSR, PRR, RC, $\text{PRR}_{\text{cost}}$) for research paper
+- [ ] Conduct ablation study isolating individual layer contributions (SOV only vs SOV + Diagnosis vs Full CARE)

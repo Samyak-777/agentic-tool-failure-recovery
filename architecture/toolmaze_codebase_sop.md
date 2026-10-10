@@ -135,3 +135,23 @@ Task JSON → ExecutionEngine → Agent.initialize(task, tools)
 Judge: evaluate(task_json, agent_trace) → pass/fail + reasoning
 Metrics: compute TSR, PRR, RC from all task results
 ```
+
+---
+
+## 5. CARE 7-Layer Resilience Architecture (`ToolMaze/`)
+
+1. **Layer 1: Semantic Output Validation (SOV)** (`semantic_validation/`):
+   - Deterministic schema, type, range, cross-reference, and temporal checks.
+   - **Self-Annealing Invariant**: Temporal validator must exclusively parse point-in-time timestamps and dates, explicitly skipping durations, timezones (`timezone`, `time_zone`), and timeouts (`timeout`, `elapsed_time`).
+2. **Layer 2: Structured Failure Diagnosis** (`diagnosis/`):
+   - Categorizes failures into `TRANSIENT` (server 503, network drop) vs `PERMANENT` (schema mismatch, 404, removed tools).
+3. **Layer 3: Tool Memory & Health Registry** (`tool_memory/`):
+   - Tracks tool health states (`HEALTHY`, `DEGRADED`, `BLACKLISTED`), caches valid signatures, and enforces recovery allowances.
+4. **Layer 4: DAG-Aware Alternative Path Selection** (`dag_rerouting/`):
+   - Prunes blocked topological branches upon permanent victim tool failure; redirects to pre-computed alternative paths.
+5. **Layer 5: Dynamic Recovery Prompts** (`recovery_prompt/`):
+   - Injects structured failure diagnosis, root cause evidence, and alternative tool recommendations instead of generic error messages.
+6. **Layer 6: Cost-Aware Loop & Ping-Pong Detection** (`tool_memory/loop_detector.py`):
+   - Detects immediate cycles and alternating ping-pong oscillation ($A \to B \to A \to B$), triggering hard circuit breakers.
+7. **Layer 7: Selective LLM Verification** (`selective_verification/`):
+   - Invoked exclusively on borderline semantic outputs to preserve overall token and cost budgets.
