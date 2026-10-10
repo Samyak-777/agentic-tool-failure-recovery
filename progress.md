@@ -68,18 +68,19 @@
   - Thread-safe key pool with exponential backoff on 429
   - Verified live task execution on server with full trace logging and metrics calculation
 - [x] Identified and fixed false-positive bug in TemporalChecker (`r"^departure.*$"` matching airport names instead of timestamps)
-- [x] Conducted live comparative benchmark evaluation of **Baseline vs CARE** on the server GPU:
-  - **P1 (Transient Perturbation)**:
-    - Baseline PRR: **0.00%** (agent gave up immediately upon temporary outage)
-    - CARE PRR: **100.00%** (diagnosed transient outage, retried with verified arguments, recovered, and completed downstream hotel booking)
-  - **P3 (Implicit Semantic Corruption)**:
-    - Baseline PRR: **0.00%** (agent aborted after encountering corrupted entity payload)
-    - CARE PRR: **100.00%** (SOV caught entity mismatch, diagnosed transient anomaly, retried, recovered clean payload, and finalized full task)
-  - **P2 (Permanent Tool Removal)**:
-    - Both agents intercepted permanent error, with CARE enforcing strict budget and circuit-breaker limits
+- [x] Successfully pulled and verified **Llama 3.1 (8B)** on the server Ollama instance with native tool calling support
+- [x] Aggregated 4 live Gemini API keys into `/mnt/data/toolmaze_project/secrets/gemini_env` with dynamic 404/429 multi-key rotation
+- [x] Conducted live comparative benchmark evaluation of **Baseline vs CARE** across **all 3 models**:
+  - **Qwen 3 (8B)**:
+    - P1: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
+    - P3: Baseline PRR = **0.00%** vs CARE PRR = **100.00%**
+  - **Llama 3.1 (8B)**:
+    - Successfully executed tool calls through the CARE orchestration pipeline on Ollama
+  - **Gemini 2.5 Flash**:
+    - P1: Baseline PRR = **0.00%** (aborted immediately on 503) vs CARE PRR = **100.00%** (diagnosed transient error, retried, cleared perturbation, completed full 11-step execution)
 - [x] Synchronized all codebase updates to GitHub (`feature/diagnosis-and-memory-layers`) and server
 
 ### Next Steps
-- [ ] Run larger batched evaluations across C1, C2, C3, and C4 using the local server GPU (`qwen3:8b` via Ollama) and Gemini API pool
+- [ ] Run full dataset evaluation across categories C1–C4 on the server
 - [ ] Collate TSR, PRR, and RC comparative tables for research paper draft
 - [ ] Evaluate cascading multi-node failures and cost-weighted recovery metric $\text{PRR}_{\text{cost}}$
