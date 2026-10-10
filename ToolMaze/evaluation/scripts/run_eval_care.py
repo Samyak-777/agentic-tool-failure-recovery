@@ -28,7 +28,7 @@ sys.path.insert(0, str(project_root))
 
 from evaluation.core import ExecutionEngine, JudgeSystem, MetricsCalculator
 from evaluation.utils import ResultSaver
-from evaluation.agents import OpenAIAgent, CAREAgent
+from evaluation.agents import BaseAgent, OpenAIAgent, CAREAgent
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("CARE_Eval")
