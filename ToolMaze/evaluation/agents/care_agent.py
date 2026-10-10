@@ -14,6 +14,8 @@ Orchestrates all 7 layers of resilience:
 
 import json
 import logging
+import uuid
+from pathlib import Path
 from typing import Dict, Any, Optional, List, Set
 
 from .base_agent import BaseAgent, AgentAction, TokenUsage, ToolCall
@@ -24,9 +26,34 @@ except ImportError:
     OpenAIAgent = None
 
 # Import CARE Layers
-from semantic_validation import SemanticValidationPipeline
-from diagnosis import StructuredDiagnosisEngine, StructuredDiagnosis, FailureCategory, PersistenceType, RecoveryDirective
-from tool_memory import ToolHealthRegistry, ToolMemory, BudgetTracker, BudgetConfig, RecoveryController, LoopDetector
+try:
+    from semantic_validation import (
+        SemanticValidationPipeline,
+        ValidationConfig,
+        PipelineStatus,
+        CheckerStatus
+    )
+except ImportError:
+    SemanticValidationPipeline = None
+    ValidationConfig = None
+    PipelineStatus = None
+    CheckerStatus = None
+
+from diagnosis import (
+    StructuredDiagnosisEngine,
+    StructuredDiagnosis,
+    FailureCategory,
+    PersistenceType,
+    RecoveryDirective
+)
+from tool_memory import (
+    ToolHealthRegistry,
+    ToolMemory,
+    BudgetTracker,
+    BudgetConfig,
+    RecoveryController,
+    LoopDetector
+)
 from dag_rerouting import DAGPathSelector, RerouteCandidate
 from recovery_prompt import DynamicRecoveryPromptBuilder, RecoveryPromptPayload
 from selective_verification import SelectiveVerifier
@@ -47,7 +74,9 @@ class CAREAgent(BaseAgent):
         max_tokens: int = 4096,
         budget_config: Optional[BudgetConfig] = None,
         enable_sov: bool = True,
-        enable_care_recovery: bool = True
+        enable_care_recovery: bool = True,
+        sov: Optional[Any] = None,
+        tools_dir: Optional[str] = None
     ):
         # 1. Base Agent (Delegate LLM)
         if base_agent:
@@ -65,9 +94,26 @@ class CAREAgent(BaseAgent):
 
         self.enable_sov = enable_sov
         self.enable_care_recovery = enable_care_recovery
+        self.execution_id = str(uuid.uuid4())
 
         # 2. Layer 1: Semantic Output Validation Pipeline
-        self.sov = SemanticValidationPipeline()
+        if sov is not None:
+            self.sov = sov
+        elif SemanticValidationPipeline is not None:
+            try:
+                from tools.loader import ToolLoader
+                t_dir = Path(tools_dir) if tools_dir else Path(__file__).resolve().parent.parent.parent / "tools"
+                def_dir = t_dir / "definitions"
+                if def_dir.exists():
+                    loader = ToolLoader(str(def_dir))
+                    self.sov = SemanticValidationPipeline(ValidationConfig(), loader)
+                else:
+                    self.sov = None
+            except Exception as e:
+                logger.debug(f"Could not initialize default SVL: {e}")
+                self.sov = None
+        else:
+            self.sov = None
 
         # 3. Layer 2: Structured Diagnosis Engine
         self.diagnosis_engine = StructuredDiagnosisEngine()
@@ -81,7 +127,7 @@ class CAREAgent(BaseAgent):
         # 6. Layer 3: Tool Health, Memory, Budget & Recovery Controller
         self.health_registry = ToolHealthRegistry()
         self.tool_memory = ToolMemory()
-        self.budget_tracker = BudgetTracker(config=budget_config or BudgetConfig(max_recovery_tool_calls=6, max_retries_per_tool=1))
+        self.budget_tracker = BudgetTracker(config=budget_config or BudgetConfig(max_recovery_attempts=5, max_retries_per_tool=1))
         self.recovery_controller = RecoveryController(
             health_registry=self.health_registry,
             memory=self.tool_memory,
@@ -110,6 +156,14 @@ class CAREAgent(BaseAgent):
     def initialize(self, task_description: str, tool_definitions: Dict[str, Any], task_json: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the CARE Agent with task definitions."""
         self.task_json = task_json or {}
+        self.execution_id = str(uuid.uuid4())
+        task_id = self.task_json.get("task_id", "task_care")
+        if self.sov is not None:
+            try:
+                self.sov.create_execution_state(self.execution_id, task_id)
+            except Exception:
+                pass
+
         self.step_counter = 0
         self.last_action = None
         self.last_recovery_directive = None
@@ -123,6 +177,10 @@ class CAREAgent(BaseAgent):
         self.recovery_controller.reset()
 
         self.base_agent.initialize(task_description, tool_definitions)
+
+    def set_task_json(self, task_json: Dict[str, Any]) -> None:
+        """Set task specification for DAG-aware and recovery routing."""
+        self.task_json = task_json or {}
 
     def step(self, user_message: Optional[str] = None) -> AgentAction:
         """Execute one reasoning step with proactive loop & abort guards."""
@@ -144,7 +202,6 @@ class CAREAgent(BaseAgent):
         if action.type == "tool_call" and action.tool_name:
             if self.health_registry.is_blacklisted(action.tool_name):
                 logger.warning(f"CARE Guard: Agent attempted to invoke blacklisted tool '{action.tool_name}'. Intercepting.")
-                # Look up alternative immediately
                 candidate = self.path_selector.find_reroute(
                     failed_tool=action.tool_name,
                     task_json=self.task_json,
@@ -169,15 +226,36 @@ class CAREAgent(BaseAgent):
         # ----------------------------------------------------
         # Layer 1: Deterministic Semantic Output Validation
         # ----------------------------------------------------
-        validation_res = self.sov.validate(
-            tool_name=tool_name,
-            output=result,
-            arguments=tool_args,
-            task_query=query
-        )
+        is_clean = True
+        val_res_dict = None
+
+        if self.sov is not None and PipelineStatus is not None:
+            try:
+                val_result = self.sov.validate(
+                    tool_name=tool_name,
+                    arguments=tool_args,
+                    result=result,
+                    execution_id=self.execution_id,
+                    task_id=self.task_json.get("task_id", "task_0"),
+                    step=self.step_counter
+                )
+                val_res_dict = val_result.to_dict()
+                if val_result.pipeline_status in (PipelineStatus.INVALID, PipelineStatus.ERROR):
+                    is_clean = False
+            except Exception as e:
+                logger.debug(f"SVL validation error: {e}")
+
+        # Semantic corruption checks on payload (e.g. negative balances, errors)
+        if isinstance(result, dict):
+            if result.get("status") == "error" or "error" in result:
+                is_clean = False
+            for k, v in result.items():
+                if any(term in k.lower() for term in ["balance", "price", "count", "age", "qty"]):
+                    if isinstance(v, (int, float)) and v < 0:
+                        is_clean = False
 
         # If clean, record success and return unmodified output
-        if validation_res.is_valid and not validation_res.violations:
+        if is_clean:
             self.recovery_controller.decide_recovery(
                 diagnosis=StructuredDiagnosis(
                     tool_name=tool_name,
@@ -198,20 +276,19 @@ class CAREAgent(BaseAgent):
         # ----------------------------------------------------
         # Layer 2: Structured Failure Diagnosis
         # ----------------------------------------------------
-        history = self.tool_memory.get_tool_history(tool_name)
         diagnosis = self.diagnosis_engine.diagnose(
             tool_name=tool_name,
-            raw_output=result,
-            violations=validation_res.violations,
             arguments=tool_args,
-            history=history
+            raw_result=result,
+            validation_result=val_res_dict,
+            tool_call_history=self.tool_memory.call_log,
+            step_num=self.step_counter
         )
 
         # ----------------------------------------------------
         # Layer 7: Selective LLM Verification (if ambiguous)
         # ----------------------------------------------------
-        if validation_res.is_valid and validation_res.violations:
-            # Borderline case
+        if diagnosis.recommended_action == RecoveryDirective.VERIFY:
             verif = self.selective_verifier.verify(
                 tool_name=tool_name,
                 arguments=tool_args,
@@ -245,7 +322,7 @@ class CAREAgent(BaseAgent):
             diagnosis=diagnosis,
             recovery_decision=recovery_decision,
             blacklisted_tools=self.health_registry.get_blacklisted_tools(),
-            remaining_budget=self.budget_tracker.remaining_recovery_calls,
+            remaining_budget=self.budget_tracker.get_remaining_recovery_calls(),
             loop_warning=recovery_decision.get("loop_warning")
         )
         self.recovery_prompts_injected += 1

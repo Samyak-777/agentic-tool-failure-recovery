@@ -69,6 +69,21 @@ class ToolMemory:
             return valid_entries[-1].get("output")
         return None
 
+    def get_executed_tools(self) -> List[str]:
+        """Return list of distinct tool names executed so far in chronological order."""
+        seen = set()
+        ordered = []
+        for entry in self.call_log:
+            t = entry.get("tool_name")
+            if t and t not in seen:
+                seen.add(t)
+                ordered.append(t)
+        return ordered
+
+    def get_tool_history(self, tool_name: str) -> List[Dict[str, Any]]:
+        """Return full history of calls for a specific tool."""
+        return self.cached_outputs.get(tool_name, [])
+
     def reset(self):
         self.tried_signatures.clear()
         self.cached_outputs.clear()
