@@ -52,7 +52,24 @@
   - Budget cap -> ABORT (PASSED)
 - [x] Pushed all code to GitHub branch `feature/diagnosis-and-memory-layers` and deployed to server (`10.18.1.16`)
 
+- [x] Designed and implemented **Layer 4: DAG-Aware Alternative Path Selection** (`ToolMaze/dag_rerouting/`):
+  - `path_selector.py`: Topological DAG traversal, pre-computed solution path filtering, and dependency satisfaction checks
+- [x] Designed and implemented **Layer 5: Dynamic Recovery Prompts with Evidence** (`ToolMaze/recovery_prompt/`):
+  - `prompt_builder.py`: Synthesizes evidence-rich diagnostic payloads replacing generic error strings
+- [x] Designed and implemented **Layer 6: Cost-Aware Control & Loop Detection** (`ToolMaze/tool_memory/loop_detector.py`):
+  - `loop_detector.py`: Detects immediate repetition, ping-pong oscillation ($A \to B \to A \to B$), and multi-step cycles
+- [x] Designed and implemented **Layer 7: Selective LLM Verification** (`ToolMaze/selective_verification/`):
+  - `verifier.py`: Invoked exclusively on ambiguous / borderline semantic outputs to preserve token budget
+- [x] Designed and implemented **CAREAgent** (`ToolMaze/evaluation/agents/care_agent.py`):
+  - Integrates all 7 layers of resilience into ToolMaze's `BaseAgent` and `ExecutionEngine`
+- [x] Implemented and verified comprehensive 7-layer test suite (`ToolMaze/tests/test_full_care_pipeline.py`):
+  - 5/5 test cases passed on both local environment and server
+- [x] Implemented multi-key rotating evaluation runner (`ToolMaze/evaluation/scripts/run_eval_care.py`):
+  - Thread-safe key pool with exponential backoff on 429
+  - Verified live task execution on server with full trace logging and metrics calculation
+- [x] Synchronized all codebase changes with GitHub branch `feature/diagnosis-and-memory-layers` and deployed to server
+
 ### Next Steps
-- [ ] Connect RecoveryController output directly to agent prompt conditioning in `CAREAgent`
-- [ ] Implement Layer 4: DAG-Aware Alternative Path Selection
-- [ ] Run full benchmark evaluation across C1-C4 with all layers enabled
+- [ ] Run benchmark evaluation across full task sets (C1, C2, C3, C4) comparing CARE vs Baseline
+- [ ] Confirm location/keys for the 6-7 Gemini API keys env file to maximize parallel evaluation throughput
+- [ ] Collate TSR, PRR, and RC comparative metrics for paper draft

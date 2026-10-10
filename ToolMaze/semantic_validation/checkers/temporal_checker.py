@@ -38,8 +38,8 @@ TEMPORAL_FIELD_PATTERNS = [
     r"^updated_at$",
     r"^check_in$",
     r"^check_out$",
-    r"^departure.*$",
-    r"^arrival.*$",
+    r"^departure_(time|date|timestamp)$",
+    r"^arrival_(time|date|timestamp)$",
 ]
 
 ISO_FORMATS = [

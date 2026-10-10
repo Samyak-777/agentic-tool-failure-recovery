@@ -100,3 +100,25 @@
 
 > ✅ **GPU Verdict**: The **24 GB NVIDIA TITAN RTX** with **128 GB RAM** is **ideal** for serving **Qwen-2.5-7B-Instruct** or **Llama-3.1-8B-Instruct** with vLLM under FP16/BF16 precision without quantization loss.
 > ✅ **Storage Status**: `/dev/sdb` has been successfully mounted to `/mnt/data` with persistent `/etc/fstab` configuration, providing **3.4 TB free storage** with full user write permissions for models, conda environments, and datasets.
+
+---
+
+## CARE Architecture Integration & Test Findings (2026-10-10)
+
+1. **Layer 4 (DAG Path Selection)**:
+   - ToolMaze's ground-truth `valid_solution_paths` provide deterministic alternative paths that can be topologically filtered against blacklisted tools.
+   - When a victim tool is blacklisted, `DAGPathSelector` switches immediately to unblocked alternative branches without trial-and-error hallucinations.
+
+2. **Layer 5 (Dynamic Recovery Prompts)**:
+   - Supplying LLM agents with explicit structured failure diagnosis (`category`, `root_cause`, `blacklist`, `recommended_substitute`) prevents the agent from blindly retrying corrupted tools and drastically cuts Recovery Cost (RC).
+
+3. **Layer 6 (Cost-Aware Loop & Ping-Pong Detection)**:
+   - Prevents alternating deadlocks ($A \to B \to A \to B$) and infinite repetition by enforcing hard circuit breakers and forced rerouting.
+
+4. **Layer 7 (Selective LLM Verification)**:
+   - By running cheap deterministic checks first and only invoking LLM verification on ambiguous edge cases, token consumption is kept near zero during clean tool execution.
+
+5. **Multi-Key Pool & Fallback Engine**:
+   - `run_eval_care.py` provides thread-safe round-robin API key rotation across multiple Gemini keys with exponential backoff on 429 quota exhaustion.
+   - Seamless local fallback to `qwen3:8b` via Ollama (`http://localhost:11434/v1`) ensures evaluation can run continuously with zero API costs.
+
