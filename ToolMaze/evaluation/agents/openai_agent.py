@@ -212,10 +212,34 @@ class OpenAIAgent(BaseAgent):
                         thought=msg_dict.get("content")
                     )
 
-                # 无 tool_call，返回最终文本答案
+                # 无 tool_call，检查 content 是否包含 JSON 工具调用（如 Llama 3.1 文本块回显）
+                content = msg_dict.get("content", "")
+                if content and "{" in content and "}" in content:
+                    import re
+                    matches = re.findall(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', content)
+                    for m in reversed(matches):
+                        try:
+                            parsed = json.loads(m)
+                            if isinstance(parsed, dict) and "name" in parsed and ("parameters" in parsed or "arguments" in parsed):
+                                tool_name = parsed["name"]
+                                args = parsed.get("parameters", parsed.get("arguments", {}))
+                                if isinstance(args, str):
+                                    try:
+                                        args = json.loads(args)
+                                    except Exception:
+                                        pass
+                                return AgentAction(
+                                    type="tool_call",
+                                    tool_name=tool_name,
+                                    arguments=args if isinstance(args, dict) else {},
+                                    thought=content
+                                )
+                        except Exception:
+                            pass
+
                 return AgentAction(
                     type="final_answer",
-                    content=msg_dict.get("content", "")
+                    content=content
                 )
 
         except Exception as e:
