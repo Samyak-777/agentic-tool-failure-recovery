@@ -287,7 +287,9 @@ def main():
     parser.add_argument("--config", type=str, default="evaluation/configs/gemini_eval_config_c1.yaml")
     parser.add_argument("--agent-type", type=str, default="care", choices=["care", "baseline"])
     parser.add_argument("--backend", type=str, default="gemini", choices=["gemini", "ollama", "vllm"])
+    parser.add_argument("--category", type=str, default=None, choices=["c1", "c2", "c3", "c4"])
     parser.add_argument("--model", type=str, default=None)
+    parser.add_argument("--ollama-url", type=str, default="http://localhost:11434/v1")
     parser.add_argument("--env-file", type=str, default=None)
     parser.add_argument("--modes", nargs="+", default=None)
     parser.add_argument("--task-id", type=str, default=None)
@@ -297,16 +299,23 @@ def main():
     args, _ = parser.parse_known_args()
 
     config = load_config(args.config)
+    if args.category:
+        config["data"]["task_category"] = args.category
+        if args.category in DEFAULT_TASK_DIRS:
+            config["data"]["task_dir"] = DEFAULT_TASK_DIRS[args.category]
     if args.modes:
-        config["evaluation"]["modes"] = args.modes
+        expanded_modes = []
+        for m in args.modes:
+            expanded_modes.extend([x.strip() for x in m.split(",") if x.strip()])
+        config["evaluation"]["modes"] = expanded_modes
     if args.model:
         config["agent"]["model"] = args.model
         config["judge"]["model"] = args.model
 
     # Configure backend endpoint
     if args.backend == "ollama":
-        config["agent"]["base_url"] = "http://localhost:11434/v1"
-        config["judge"]["base_url"] = "http://localhost:11434/v1"
+        config["agent"]["base_url"] = args.ollama_url
+        config["judge"]["base_url"] = args.ollama_url
         if not args.model:
             config["agent"]["model"] = "qwen3:8b"
             config["judge"]["model"] = "qwen3:8b"
