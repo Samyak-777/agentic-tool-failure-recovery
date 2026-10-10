@@ -31,16 +31,22 @@ from .base import BaseChecker
 
 
 TEMPORAL_FIELD_PATTERNS = [
-    r"^.*timestamp.*$",
+    r"^.*(?:timestamp|datetime).*$",
     r"^.*date.*$",
-    r"^.*time.*$",
+    r"^(?:current_)?time$",
+    r"^.*_(?:time|date|timestamp)$",
     r"^created_at$",
     r"^updated_at$",
     r"^check_in$",
     r"^check_out$",
-    r"^departure_(time|date|timestamp)$",
-    r"^arrival_(time|date|timestamp)$",
 ]
+
+NON_TEMPORAL_KEYS = {
+    "timezone", "time_zone", "timeout", "timer", "times",
+    "elapsed_time", "travel_time", "flight_time", "driving_time",
+    "response_time", "execution_time", "run_time", "total_time",
+    "wait_time", "duration", "time_taken", "time_elapsed", "time_remaining",
+}
 
 ISO_FORMATS = [
     "%Y-%m-%dT%H:%M:%SZ",
@@ -149,6 +155,12 @@ class TemporalChecker(BaseChecker):
         """Identify fields that represent dates or timestamps."""
         found = {}
         for key, val in result.items():
+            key_lower = key.lower()
+            if key_lower in NON_TEMPORAL_KEYS:
+                continue
+            if any(key_lower.endswith(sfx) for sfx in ("_zone", "_ms", "_sec", "_secs", "_seconds", "_min", "_mins", "_minutes", "_hr", "_hrs", "_hours")):
+                continue
+
             for pat in TEMPORAL_FIELD_PATTERNS:
                 if re.match(pat, key, re.IGNORECASE):
                     # Exclude boolean or pure float metrics like 'time_elapsed_ms' if not a timestamp
