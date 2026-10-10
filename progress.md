@@ -92,7 +92,20 @@
     - Successfully validated with JSON parser and CARE resilience
 - [x] Synchronized all codebase updates to GitHub (`feature/diagnosis-and-memory-layers`) and server
 
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C1 Baseline**:
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P0 (Clean Execution)**: TSR = **72.00%** (72/100 tasks passed)
+  - **P1 (Transient Server 503 Outage)**:
+    - TSR = **6.00%**, PRR = **6.82%** (Only 6/88 fault hits recovered!), Recovery Cost = **0.82**
+    - Proves baseline open-source agents almost completely surrender on temporary server glitches
+  - **P3 (Implicit Semantic Data Corruption)**:
+    - TSR = **1.00%**, PRR = **2.30%** (Only 2/87 fault hits recovered!), Recovery Cost = **0.86**
+    - Proves baseline agents almost universally over-trust corrupted data without validation
+  - **P2 (Permanent Tool Removal)**: TSR = 60.00%, PRR = 80.46%, RC = 0.28
+  - **P4 (Permanent Semantic Corruption)**: TSR = 26.00%, PRR = 42.53%, RC = 0.61
+- [x] Currently executing **Qwen 3 (8B) Category C1 CARE (500 tasks)**: 36 tasks evaluated in first 12 minutes (rate: ~3 tasks/min).
+
 ### Next Steps
-- [ ] Scale evaluation to full dataset (2,000 tasks / 4,000 total runs across C1–C4) via background overnight job
-- [ ] Format complete comparative LaTeX tables (TSR, PRR, RC, $\text{PRR}_{\text{cost}}$) for research paper
-- [ ] Conduct ablation study isolating individual layer contributions (SOV only vs SOV + Diagnosis vs Full CARE)
+- [ ] Complete Qwen C1 CARE (500 tasks) and compare full-sample PRR gains over baseline
+- [ ] Progress through C2, C3, and C4 runs in background suite
+- [ ] Format complete comparative LaTeX tables for publication paper draft

@@ -143,4 +143,18 @@
 3. In **Category $\mathcal{C}_2$ (Diamond DAG)** with topological branching, CARE successfully recovers under perturbation ($PRR = 100.00\%$), proving resilience generalisation beyond linear pipelines.
 4. **Self-Annealing Progress**: Resolved false-positive temporal checker failures on duration/timezone strings (`America/New_York`), preventing spurious validation abortions in multi-timezone workflows.
 
+---
+
+## Full-Scale Benchmark: Qwen 3 (8B) Category C1 Baseline (500 Tasks)
+
+| Perturbation Mode | Total Tasks | Fault Hits | Passed | Failed | Task Success Rate (TSR) | Perturbation Recovery Rate (PRR) | Recovery Cost (RC) |
+|---|---|---|---|---|---|---|---|
+| **P0 (Clean Execution)** | 100 | N/A | 72 | 28 | **72.00%** | N/A | 0.00 |
+| **P1 (Transient 503)** | 100 | 88 | 6 | 94 | **6.00%** | **6.82%** (6/88) | **0.82** |
+| **P2 (Permanent Deletion)** | 100 | 87 | 60 | 40 | **60.00%** | **80.46%** (70/87) | **0.28** |
+| **P3 (Implicit Semantic)** | 100 | 87 | 1 | 99 | **1.00%** | **2.30%** (2/87) | **0.86** |
+| **P4 (Permanent Semantic)** | 100 | 87 | 26 | 74 | **26.00%** | **42.53%** (37/87) | **0.61** |
+
+> **Critical Empirical Finding**: Under realistic transient server errors ($\mathcal{P}_1$) and implicit semantic data corruption ($\mathcal{P}_3$), the baseline open-source model suffers from a catastrophic failure rate ($\text{PRR} = 6.82\%$ and $2.30\%$). This provides the definitive empirical motivation for the CARE framework in the research paper.
+
 
