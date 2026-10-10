@@ -16,6 +16,9 @@ def __getattr__(name):
     elif name == "MCPAgent":
         from .mcp_agent import MCPAgent
         return MCPAgent
+    elif name == "CAREAgent":
+        from .care_agent import CAREAgent
+        return CAREAgent
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
@@ -25,5 +28,6 @@ __all__ = [
     "OpenAIAgent",
     "AnthropicAgent",
     "VLLMAgent",
-    "MCPAgent"
+    "MCPAgent",
+    "CAREAgent"
 ]

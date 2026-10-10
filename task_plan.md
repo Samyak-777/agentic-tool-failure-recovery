@@ -1,58 +1,36 @@
-# Task Plan — ToolMaze Enhancement Project
+# Task Plan — ToolMaze Enhancement Project: Full CARE Architecture
 
-## Phase 1: Environment Setup & Baseline (Weeks 1–3)
-- [ ] SSH into server (10.18.1.16) from campus, gather full hardware specs
-- [ ] Install Python 3.10+, CUDA, PyTorch, vLLM/Ollama
-- [ ] Clone ToolMaze repo: `git clone https://github.com/Zhudongsheng75/ToolMaze.git`
-- [ ] Install ToolMaze dependencies: `pip install -r requirements.txt`
-- [ ] Download Qwen-2.5-7B-Instruct model weights
-- [ ] Run ToolMaze baseline evaluation on Qwen-2.5-7B
-- [ ] Record baseline TSR, PRR, RC numbers
-- [ ] Document any reproducibility discrepancies vs. paper
+## Phase 1: Environment & Foundation (Completed)
+- [x] SSH reachability to server (10.18.1.16) verified with GPU specs (TITAN RTX 24GB VRAM)
+- [x] ToolMaze dataset cloned and mounted on `/mnt/data/toolmaze_project` (2,000 perturbed tasks, 400 DAG templates)
+- [x] ToolMaze Python environment initialized with PyTorch + CUDA, vLLM, and requirements
+- [x] GitHub repo synchronized: `Samyak-777/agentic-tool-failure-recovery`
 
-## Phase 2: Agent Framework Implementation (Weeks 4–5)
-- [ ] Implement ReAct-style agent adapter for ToolMaze
-- [ ] Implement SWE-Agent-inspired ACI agent adapter
-- [ ] Add token counting + latency instrumentation layer
-- [ ] Run both agents on ToolMaze, compare with Phase 1 baseline
+## Phase 2: Foundational Layers (Completed)
+- [x] **Layer 1: Deterministic Semantic Output Validation (SOV)** (`ToolMaze/semantic_validation/`) — 32/32 tests passed; verified live with Gemini
+- [x] **Layer 2: Structured Failure Diagnosis** (`ToolMaze/diagnosis/`) — taxonomy, persistence classification, root cause analysis
+- [x] **Layer 3: Failure-State Tracking & Tool Memory** (`ToolMaze/tool_memory/`) — ToolHealthRegistry, ToolMemory, BudgetTracker, RecoveryController
+- [x] **Integration Test (Layers 1–3)** (`tools/test_all_three_layers.py`) — Clean, Transient, Persistent, and Budget exhaustion paths verified
 
-## Phase 3: Core Improvements (Weeks 6–9)
-### 3A: Semantic Output Validation (SOV)
-- [ ] Implement 5 validation checks (range, type, schema, temporal, cross-ref)
-- [ ] Integrate SOV into agent pipeline
-- [ ] Test detection rate on P3/P4 perturbations
+## Phase 3: Remaining Layers Implementation (In Progress)
+- [ ] **Layer 4: DAG-Aware Alternative Path Selection** (`ToolMaze/dag_rerouting/`)
+  - Build `path_selector.py` to inspect task DAG, alternative tools via `alternatives_loader.py`, and prune blocked paths
+- [ ] **Layer 5: Dynamic Recovery Prompts with Evidence** (`ToolMaze/recovery_prompt/`)
+  - Build `prompt_builder.py` providing structured failure diagnosis, blacklisted tools, and valid alternatives to agent
+- [ ] **Layer 6: Cost-Aware Control & Loop Detection** (`ToolMaze/tool_memory/loop_detector.py`)
+  - Implement cycle/ping-pong detection (preventing alternating tool call loops) and enforce budget caps
+- [ ] **Layer 7: Selective LLM Verification** (`ToolMaze/selective_verification/`)
+  - Lightweight verification module for ambiguous/borderline outputs
+- [ ] **Unified CARE Agent** (`ToolMaze/evaluation/agents/care_agent.py`)
+  - Implement `CAREAgent` integrating Layers 1–7 into ToolMaze's `BaseAgent` and `ExecutionEngine`
 
-### 3B: Cost-Aware Recovery Engine (CARE)
-- [ ] Implement recovery budget system
-- [ ] Implement strategy router (retry → reroute → backtrack → give-up)
-- [ ] Implement DAG-aware rerouting logic
-- [ ] Integrate with both agent frameworks
+## Phase 4: Verification on Test Cases
+- [ ] Unit & integration tests for Layers 4–7 (`ToolMaze/tests/test_full_care_pipeline.py`)
+- [ ] Representative end-to-end task tests across C1/C2 (P0, P1, P2, P3, P4)
+- [ ] Verify multi-key rotation and rate-limit handling across available Gemini API keys
 
-### 3C: Extended Perturbations
-- [ ] Design cascading failure mode (P5)
-- [ ] Implement in ToolMaze perturbation engine
-- [ ] Generate P5 test cases
-
-### 3D: Recovery Strategy Classification
-- [ ] Implement action tagger per step
-- [ ] Implement detection latency metric
-- [ ] Generate strategy distribution visualizations
-
-## Phase 4: Full Evaluation (Weeks 10–11)
-- [ ] Run: 2–4 models × 5 perturbation modes × 4 complexity levels × 3 seeds
-- [ ] Compute all metrics (TSR, PRR, PRR_cost, RC_calls, RC_tokens, RC_time)
-- [ ] Statistical significance tests (p < 0.05)
-- [ ] Generate paper figures (bar charts, heatmaps, radar charts)
-- [ ] Run ablation studies (SOV-only, CARE-only, SOV+CARE)
-
-## Phase 5: Cloud RCA Demo (Weeks 12–13) — Stretch Goal
-- [ ] Deploy tools as HTTP microservices (FastAPI)
-- [ ] Add real-world failure injection (latency, rate limits)
-- [ ] Run improved agent on live endpoints
-- [ ] Build RCA dashboard
-
-## Phase 6: Paper Writing (Weeks 13–16)
-- [ ] Write LaTeX paper (8 pages, ACL format)
-- [ ] Create reproducibility checklist
-- [ ] Internal review and revision
-- [ ] Final submission
+## Phase 5: Benchmark Evaluation on ToolMaze Dataset
+- [ ] Configure `run_eval_care.py` with multi-key pool, batching, and local fallback
+- [ ] Run benchmark evaluation across C1–C4 tasks
+- [ ] Compare baseline vs CARE architecture (TSR, PRR, RC metrics)
+- [ ] Generate comparative analysis and report findings in `progress.md` and `findings.md`

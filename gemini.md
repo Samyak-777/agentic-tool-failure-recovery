@@ -168,3 +168,43 @@
 - **DO** log every agent step with full token counts and latency.
 - **DO** run each experiment 3× with different seeds and report mean ± std.
 - **DO** version control every experiment config in git.
+
+---
+
+## 8. The 7-Layer CARE Architecture Invariants
+
+1. **Layer 1: Deterministic Semantic Output Validation (SOV)**: Intercepts raw tool returns before LLM ingestion. Validates types, ranges, schemas, temporal freshness, and cross-field constraints.
+2. **Layer 2: Structured Failure Diagnosis**: Converts validation violations into a taxonomy-classified `StructuredDiagnosis` (failure category, transient vs permanent persistence, root cause attribution).
+3. **Layer 3: Failure-State Tracking & Tool Memory**: Maintains `ToolHealthRegistry` (HEALTHY, DEGRADED, BLACKLISTED), `ToolMemory` (cached outputs and tried signatures), and `BudgetTracker`.
+4. **Layer 4: DAG-Aware Alternative Path Selection**: When `REROUTE` is triggered, evaluates topological DAG dependencies and alternatives mapping (`tools/alternatives_loader.py`) to propose unblocked substitute tools.
+5. **Layer 5: Dynamic Recovery Prompts with Evidence**: Synthesizes actionable, evidence-based feedback into the agent prompt (root cause, blacklisted tools, suggested substitute) instead of generic error strings.
+6. **Layer 6: Cost-Aware Loop & Ping-Pong Detection**: Detects cyclic tool calls ($A \to B \to A$) and aborts or forces alternative path exploration before token exhaustion.
+7. **Layer 7: Selective LLM Verification**: Invocable strictly when deterministic checks yield ambiguous confidence, preventing unnecessary LLM token expenditure on unambiguous failures.
+
+---
+
+## 9. Data Schemas for Extended Layers
+
+### 9.1 DAG Reroute Candidate (`ToolMaze/dag_rerouting/`)
+```json
+{
+  "failed_tool": "string",
+  "candidate_tools": ["string"],
+  "selected_tool": "string | null",
+  "reason": "string",
+  "is_viable": true
+}
+```
+
+### 9.2 Recovery Prompt Payload (`ToolMaze/recovery_prompt/`)
+```json
+{
+  "status": "RETRY | VERIFY | REROUTE | ABORT",
+  "failed_tool": "string",
+  "diagnosis_summary": "string",
+  "blacklisted_tools": ["string"],
+  "recommended_substitute": "string | null",
+  "system_directive": "string"
+}
+```
+
