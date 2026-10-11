@@ -91,6 +91,42 @@ def test_layer_4_dag_rerouting():
     print("   [PASS] Layer 4 correctly switched to unblocked alternative branch ('tool_gamma').")
 
 
+def test_layer_4_dag_rerouting_toolmaze_dict_format():
+    """Verify Layer 4 handles ToolMaze's native dictionary-format valid_paths and alternative_tools."""
+    selector = DAGPathSelector()
+
+    task_json = {
+        "task_id": "test_c2_native",
+        "valid_paths": [
+            {
+                "path_id": "path_0",
+                "tools": ["get_hotel_info_booking", "get_flight_info", "book_hotel", "send_email"]
+            },
+            {
+                "path_id": "path_1",
+                "tools": ["get_hotel_info_booking", "get_flight_info_aviationstack", "book_hotel", "send_email"]
+            }
+        ],
+        "alternative_tools": [
+            "get_flight_info",
+            "get_flight_info_aviationstack"
+        ]
+    }
+
+    # Step 1: 'get_hotel_info_booking' already executed. Step 2: 'get_flight_info' failed.
+    candidate = selector.find_reroute(
+        failed_tool="get_flight_info",
+        task_json=task_json,
+        blacklisted_tools={"get_flight_info"},
+        executed_tools=["get_hotel_info_booking"]
+    )
+
+    assert candidate.is_viable is True, "Candidate should be viable"
+    assert candidate.selected_tool == "get_flight_info_aviationstack", f"Expected 'get_flight_info_aviationstack', got {candidate.selected_tool}"
+    print("   [PASS] Layer 4 correctly rerouted using ToolMaze native valid_paths dict format.")
+
+
+
 def test_layer_5_recovery_prompt_builder():
     """Verify Layer 5 generates informative, evidence-grounded prompt payloads."""
     print("-> Testing Layer 5: Dynamic Recovery Prompt Builder...")

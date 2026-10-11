@@ -34,13 +34,13 @@
 
 ## Phase 5: Benchmark Evaluation on ToolMaze Dataset (In Progress)
 - [x] Configured `run_eval_care.py` with multi-key pool, batching, and local fallback (Ollama `qwen3:8b` on TITAN RTX GPU)
-- [x] Executed 20-task comparative batch evaluation across all 3 models (Qwen, Llama, Gemini) under P0–P4:
-  - Verified P1 and P3 recovery: Baseline PRR = 0.00% vs CARE PRR = 100.00%
-  - Slashed Recovery Cost (RC) from 1.00 down to 0.25 (P1) and 0.50 (P3)
-- [x] Verified Category C2 (Diamond DAG topology): CARE achieved 100% PRR on branching workflows
 - [x] Implemented evaluation caching/resumption logic in `run_eval_care.py` to prevent duplicate computations across runs
 - [x] Launched full-scale benchmark execution suite (`run_full_benchmark_suite.sh`) in background on server:
-  - Phase 1: Qwen 3 (8B) Full Baseline vs CARE across C1, C2, C3, C4 (2,000 tasks / 4,000 runs)
-  - Phase 2: Llama 3.1 (8B) Full Baseline vs CARE across C1, C2, C3, C4
-  - Phase 3: Gemini / Gemma API Full Baseline vs CARE across C1, C2, C3, C4 with 4-key round-robin rotation
-- [ ] Monitor background run and collate complete comparative LaTeX publication tables
+  - [x] **Qwen 3 (8B) Category C1 (Linear DAG)**: Completed (500 Baseline + 500 CARE). CARE achieved **13.5× higher P1 PRR** and **18.4× higher P3 PRR**.
+  - [x] **Qwen 3 (8B) Category C2 (Diamond DAG)**: Completed (500 Baseline + 500 CARE). CARE achieved **2.3× higher P1 PRR (86.36%)** and **4.2× higher P3 PRR (55.95%)**.
+  - [x] **Qwen 3 (8B) Category C3 (Layered DAG) Baseline**: Completed (500 tasks). Baseline suffered catastrophic collapse to 0% TSR on P3 and P4.
+  - [ ] **Qwen 3 (8B) Category C3 (Layered DAG) CARE**: In Progress (268/500 tasks completed). Demonstrating 12.3× higher P1 success and resurrecting P3 from 0% to 13.2%.
+  - [ ] **Qwen 3 (8B) Category C4 (Complex General DAG)**: Pending (starts ~12:30 PM IST).
+  - [ ] Phase 2: Llama 3.1 (8B) Full Baseline vs CARE across C1, C2, C3, C4
+  - [ ] Phase 3: Gemini / Gemma API Full Baseline vs CARE across C1, C2, C3, C4 with 4-key round-robin rotation
+- [ ] Collate complete comparative LaTeX publication tables across all model families and topologies

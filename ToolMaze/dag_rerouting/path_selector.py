@@ -97,17 +97,30 @@ class DAGPathSelector:
             executed_tools: List of tools already executed in this episode.
             available_tools: Optional pool of allowed tools in the environment.
         """
-        # 1. Strategy A: Check valid_solution_paths in task_json (Ground Truth DAG paths)
-        valid_paths = task_json.get("valid_solution_paths", [])
-        if valid_paths:
+        # 1. Strategy A: Check valid_paths / valid_solution_paths in task_json
+        raw_paths = task_json.get("valid_paths") or task_json.get("valid_solution_paths") or []
+        if raw_paths:
             candidate = self._reroute_from_solution_paths(
                 failed_tool=failed_tool,
-                valid_paths=valid_paths,
+                valid_paths=raw_paths,
                 blacklisted_tools=blacklisted_tools,
                 executed_tools=executed_tools
             )
             if candidate and candidate.is_viable:
                 return candidate
+
+        # 1b. Strategy A.2: Check explicit task_json["alternative_tools"]
+        task_alts = task_json.get("alternative_tools", [])
+        if failed_tool in task_alts:
+            for alt in task_alts:
+                if alt != failed_tool and alt not in blacklisted_tools:
+                    return RerouteCandidate(
+                        failed_tool=failed_tool,
+                        candidate_tools=[alt],
+                        selected_tool=alt,
+                        reason=f"Selected unblocked alternative tool '{alt}' declared in task definition.",
+                        is_viable=True
+                    )
 
         # 2. Strategy B: Query alternatives.yaml for known functional substitutes
         alt_tools = self._tool_to_alternatives.get(failed_tool, set())
@@ -169,13 +182,28 @@ class DAGPathSelector:
     def _reroute_from_solution_paths(
         self,
         failed_tool: str,
-        valid_paths: List[List[str]],
+        valid_paths: Any,
         blacklisted_tools: Set[str],
         executed_tools: List[str]
     ) -> Optional[RerouteCandidate]:
         """Find an alternative pre-computed solution path that avoids all blacklisted tools."""
+        normalized_paths: List[List[str]] = []
+        for p in valid_paths:
+            if isinstance(p, dict):
+                tools = p.get("tools")
+                if not tools and "execution_trace" in p:
+                    tools = [
+                        step.get("tool_name")
+                        for step in p.get("execution_trace", [])
+                        if step.get("tool_name")
+                    ]
+                if tools:
+                    normalized_paths.append(list(tools))
+            elif isinstance(p, (list, tuple)):
+                normalized_paths.append(list(p))
+
         candidate_paths = []
-        for path in valid_paths:
+        for path in normalized_paths:
             # Check if this path contains ANY blacklisted tool
             if any(tool in blacklisted_tools for tool in path):
                 continue

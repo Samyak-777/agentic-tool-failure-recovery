@@ -116,9 +116,41 @@
   - **P2 (Permanent Tool Removal)**: TSR = 61.00%, PRR = 90.24% (74/82 recovered), RC = 0.46
   - **P4 (Permanent Semantic Corruption)**: TSR = 36.00% (vs Baseline 26.00%), RC = 0.59
 - [x] **Category C1 1,000-Task Milestone Achieved**: Full 500-task Baseline + 500-task CARE completed.
-- [x] Actively executing **Qwen 3 (8B) Category C2 Baseline (500 tasks)**: 113 / 500 tasks completed (started 20:41 IST).
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C2 Baseline (Diamond DAG Topology)**:
+  - **Finished at**: 00:31 IST (Oct 11)
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P0 (Clean Execution)**: TSR = **62.00%** (62/100 tasks passed)
+  - **P1 (Transient Server 503 Outage)**: TSR = **34.00%**, PRR = **37.35%** (31/83 recovered), RC = **0.51**
+  - **P2 (Permanent Tool Removal)**: TSR = **34.00%**, PRR = **35.96%** (32/89 recovered), RC = **0.56** (Baseline struggles to branch to alternative paths 64% of the time)
+  - **P3 (Implicit Semantic Data Corruption)**: TSR = **12.00%**, PRR = **13.41%** (11/82 recovered), RC = **0.71** (Over-trusts corrupted data across DAG nodes)
+  - **P4 (Permanent Semantic Corruption)**: TSR = **15.00%**, PRR = **16.87%** (14/83 recovered), RC = **0.69**
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C2 CARE (All 7 Layers Unified)**:
+  - **Finished at**: 04:20 IST (Oct 11)
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P0 (Clean Execution)**: TSR = **48.00%** (48/100 tasks passed)
+  - **P1 (Transient Server 503 Outage)**: TSR = **46.00%** (+12.00% vs Baseline), PRR = **86.36%** (76/88 recovered vs Baseline 37.35% — **2.3× higher!**), RC = **0.46**
+  - **P2 (Permanent Tool Removal)**: TSR = 16.00%, PRR = 17.44%, RC = 0.71
+  - **P3 (Implicit Semantic Data Corruption)**: TSR = **23.00%** (vs Baseline 12.00% — **nearly 2× higher!**), PRR = **55.95%** (47/84 recovered vs Baseline 13.41% — **4.2× higher!**), RC = **0.63**
+  - **P4 (Permanent Semantic Corruption)**: TSR = 6.00%, PRR = 5.75%, RC = 0.82
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C3 Baseline (Layered DAG Topology)**:
+  - **Finished at**: 08:19 IST (Oct 11)
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P0 (Clean Execution)**: TSR = **59.00%** (59/100 tasks passed)
+  - **P1 (Transient Server 503 Outage)**: TSR = **3.00%**, PRR = **5.49%** (5/91 recovered), RC = **0.88** (Catastrophic surrender)
+  - **P2 (Permanent Tool Removal)**: TSR = **4.00%**, PRR = **4.30%** (4/93 recovered), RC = **0.89**
+  - **P3 (Implicit Semantic Data Corruption)**: TSR = **0.00%** (**0/100 passed! Absolute collapse**), PRR = **4.35%** (4/92), RC = **0.92**
+  - **P4 (Permanent Semantic Corruption)**: TSR = **0.00%** (**0/100 passed! Absolute collapse**), PRR = **0.00%** (0/94), RC = **0.94**
+- [x] **Category C3 CARE Agent (All 7 Layers Unified) Actively Executing on GPU**:
+  - **Process**: PID `41070` (`run_eval_care.py --backend ollama --model qwen3:8b --category c3 --agent-type care --max-workers 2`)
+  - **Progress**: **268 / 500 tasks completed** (Started 08:19 IST, 53.6% complete)
+  - **Interim Performance**:
+    - $\mathcal{P}_1$ (Transient 503): **37.0% passed** (20/54) vs Baseline **3.0%** (**12.3× higher success rate!**)
+    - $\mathcal{P}_3$ (Semantic Corruption): **13.2% passed** (7/53) vs Baseline **0.0%** (**Resurrected from total collapse!**)
+  - **ETA**: ~12:30 PM IST (will automatically transition to Category C4 Complex General DAG)
+- [x] **Total Benchmark Task Evaluations Recorded on Disk**: **2,768+ evaluations**
 
 ### Next Steps
-- [ ] Complete Qwen C2 Baseline and launch Qwen C2 CARE (Diamond DAG topology)
-- [ ] Progress through C3, C4, Llama 3.1, and Gemini rotating API pool
+- [ ] Complete Qwen C3 CARE (Layered DAG) and advance to Qwen C4 (Complex DAG)
+- [ ] Conclude Phase 1 (Qwen 3 8B all C1–C4) and begin Phase 2 (Llama 3.1 8B all C1–C4)
+- [ ] Execute Phase 3: Gemini / Gemma rotating API pool
 - [ ] Collate full comparative tables (LaTeX) for publication paper draft
