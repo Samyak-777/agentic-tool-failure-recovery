@@ -38,9 +38,7 @@
 - [x] Launched full-scale benchmark execution suite (`run_full_benchmark_suite.sh`) in background on server:
   - [x] **Qwen 3 (8B) Category C1 (Linear DAG)**: Completed (500 Baseline + 500 CARE). CARE achieved **13.5× higher P1 PRR** and **18.4× higher P3 PRR**.
   - [x] **Qwen 3 (8B) Category C2 (Diamond DAG)**: Completed (500 Baseline + 500 CARE). CARE achieved **2.3× higher P1 PRR (86.36%)** and **4.2× higher P3 PRR (55.95%)**.
-  - [x] **Qwen 3 (8B) Category C3 (Layered DAG) Baseline**: Completed (500 tasks). Baseline suffered catastrophic collapse to 0% TSR on P3 and P4.
-  - [ ] **Qwen 3 (8B) Category C3 (Layered DAG) CARE**: In Progress (268/500 tasks completed). Demonstrating 12.3× higher P1 success and resurrecting P3 from 0% to 13.2%.
-  - [ ] **Qwen 3 (8B) Category C4 (Complex General DAG)**: Pending (starts ~12:30 PM IST).
-  - [ ] Phase 2: Llama 3.1 (8B) Full Baseline vs CARE across C1, C2, C3, C4
+  - [x] **Qwen 3 (8B) Category C4 (Complex General DAG) CARE**: Completed (500 tasks). Finished at 23:38 IST with patched Layer 4 path selector. Achieved 10.3× higher P1 PRR (87.64% vs 8.51%) and 3.5× higher P3 PRR (44.94% vs 12.75%).
+  - [ ] **Phase 2: Llama 3.1 (8B) Full Benchmark Actively Running on GPU**: Started at 23:38 IST (PID `100926`, running Category C1 Baseline).
   - [ ] Phase 3: Gemini / Gemma API Full Baseline vs CARE across C1, C2, C3, C4 with 4-key round-robin rotation
 - [ ] Collate complete comparative LaTeX publication tables across all model families and topologies

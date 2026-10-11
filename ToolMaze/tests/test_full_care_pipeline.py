@@ -241,15 +241,69 @@ def test_full_care_agent_closed_loop():
     print(f"   [PASS] Corrupted output caught by SOV -> Layer 2 Diagnosis ({last_res.get('diagnosis')}) -> Directive: {last_res.get('orchestrator_directive')}")
 
 
+def test_layer_1_tiered_sov_soft_advisory():
+    """Verify that omitting non-critical metadata (e.g. timestamp) does NOT trigger fatal error."""
+    print("-> Testing Tiered SOV: Non-Critical Metadata Soft Advisory...")
+    mock_llm = MockBaseAgent()
+    agent = CAREAgent(base_agent=mock_llm)
+    agent.initialize("Test Task", {})
+
+    mock_llm.action_queue.append(AgentAction(type="tool_call", tool_name="create_document", arguments={"content": "hello"}))
+    agent.step()
+
+    # create_document returns valid data but omits 'timestamp'
+    doc_result = {
+        "message": "Note saved successfully",
+        "note_id": "NOTE18E3D",
+        "title": "Untitled",
+        "content_length": 5,
+        "tags": []
+    }
+    agent.receive_tool_result("create_document", doc_result)
+    assert len(mock_llm.received_results) == 1
+    # Must NOT be intercepted as CARE_VALIDATION_FAILURE
+    assert mock_llm.received_results[0][1] == doc_result
+    assert agent.force_abort is False
+    print("   [PASS] Non-critical metadata omission passed through cleanly as soft advisory without abort.")
+
+
+def test_layer_5_full_workflow_path_injection():
+    """Verify Layer 5 injects the full alternative sequence when target_path is available."""
+    print("-> Testing Layer 5: Full-Subpath Sequence Injection in Reroute Prompt...")
+    builder = DynamicRecoveryPromptBuilder()
+    diagnosis = StructuredDiagnosis(
+        tool_name="get_bank_balance_native",
+        is_valid=False,
+        category=FailureCategory.EXTERNAL_SERVICE_ERROR,
+        persistence=PersistenceType.PERMANENT,
+        root_cause="Tool 404 Deprecated",
+        severity="HIGH",
+        recommended_action=RecoveryDirective.REROUTE
+    )
+    decision = {
+        "action": "reroute",
+        "suggested_tool": "get_broker_balance_ledger_native",
+        "target_path": ["get_broker_balance_ledger_native", "archive_broker_balance_ledger_native", "email_contact_by_name"]
+    }
+    payload = builder.build_prompt(diagnosis, decision, blacklisted_tools={"get_bank_balance_native"})
+    assert "Planned alternative workflow sequence" in payload.prompt_text
+    assert "archive_broker_balance_ledger_native" in payload.prompt_text
+    print("   [PASS] Full alternative workflow sequence successfully injected into recovery directive.")
+
+
 if __name__ == "__main__":
     print("==================================================")
     print("RUNNING FULL CARE 7-LAYER PIPELINE INTEGRATION TESTS")
     print("==================================================")
     test_layer_4_dag_rerouting()
+    test_layer_4_dag_rerouting_toolmaze_dict_format()
     test_layer_5_recovery_prompt_builder()
+    test_layer_5_full_workflow_path_injection()
     test_layer_6_loop_detector()
     test_layer_7_selective_verifier()
+    test_layer_1_tiered_sov_soft_advisory()
     test_full_care_agent_closed_loop()
     print("==================================================")
-    print("ALL 7 LAYERS VERIFIED SUCCESSFULLY (5/5 PASSED)!")
+    print("ALL 7 LAYERS VERIFIED SUCCESSFULLY (8/8 PASSED)!")
     print("==================================================")
+

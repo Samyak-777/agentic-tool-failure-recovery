@@ -22,6 +22,7 @@ class RecoveryPromptPayload:
     is_blacklisted: bool
     blacklisted_tools: List[str] = field(default_factory=list)
     suggested_substitute: Optional[str] = None
+    target_path: Optional[List[str]] = None
     remaining_recovery_budget: Optional[int] = None
     prompt_text: str = ""
 
@@ -35,6 +36,7 @@ class RecoveryPromptPayload:
             "is_blacklisted": self.is_blacklisted,
             "blacklisted_tools": self.blacklisted_tools,
             "suggested_substitute": self.suggested_substitute,
+            "target_path": self.target_path,
             "remaining_recovery_budget": self.remaining_recovery_budget,
             "prompt_text": self.prompt_text,
         }
@@ -106,10 +108,15 @@ class DynamicRecoveryPromptBuilder:
                 "Do NOT abandon the current path yet."
             )
         elif action == RecoveryDirective.REROUTE.value.upper():
+            target_path = recovery_decision.get("target_path") or []
             if suggested_tool:
+                remaining_steps = [t for t in target_path if t not in set(blacklist_list)]
+                step_plan_str = ""
+                if remaining_steps and len(remaining_steps) > 1:
+                    step_plan_str = f" Planned alternative workflow sequence: {' -> '.join(remaining_steps)}."
                 lines.append(
                     f"ACTION: REROUTE immediately. Tool '{tool_name}' has failed permanently and is BLOCKED. "
-                    f"You MUST use alternative tool '{suggested_tool}'. "
+                    f"You MUST use alternative tool '{suggested_tool}'.{step_plan_str} "
                     f"Do NOT call '{tool_name}' or any blacklisted tools again."
                 )
             else:
@@ -142,6 +149,7 @@ class DynamicRecoveryPromptBuilder:
             is_blacklisted=is_blacklisted,
             blacklisted_tools=blacklist_list,
             suggested_substitute=suggested_tool,
+            target_path=recovery_decision.get("target_path"),
             remaining_recovery_budget=remaining_budget,
             prompt_text=prompt_text
         )

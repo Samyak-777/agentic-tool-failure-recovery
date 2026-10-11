@@ -241,7 +241,25 @@ class CAREAgent(BaseAgent):
                 )
                 val_res_dict = val_result.to_dict()
                 if val_result.pipeline_status in (PipelineStatus.INVALID, PipelineStatus.ERROR):
-                    is_clean = False
+                    # Tiered SOV: Check if failure is purely non-critical metadata omission
+                    failed_checks = getattr(val_result, "failed_checks", {}) or {}
+                    failed_keys = set(failed_checks.keys())
+                    NON_CRITICAL_METADATA_FIELDS = {
+                        "timestamp", "document_timestamp", "created_at", "updated_at",
+                        "datetime", "time", "date", "status_code", "execution_time", "elapsed_time"
+                    }
+                    if failed_keys == {"required"}:
+                        req_check = val_result.checks.get("required")
+                        details = getattr(req_check, "details", {}) or {}
+                        missing = set(details.get("missing_fields", []))
+                        null_f = set(details.get("null_fields", []))
+                        if (missing | null_f) and (missing | null_f).issubset(NON_CRITICAL_METADATA_FIELDS):
+                            logger.info(f"SOV Soft Advisory: Tool '{tool_name}' omitted non-critical metadata {missing | null_f}. Treating output as clean.")
+                            is_clean = True
+                        else:
+                            is_clean = False
+                    else:
+                        is_clean = False
             except Exception as e:
                 logger.debug(f"SVL validation error: {e}")
 

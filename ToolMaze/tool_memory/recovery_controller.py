@@ -117,11 +117,12 @@ class RecoveryController:
 
         # 4. Check Blacklist Status (Permanent failure or cycle-broken tool)
         if self.registry.is_blacklisted(tool_name):
-            alt_tool, alt_reason = self._find_healthy_alternative(tool_name, task_json, exec_tools)
+            alt_tool, alt_reason, target_path = self._find_healthy_alternative(tool_name, task_json, exec_tools)
             if alt_tool:
                 return {
                     "action": RecoveryDirective.REROUTE.value,
                     "suggested_tool": alt_tool,
+                    "target_path": target_path,
                     "rationale": f"Tool '{tool_name}' is blacklisted ({self.registry.get_record(tool_name).blacklist_reason}). Rerouting: {alt_reason}",
                     "agent_prompt_guidance": (
                         f"SYSTEM ALERT: Tool '{tool_name}' is permanently unavailable or corrupted. "
@@ -133,6 +134,7 @@ class RecoveryController:
                 return {
                     "action": RecoveryDirective.ABORT.value,
                     "suggested_tool": None,
+                    "target_path": None,
                     "rationale": f"Tool '{tool_name}' is blacklisted and no healthy alternatives exist in DAG.",
                     "agent_prompt_guidance": (
                         f"SYSTEM ALERT: Tool '{tool_name}' has failed permanently and no alternative tools exist. "
@@ -147,6 +149,7 @@ class RecoveryController:
                 return {
                     "action": RecoveryDirective.RETRY.value,
                     "suggested_tool": tool_name,
+                    "target_path": None,
                     "rationale": f"Transient failure detected on '{tool_name}'. Budget allows retry.",
                     "agent_prompt_guidance": (
                         f"RETRY DIRECTIVE: Tool '{tool_name}' experienced a transient anomaly ({diagnosis.root_cause}). "
@@ -156,11 +159,12 @@ class RecoveryController:
                 }
             else:
                 # Retry budget for this tool reached -> Reroute
-                alt_tool, alt_reason = self._find_healthy_alternative(tool_name, task_json, exec_tools)
+                alt_tool, alt_reason, target_path = self._find_healthy_alternative(tool_name, task_json, exec_tools)
                 if alt_tool:
                     return {
                         "action": RecoveryDirective.REROUTE.value,
                         "suggested_tool": alt_tool,
+                        "target_path": target_path,
                         "rationale": f"Retry budget for '{tool_name}' reached. Switching to '{alt_tool}' ({alt_reason}).",
                         "agent_prompt_guidance": f"Retry limit reached for '{tool_name}'. Switch to alternative '{alt_tool}'.",
                         "loop_warning": loop_warning
@@ -169,17 +173,19 @@ class RecoveryController:
                     return {
                         "action": RecoveryDirective.ABORT.value,
                         "suggested_tool": None,
+                        "target_path": None,
                         "rationale": f"Retry budget for '{tool_name}' reached and no alternatives available.",
                         "agent_prompt_guidance": f"Unable to recover '{tool_name}'. Proceed with graceful fallback.",
                         "loop_warning": loop_warning
                     }
 
         # 6. Default Fallback -> Reroute
-        alt_tool, alt_reason = self._find_healthy_alternative(tool_name, task_json, exec_tools)
+        alt_tool, alt_reason, target_path = self._find_healthy_alternative(tool_name, task_json, exec_tools)
         if alt_tool:
             return {
                 "action": RecoveryDirective.REROUTE.value,
                 "suggested_tool": alt_tool,
+                "target_path": target_path,
                 "rationale": f"Rerouting from '{tool_name}' to '{alt_tool}' ({alt_reason}).",
                 "agent_prompt_guidance": f"Switch to substitute tool '{alt_tool}'.",
                 "loop_warning": loop_warning
@@ -188,6 +194,7 @@ class RecoveryController:
         return {
             "action": RecoveryDirective.ABORT.value,
             "suggested_tool": None,
+            "target_path": None,
             "rationale": "No viable recovery path identified.",
             "agent_prompt_guidance": "No viable alternative found. Abort recovery.",
             "loop_warning": loop_warning
@@ -198,7 +205,7 @@ class RecoveryController:
         tool_name: str,
         task_json: Optional[Dict[str, Any]] = None,
         executed_tools: Optional[List[str]] = None
-    ) -> tuple[Optional[str], str]:
+    ) -> tuple[Optional[str], str, Optional[List[str]]]:
         """Find an alternative tool that is not blacklisted using DAGPathSelector or lookup map."""
         blacklisted = self.registry.get_blacklisted_tools()
         exec_tools = executed_tools or []
@@ -212,15 +219,16 @@ class RecoveryController:
                 executed_tools=exec_tools
             )
             if candidate.is_viable and candidate.selected_tool:
-                return candidate.selected_tool, candidate.reason
+                target_path = getattr(candidate, "target_path", None)
+                return candidate.selected_tool, candidate.reason, target_path
 
         # Fallback: Dictionary lookup
         candidates = self.alternative_map.get(tool_name, [])
         for cand in candidates:
             if not self.registry.is_blacklisted(cand):
-                return cand, "Selected from static alternative map."
+                return cand, "Selected from static alternative map.", None
 
-        return None, "No candidate alternatives found."
+        return None, "No candidate alternatives found.", None
 
     def reset(self):
         self.registry.reset()
