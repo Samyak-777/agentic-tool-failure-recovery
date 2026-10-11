@@ -232,12 +232,41 @@ When encountering branching alternatives, the baseline agent fails to switch pat
 *Core Research Discovery: Catastrophic Baseline Collapse in Layered DAGs*:
 As topological complexity scales from Linear ($\mathcal{C}_1$) to Diamond ($\mathcal{C}_2$) to Layered ($\mathcal{C}_3$), the baseline agent suffers total collapse. Under semantic corruption ($\mathcal{P}_3$ and $\mathcal{P}_4$), the baseline agent achieves **0% Task Success Rate (0/100 tasks passed)**, demonstrating that native LLMs cannot handle multi-layer fault propagation.
 
-### CARE Agent — All 7 Layers Unified (500 Tasks) — Actively Running on GPU
-- **Execution Progress**: **268 / 500 tasks completed** (53.6% done, PID `41070`).
+### CARE Agent — All 7 Layers Unified (500 Tasks) — Completed 2026-10-11 12:16 IST
+| Perturbation Mode | Total Tasks | Fault Hits | Passed | Failed | Task Success Rate (TSR) | Perturbation Recovery Rate (PRR) | Recovery Cost (RC) |
+|---|---|---|---|---|---|---|---|
+| **P0 (Clean Execution)** | 100 | N/A | 44 | 56 | **44.00%** | N/A | 0.00 |
+| **P1 (Transient 503)** | 100 | 88 | 33 | 67 | **33.00%** | **95.45%** (84/88) | **0.56** |
+| **P2 (Permanent Deletion)** | 100 | 92 | 0 | 100 | **0.00%** | **0.00%** (0/92) | **0.92** |
+| **P3 (Implicit Semantic)** | 100 | 84 | 13 | 87 | **13.00%** | **44.05%** (37/84) | **0.71** |
+| **P4 (Permanent Semantic)** | 100 | 91 | 1 | 99 | **1.00%** | **1.10%** (1/91) | **0.90** |
+
+### Head-to-Head Comparative Gain on Category C3 (Layered DAG)
+| Metric Dimension | Baseline Agent | CARE Agent | Absolute Gain | Relative Improvement |
+|---|---|---|---|---|
+| **P1 Perturbation Recovery Rate (PRR)** | **5.49%** | **95.45%** | **+89.96%** | **17.4× (1,639% improvement)** |
+| **P1 Task Success Rate (TSR)** | **3.00%** | **33.00%** | **+30.00%** | **11.0× higher success** |
+| **P1 Recovery Cost (RC)** | $0.88$ | **$0.56$** | **-0.32** | **36.4% cost reduction** |
+| **P3 Perturbation Recovery Rate (PRR)** | **4.35%** | **44.05%** | **+39.70%** | **10.1× (913% improvement)** |
+| **P3 Task Success Rate (TSR)** | **0.00%** | **13.00%** | **+13.00%** | **Resurrected from absolute 0%** |
+| **P3 Recovery Cost (RC)** | $0.92$ | **$0.71$** | **-0.21** | **22.8% cost reduction** |
+
+---
+
+## Full-Scale Benchmark: Qwen 3 (8B) Category C4 (Complex General DAG Topology)
+
+### Baseline Agent (500 Tasks) — Actively Running on GPU
+- **Execution Process**: PID `43361` (`run_eval_care.py --backend ollama --model qwen3:8b --category c4 --agent-type baseline --max-workers 2`).
+- **Started at**: 12:16 IST (Oct 11).
+- **Progress**: **205 / 500 tasks completed** (41.0% complete, ~2.3 tasks/min).
 - **Interim Performance**:
-  - $\mathcal{P}_1$ (Transient 503): **37.0% passed** (20/54) vs Baseline **3.0%** (**12.3× higher success rate!**)
-  - $\mathcal{P}_3$ (Semantic Corruption): **13.2% passed** (7/53) vs Baseline **0.0%** (**Resurrected from absolute 0% collapse!**)
-- **Projected Completion**: ~12:30 PM IST, immediately transitioning to Category $\mathcal{C}_4$ (Complex General DAG).
+  - $\mathcal{P}_0$: 26.8% passed (11/41)
+  - $\mathcal{P}_1$: 2.4% passed (1/41)
+  - $\mathcal{P}_2$: 0.0% passed (0/41)
+  - $\mathcal{P}_3$: 4.9% passed (2/41)
+  - $\mathcal{P}_4$: 0.0% passed (0/41)
+- **Projected Completion**: ~16:45 IST (immediately triggers Category $\mathcal{C}_4$ CARE with patched Layer 4).
+
 
 
 

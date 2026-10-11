@@ -140,17 +140,31 @@
   - **P2 (Permanent Tool Removal)**: TSR = **4.00%**, PRR = **4.30%** (4/93 recovered), RC = **0.89**
   - **P3 (Implicit Semantic Data Corruption)**: TSR = **0.00%** (**0/100 passed! Absolute collapse**), PRR = **4.35%** (4/92), RC = **0.92**
   - **P4 (Permanent Semantic Corruption)**: TSR = **0.00%** (**0/100 passed! Absolute collapse**), PRR = **0.00%** (0/94), RC = **0.94**
-- [x] **Category C3 CARE Agent (All 7 Layers Unified) Actively Executing on GPU**:
-  - **Process**: PID `41070` (`run_eval_care.py --backend ollama --model qwen3:8b --category c3 --agent-type care --max-workers 2`)
-  - **Progress**: **268 / 500 tasks completed** (Started 08:19 IST, 53.6% complete)
-  - **Interim Performance**:
-    - $\mathcal{P}_1$ (Transient 503): **37.0% passed** (20/54) vs Baseline **3.0%** (**12.3× higher success rate!**)
-    - $\mathcal{P}_3$ (Semantic Corruption): **13.2% passed** (7/53) vs Baseline **0.0%** (**Resurrected from total collapse!**)
-  - **ETA**: ~12:30 PM IST (will automatically transition to Category C4 Complex General DAG)
-- [x] **Total Benchmark Task Evaluations Recorded on Disk**: **2,768+ evaluations**
+- [x] **Full 500-Task Benchmark Completed on Qwen 3 (8B) Category C3 CARE (All 7 Layers Unified)**:
+  - **Finished at**: 12:16 IST (Oct 11)
+  - **Dataset Scale**: 500 tasks across P0, P1, P2, P3, P4
+  - **P0 (Clean Execution)**: TSR = **44.00%** (44/100 tasks passed)
+  - **P1 (Transient Server 503 Outage)**:
+    - TSR = **33.00%** (vs Baseline 3.00% — **11.0× higher success rate!**)
+    - PRR = **95.45%** (84/88 recovered vs Baseline 5.49% — **17.4× relative improvement!**)
+    - Recovery Cost (RC) = **0.56** (vs Baseline 0.88 — **36.4% cost reduction!**)
+  - **P3 (Implicit Semantic Data Corruption)**:
+    - TSR = **13.00%** (vs Baseline 0.00% — **Resurrected from absolute collapse!**)
+    - PRR = **44.05%** (37/84 recovered vs Baseline 4.35% — **10.1× relative improvement!**)
+    - Recovery Cost (RC) = **0.71** (vs Baseline 0.92 — **22.8% cost reduction!**)
+  - **P2 (Permanent Tool Removal)**: TSR = 0.00%, PRR = 0.00%
+  - **P4 (Permanent Semantic Corruption)**: TSR = 1.00%, PRR = 1.10%
+- [x] **Category C3 1,000-Task Milestone Achieved**: Full 500-task Baseline + 500-task CARE completed.
+- [x] **Category C4 (Complex General DAG) Baseline Actively Executing on GPU**:
+  - **Process**: PID `43361` (`run_eval_care.py --backend ollama --model qwen3:8b --category c4 --agent-type baseline --max-workers 2`)
+  - **Started at**: 12:16 IST (Oct 11)
+  - **Progress**: **205 / 500 tasks completed** (41.0% complete, ~2.3 tasks/min)
+  - **Interim Performance**: P0: 26.8% (11/41), P1: 2.4% (1/41), P2: 0.0% (0/41), P3: 4.9% (2/41), P4: 0.0% (0/41)
+  - **ETA**: ~16:45 IST (will automatically transition to Category C4 CARE with patched Layer 4 rerouting engine)
+- [x] **Total Benchmark Task Evaluations Recorded on Disk**: **3,205+ evaluations**
 
 ### Next Steps
-- [ ] Complete Qwen C3 CARE (Layered DAG) and advance to Qwen C4 (Complex DAG)
+- [ ] Complete Qwen C4 Baseline and launch Qwen C4 CARE (Complex General DAG topology with patched Layer 4)
 - [ ] Conclude Phase 1 (Qwen 3 8B all C1–C4) and begin Phase 2 (Llama 3.1 8B all C1–C4)
 - [ ] Execute Phase 3: Gemini / Gemma rotating API pool
 - [ ] Collate full comparative tables (LaTeX) for publication paper draft
