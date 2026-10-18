@@ -89,7 +89,7 @@ class DAGPathSelector:
         available_tools: Optional[List[str]] = None
     ) -> RerouteCandidate:
         """Find a viable substitute tool that satisfies DAG dependencies.
-        
+
         Args:
             failed_tool: Name of the tool that encountered a permanent failure.
             task_json: Full task specification (DAG, valid_solution_paths, tools).
@@ -104,7 +104,8 @@ class DAGPathSelector:
                 failed_tool=failed_tool,
                 valid_paths=raw_paths,
                 blacklisted_tools=blacklisted_tools,
-                executed_tools=executed_tools
+                executed_tools=executed_tools,
+                task_json=task_json
             )
             if candidate and candidate.is_viable:
                 return candidate
@@ -112,15 +113,33 @@ class DAGPathSelector:
         # 1b. Strategy A.2: Check explicit task_json["alternative_tools"]
         task_alts = task_json.get("alternative_tools", [])
         if failed_tool in task_alts:
-            for alt in task_alts:
-                if alt != failed_tool and alt not in blacklisted_tools:
-                    return RerouteCandidate(
-                        failed_tool=failed_tool,
-                        candidate_tools=[alt],
-                        selected_tool=alt,
-                        reason=f"Selected unblocked alternative tool '{alt}' declared in task definition.",
-                        is_viable=True
-                    )
+            viable_task_alts = [
+                alt for alt in task_alts
+                if alt != failed_tool and alt not in blacklisted_tools
+            ]
+
+            if available_tools:
+                viable_task_alts = [
+                    alt for alt in viable_task_alts if alt in available_tools
+                ]
+
+            best_tool = self._pick_dependency_satisfied_tool(
+                candidates=viable_task_alts,
+                task_json=task_json,
+                executed_tools=executed_tools
+            )
+
+            if best_tool:
+                return RerouteCandidate(
+                    failed_tool=failed_tool,
+                    candidate_tools=viable_task_alts,
+                    selected_tool=best_tool,
+                    reason=(
+                        f"Selected unblocked alternative tool '{best_tool}' "
+                        "with satisfied DAG prerequisites."
+                    ),
+                    is_viable=True
+                )
 
         # 2. Strategy B: Query alternatives.yaml for known functional substitutes
         alt_tools = self._tool_to_alternatives.get(failed_tool, set())
@@ -133,49 +152,31 @@ class DAGPathSelector:
             viable_alts = [t for t in viable_alts if t in available_tools]
 
         if viable_alts:
-            # Check DAG dependencies if DAG nodes exist in task_json
+            # Check DAG dependencies before selecting a substitute.
             best_tool = self._pick_dependency_satisfied_tool(
                 candidates=viable_alts,
-                task_json=task_json,
-                executed_tools=executed_tools
-            )
-            return RerouteCandidate(
-                failed_tool=failed_tool,
-                candidate_tools=viable_alts,
-                selected_tool=best_tool or viable_alts[0],
-                reason=f"Found substitute from alternatives catalog avoiding {len(blacklisted_tools)} blacklisted tools.",
-                is_viable=True
-            )
-
-        # 3. Strategy C: Check DAG node alternatives from task_json["dag"]
-        dag = task_json.get("dag", {})
-        nodes = dag.get("nodes", [])
-        alt_nodes = [
-            n.get("tool_name") for n in nodes
-            if n.get("tool_name") and n.get("tool_name") != failed_tool
-            and n.get("tool_name") not in blacklisted_tools
-            and n.get("tool_name") not in executed_tools
-        ]
-        if alt_nodes:
-            best_tool = self._pick_dependency_satisfied_tool(
-                candidates=alt_nodes,
                 task_json=task_json,
                 executed_tools=executed_tools
             )
             if best_tool:
                 return RerouteCandidate(
                     failed_tool=failed_tool,
-                    candidate_tools=alt_nodes,
+                    candidate_tools=viable_alts,
                     selected_tool=best_tool,
-                    reason=f"Selected unexecuted DAG node '{best_tool}' with satisfied prerequisites.",
+                    reason=(
+                        "Found substitute from alternatives catalog "
+                        f"avoiding {len(blacklisted_tools)} blacklisted tools."
+                    ),
                     is_viable=True
                 )
 
+
+        # 3. Strategy C: Do not treat arbitrary DAG nodes as substitutes.
         return RerouteCandidate(
             failed_tool=failed_tool,
             candidate_tools=[],
             selected_tool=None,
-            reason=f"No viable alternative tools available in DAG. All candidates are blacklisted or missing.",
+            reason="No safe alternative found among validated paths or explicit subsitutes.",
             is_viable=False
         )
 
@@ -184,52 +185,66 @@ class DAGPathSelector:
         failed_tool: str,
         valid_paths: Any,
         blacklisted_tools: Set[str],
-        executed_tools: List[str]
+        executed_tools: List[str],
+        task_json: Optional[Dict[str, Any]] = None
     ) -> Optional[RerouteCandidate]:
-        """Find an alternative pre-computed solution path that avoids all blacklisted tools."""
+        """Find an alternative path whose next tool has satisfied prerequisites."""
         normalized_paths: List[List[str]] = []
-        for p in valid_paths:
-            if isinstance(p, dict):
-                tools = p.get("tools")
-                if not tools and "execution_trace" in p:
+
+        for path in valid_paths:
+            if isinstance(path, dict):
+                tools = path.get("tools")
+                if not tools and "execution_trace" in path:
                     tools = [
                         step.get("tool_name")
-                        for step in p.get("execution_trace", [])
+                        for step in path.get("execution_trace", [])
                         if step.get("tool_name")
                     ]
                 if tools:
                     normalized_paths.append(list(tools))
-            elif isinstance(p, (list, tuple)):
-                normalized_paths.append(list(p))
+            elif isinstance(path, (list, tuple)):
+                normalized_paths.append(list(path))
 
-        candidate_paths = []
-        for path in normalized_paths:
-            # Check if this path contains ANY blacklisted tool
-            if any(tool in blacklisted_tools for tool in path):
-                continue
-            candidate_paths.append(path)
+        # Exclude paths that contain any permanently blocked tool.
+        candidate_paths = [
+            path for path in normalized_paths
+            if not any(tool in blacklisted_tools for tool in path)
+        ]
 
         if not candidate_paths:
             return None
 
-        # Sort candidate paths by similarity to current execution progress
-        # Prefer paths that share the most tools already executed
+        # Prefer paths that share the most tools already executed.
         exec_set = set(executed_tools)
         candidate_paths.sort(
-            key=lambda p: len(set(p).intersection(exec_set)),
+            key=lambda path: len(set(path).intersection(exec_set)),
             reverse=True
         )
 
-        chosen_path = candidate_paths[0]
-        # Find next tool in the chosen path that has not been executed yet
-        for tool in chosen_path:
-            if tool not in executed_tools and tool not in blacklisted_tools:
+        # Check each path for a next tool whose prerequisites are satisfied.
+        for chosen_path in candidate_paths:
+            for tool in chosen_path:
+                if tool in exec_set or tool in blacklisted_tools:
+                    continue
+
+                if task_json is not None:
+                    selected = self._pick_dependency_satisfied_tool(
+                        candidates=[tool],
+                        task_json=task_json,
+                        executed_tools=executed_tools
+                    )
+                    if selected is None:
+                        break
+
                 return RerouteCandidate(
                     failed_tool=failed_tool,
                     candidate_tools=[tool],
                     selected_tool=tool,
                     target_path=chosen_path,
-                    reason=f"Switched to alternative valid solution path avoiding blacklisted tool '{failed_tool}'.",
+                    reason=(
+                        "Switched to an alternative valid solution path; "
+                        f"selected '{tool}' after checking its prerequisites."
+                    ),
                     is_viable=True
                 )
 
@@ -245,17 +260,24 @@ class DAGPathSelector:
         dag = task_json.get("dag", {})
         nodes = dag.get("nodes", [])
         dep_map: Dict[str, List[str]] = {}
-        for n in nodes:
-            name = n.get("tool_name")
-            deps = n.get("dependencies", [])
+
+        for node in nodes:
+            name = node.get("tool_name")
+            deps = node.get("dependencies", [])
             if name:
                 dep_map[name] = deps
 
         exec_set = set(executed_tools)
-        for cand in candidates:
-            prereqs = dep_map.get(cand, [])
-            if all(p in exec_set for p in prereqs):
-                return cand
+        dag_declared = bool(nodes)
 
-        # If none have 100% satisfied prerequisites or no deps declared, return first candidate
-        return candidates[0] if candidates else None
+        for candidate in candidates:
+            # With an explicit DAG, don't assume an unlisted tool is ready.
+            # Without a DAG, preserve legacy behavior.
+            if dag_declared and candidate not in dep_map:
+                continue
+
+            prerequisites = dep_map.get(candidate, [])
+            if all(prerequisite in exec_set for prerequisite in prerequisites):
+                return candidate
+
+        return None

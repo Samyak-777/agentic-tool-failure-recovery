@@ -307,3 +307,221 @@ if __name__ == "__main__":
     print("ALL 7 LAYERS VERIFIED SUCCESSFULLY (8/8 PASSED)!")
     print("==================================================")
 
+
+
+def test_layer_4_rejects_candidates_with_unsatisfied_prerequisites():
+    """Do not select a DAG node when its prerequisites have not executed."""
+    selector = DAGPathSelector()
+
+    task_json = {
+        "task_id": "test_unsatisfied_prerequisites",
+        "dag": {
+            "nodes": [
+                {"tool_name": "publish_booking", "dependencies": ["create_booking"]},
+                {"tool_name": "create_booking", "dependencies": ["get_hotel_details"]},
+                {"tool_name": "get_hotel_details", "dependencies": ["lookup_hotel"]},
+            ]
+        },
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="failed_tool",
+        task_json=task_json,
+        blacklisted_tools={"failed_tool"},
+        executed_tools=[],
+    )
+
+    assert not candidate.is_viable, (
+        "Selector should reject rerouting when no candidate has satisfied "
+        f"prerequisites, but selected {candidate.selected_tool!r}"
+    )
+
+
+def test_layer_4_strategy_b_rejects_unsatisfied_prerequisites():
+    """Strategy B must not select a substitute whose DAG prerequisites are unmet."""
+    selector = DAGPathSelector()
+
+    # Configure a known substitute directly, so this test does not depend
+    # on the repository's alternatives catalog contents.
+    selector._tool_to_alternatives["failed_tool"] = {"publish_booking"}
+
+    task_json = {
+        "task_id": "test_strategy_b_unsatisfied_prerequisite",
+        "dag": {
+            "nodes": [
+                {
+                    "tool_name": "publish_booking",
+                    "dependencies": ["create_booking"],
+                },
+                {
+                    "tool_name": "create_booking",
+                    "dependencies": ["get_hotel_details"],
+                },
+                {
+                    "tool_name": "get_hotel_details",
+                    "dependencies": ["lookup_hotel"],
+                },
+            ]
+        },
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="failed_tool",
+        task_json=task_json,
+        blacklisted_tools={"failed_tool"},
+        executed_tools=[],
+    )
+
+    assert not candidate.is_viable, (
+        "Strategy B must not select a substitute when its prerequisites "
+        f"are unmet; selected {candidate.selected_tool!r}"
+    )
+
+
+def test_layer_4_strategy_a_path_rejects_unsatisfied_prerequisites():
+    """Strategy A must not select the next path tool if its DAG prerequisites are unmet."""
+    selector = DAGPathSelector()
+
+    task_json = {
+        "task_id": "test_strategy_a_path_dependencies",
+        "valid_paths": [
+            {"path_id": "path_0", "tools": ["failed_tool", "publish_booking"]}
+        ],
+        "dag": {
+            "nodes": [
+                {"tool_name": "publish_booking", "dependencies": ["create_booking"]},
+                {"tool_name": "create_booking", "dependencies": ["lookup_hotel"]},
+            ]
+        },
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="failed_tool",
+        task_json=task_json,
+        blacklisted_tools={"failed_tool"},
+        executed_tools=[],
+    )
+
+    assert not candidate.is_viable, (
+        "Strategy A path selection must reject a next tool with unmet prerequisites; "
+        f"selected {candidate.selected_tool!r}"
+    )
+
+
+def test_layer_4_strategy_a_explicit_alternative_checks_prerequisites():
+    """Strategy A.2 must not bypass DAG prerequisites for explicit alternatives."""
+    selector = DAGPathSelector()
+
+    task_json = {
+        "task_id": "test_strategy_a_explicit_alternative_dependencies",
+        "alternative_tools": ["failed_tool", "publish_booking"],
+        "dag": {
+            "nodes": [
+                {"tool_name": "publish_booking", "dependencies": ["create_booking"]},
+                {"tool_name": "create_booking", "dependencies": ["lookup_hotel"]},
+            ]
+        },
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="failed_tool",
+        task_json=task_json,
+        blacklisted_tools={"failed_tool"},
+        executed_tools=[],
+    )
+
+    assert not candidate.is_viable, (
+        "An explicit alternative with unmet prerequisites must not be selected; "
+        f"selected {candidate.selected_tool!r}"
+    )
+
+
+def test_layer_4_rejects_candidate_missing_from_declared_dag():
+    """Reject an unlisted substitute when the task explicitly declares a DAG."""
+    selector = DAGPathSelector()
+    selector._tool_to_alternatives["failed_tool"] = {"unlisted_tool"}
+
+    task_json = {
+        "task_id": "test_candidate_missing_from_dag",
+        "dag": {
+            "nodes": [
+                {"tool_name": "lookup_hotel", "dependencies": []},
+            ]
+        },
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="failed_tool",
+        task_json=task_json,
+        blacklisted_tools={"failed_tool"},
+        executed_tools=[],
+    )
+
+    assert not candidate.is_viable, (
+        "An alternative missing from an explicitly declared DAG "
+        "must not be assumed dependency-free."
+    )
+def test_care_agent_does_not_silently_remap_tool_arguments():
+    """A reroute must not reuse arguments when replacement requirements differ."""
+    mock_llm = MockBaseAgent()
+    agent = CAREAgent(base_agent=mock_llm)
+
+    task_json = {
+        "task_id": "reroute_argument_test",
+        "task_description": "Retrieve flight information",
+        "valid_paths": [
+            {"path_id": "original", "tools": ["get_flight_info"]},
+            {"path_id": "alternative", "tools": ["get_flight_info_aviationstack"]},
+        ],
+        "alternative_tools": [
+            "get_flight_info",
+            "get_flight_info_aviationstack",
+        ],
+    }
+
+    tool_definitions = [
+        {
+            "name": "get_flight_info",
+            "description": "Original flight lookup",
+            "parameters": {
+                "type": "object",
+                "properties": {"flight_number": {"type": "string"}},
+                "required": ["flight_number"],
+            },
+        },
+        {
+            "name": "get_flight_info_aviationstack",
+            "description": "Alternative flight lookup",
+            "parameters": {
+                "type": "object",
+                "properties": {"flight_iata": {"type": "string"}},
+                "required": ["flight_iata"],
+            },
+        },
+    ]
+
+    agent.initialize(
+        "Retrieve flight information",
+        tool_definitions,
+        task_json=task_json,
+    )
+
+    # Force the original tool to be blacklisted.
+    agent.health_registry.blacklist_tool("get_flight_info")
+
+    mock_llm.action_queue.append(
+        AgentAction(
+            type="tool_call",
+            tool_name="get_flight_info",
+            arguments={"flight_number": "AI101"},
+        )
+    )
+
+    action = agent.step()
+
+    # The replacement requires flight_iata, which cannot safely be inferred
+    # from the original schema alone.
+    assert not (
+        action.tool_name == "get_flight_info_aviationstack"
+        and action.arguments == {"flight_number": "AI101"}
+    ), "CARE must not silently pass incompatible arguments to a replacement"

@@ -1474,28 +1474,43 @@ class JudgeSystem:
         return errors
 
     def _check_retry(self, trace: Dict[str, Any], victim_tool: str) -> Dict[str, Any]:
-        """Check if tool was retried."""
+        """Check retries and evaluate the outcome of the final attempt."""
         call_count = 0
         final_success = False
         call_details = []
 
         messages = self._get_messages(trace)
         for msg in messages:
-            if msg.get("role") == "assistant" and msg.get("type") == "tool_call":
-                call = msg.get("tool_call", {})
-                if call.get("name") != victim_tool:
-                    continue
-                call_count += 1
-                result_msg = self._find_tool_result(messages, call.get("id"), victim_tool)
-                output = result_msg.get("content", {}) if result_msg else {}
-                has_error = isinstance(output, dict) and "error" in output
-                if not has_error:
-                    final_success = True
-                call_details.append({
-                    "call_index": call_count,
-                    "has_error": has_error,
-                    "error": output.get("error") if has_error else None
-                })
+            if msg.get("role") != "assistant" or msg.get("type") != "tool_call":
+                continue
+
+            call = msg.get("tool_call", {})
+            if call.get("name") != victim_tool:
+                continue
+
+            call_count += 1
+            result_msg = self._find_tool_result(
+                messages, call.get("id"), victim_tool
+            )
+
+            result_found = result_msg is not None
+            output = result_msg.get("content") if result_found else None
+            has_error = isinstance(output, dict) and "error" in output
+
+            # Only the latest attempt determines final_success.
+            # Missing or non-dictionary results are not treated as success.
+            final_success = (
+                result_found
+                and isinstance(output, dict)
+                and not has_error
+            )
+
+            call_details.append({
+                "call_index": call_count,
+                "has_error": has_error,
+                "result_found": result_found,
+                "error": output.get("error") if has_error else None
+            })
 
         return {
             "has_retry": call_count >= 2,
@@ -1504,7 +1519,6 @@ class JudgeSystem:
             "call_details": call_details
         }
 
-    # ========== Message Helpers ==========
 
     def _get_messages(self, trace: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Return normalized message list."""

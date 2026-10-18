@@ -147,6 +147,7 @@ class CAREAgent(BaseAgent):
 
         # Session State
         self.task_json: Dict[str, Any] = {}
+        self.tool_definitions: Dict[str, Any] = {}
         self.step_counter: int = 0
         self.last_action: Optional[AgentAction] = None
         self.last_recovery_directive: Optional[str] = None
@@ -156,6 +157,7 @@ class CAREAgent(BaseAgent):
     def initialize(self, task_description: str, tool_definitions: Dict[str, Any], task_json: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the CARE Agent with task definitions."""
         self.task_json = task_json or {}
+        self.tool_definitions = tool_definitions
         self.execution_id = str(uuid.uuid4())
         task_id = self.task_json.get("task_id", "task_care")
         if self.sov is not None:
@@ -209,8 +211,13 @@ class CAREAgent(BaseAgent):
                     executed_tools=self.tool_memory.get_executed_tools()
                 )
                 if candidate.is_viable and candidate.selected_tool:
-                    logger.info(f"CARE Reroute: Substituting blacklisted '{action.tool_name}' with '{candidate.selected_tool}'.")
-                    action.tool_name = candidate.selected_tool
+                    original_tool = action.tool_name
+                    replacement_tool = candidate.selected_tool
+                    logger.info(
+                        f"CARE Reroute: Substituting blacklisted "
+                        f"'{original_tool}' with '{replacement_tool}'."
+                    )
+                    action.tool_name = replacement_tool
 
         return action
 

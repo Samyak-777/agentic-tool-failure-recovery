@@ -14,7 +14,7 @@ from tool_memory.registry import ToolHealthRegistry, ToolHealthStatus
 from tool_memory.memory import ToolMemory
 from tool_memory.budget import BudgetTracker, BudgetConfig
 from tool_memory.recovery_controller import RecoveryController
-
+from evaluation.core.judge import JudgeSystem
 class TestLayer2DiagnosisEngine(unittest.TestCase):
     def setUp(self):
         self.engine = StructuredDiagnosisEngine(max_transient_retries=2)
@@ -111,6 +111,40 @@ class TestLayer3ToolMemoryAndController(unittest.TestCase):
         )
         decision = self.controller.decide_recovery(diag, {"symbol": "AAPL"}, step_num=4)
         self.assertEqual(decision["action"], "abort")
+
+class TestJudgeRetryEvaluation(unittest.TestCase):
+    def test_final_failed_attempt_is_not_success(self):
+        judge = JudgeSystem()
+
+        messages = [
+            {
+                "role": "assistant",
+                "type": "tool_call",
+                "tool_call": {"name": "get_hotel", "id": "call_1"},
+            },
+            {
+                "role": "assistant",
+                "type": "tool_call",
+                "tool_call": {"name": "get_hotel", "id": "call_2"},
+            },
+        ]
+
+        results = {
+            "call_1": {"content": {"status": "success", "hotel": "Hilton"}},
+            "call_2": {"content": {"error": "Service unavailable"}},
+        }
+
+        judge._get_messages = lambda trace: messages
+        judge._find_tool_result = (
+            lambda msgs, call_id, tool_name: results.get(call_id)
+        )
+
+        result = judge._check_retry({}, "get_hotel")
+
+        self.assertTrue(result["has_retry"])
+        self.assertEqual(result["call_count"], 2)
+        self.assertFalse(result["final_success"])
+
 
 if __name__ == "__main__":
     unittest.main()
