@@ -184,6 +184,36 @@ class CAREAgent(BaseAgent):
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
 
+    def _find_tool_definition(self, tool_name: str) -> Optional[Dict[str, Any]]:
+        if not self.tool_definitions:
+            return None
+        if isinstance(self.tool_definitions, list):
+            for t in self.tool_definitions:
+                if t.get("name") == tool_name:
+                    return t
+                if t.get("function", {}).get("name") == tool_name:
+                    return t.get("function")
+        elif isinstance(self.tool_definitions, dict):
+            if "function_call" in self.tool_definitions:
+                for t in self.tool_definitions["function_call"]:
+                    if t.get("name") == tool_name:
+                        return t
+                    if t.get("function", {}).get("name") == tool_name:
+                        return t.get("function")
+            if tool_name in self.tool_definitions:
+                return self.tool_definitions[tool_name]
+        return None
+
+    def _are_tool_args_compatible(self, tool_name: str, args: Dict[str, Any]) -> bool:
+        tool_def = self._find_tool_definition(tool_name)
+        if not tool_def:
+            return True
+        params = tool_def.get("parameters", {})
+        required = params.get("required", [])
+        if required and not all(r in args for r in required):
+            return False
+        return True
+
     def step(self, user_message: Optional[str] = None) -> AgentAction:
         """Execute one reasoning step with proactive loop & abort guards."""
         self.step_counter += 1
@@ -213,11 +243,17 @@ class CAREAgent(BaseAgent):
                 if candidate.is_viable and candidate.selected_tool:
                     original_tool = action.tool_name
                     replacement_tool = candidate.selected_tool
-                    logger.info(
-                        f"CARE Reroute: Substituting blacklisted "
-                        f"'{original_tool}' with '{replacement_tool}'."
-                    )
-                    action.tool_name = replacement_tool
+                    if self._are_tool_args_compatible(replacement_tool, action.arguments or {}):
+                        logger.info(
+                            f"CARE Reroute: Substituting blacklisted "
+                            f"'{original_tool}' with '{replacement_tool}'."
+                        )
+                        action.tool_name = replacement_tool
+                    else:
+                        logger.warning(
+                            f"CARE Reroute: Candidate '{replacement_tool}' requires arguments "
+                            f"not present in '{original_tool}' call. Bypassing silent substitution."
+                        )
 
         return action
 

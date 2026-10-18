@@ -317,11 +317,14 @@ def main():
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--max-workers", type=int, default=2)
+    parser.add_argument("--output-dir", type=str, default=None, help="Custom output directory for results")
     parser.add_argument("--no-resume", action="store_true", default=False, help="Disable caching and re-run all tasks")
     args, _ = parser.parse_known_args()
 
     config = load_config(args.config)
     config["resume"] = not args.no_resume
+    if args.output_dir:
+        config["data"]["output_dir"] = args.output_dir
     if args.category:
         config["data"]["task_category"] = args.category
         if args.category in DEFAULT_TASK_DIRS:

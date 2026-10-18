@@ -62,6 +62,11 @@ class ToolHealthRegistry:
         else:
             record.status = ToolHealthStatus.DEGRADED
 
+    def blacklist_tool(self, tool_name: str, reason: str = "Explicitly blacklisted"):
+        record = self.get_record(tool_name)
+        record.status = ToolHealthStatus.BLACKLISTED
+        record.blacklist_reason = reason
+
     def is_blacklisted(self, tool_name: str) -> bool:
         return self.get_record(tool_name).status == ToolHealthStatus.BLACKLISTED
 
