@@ -40,6 +40,7 @@ sys.path.insert(0, str(project_root))
 
 from evaluation.core import ExecutionEngine, JudgeSystem, MetricsCalculator
 from evaluation.utils import ResultSaver
+from evaluation.telemetry import TelemetryManager, TelemetryRecorder
 
 
 # Setup logging
@@ -268,7 +269,8 @@ def evaluate_single_task(
     config: Dict[str, Any],
     tools_dir: str,
     judge: JudgeSystem,
-    saver: ResultSaver
+    saver: ResultSaver,
+    telemetry_manager: Optional[TelemetryManager] = None
 ) -> Dict[str, Any]:
     """Evaluate a single task.
 
@@ -284,12 +286,15 @@ def evaluate_single_task(
         tools_dir: Tools directory path
         judge: Judge system
         saver: Result saver
+        telemetry_manager: Optional TelemetryManager for persistent structured telemetry
 
     Returns:
         Evaluation result
     """
     task_id = task_json["task_id"]
     mode = task_json.get("perturbation_mode", "P0")
+    agent_type = config.get("agent", {}).get("type", "openai")
+    recorder = TelemetryRecorder(telemetry_manager, task_json, agent_type) if telemetry_manager else None
 
     logger.info(f"Processing {task_id} (Mode: {mode})")
 
@@ -314,6 +319,7 @@ def evaluate_single_task(
                 agent,
                 tools_dir=tools_dir,
                 validation_config=config.get("validation"),
+                telemetry_recorder=recorder
             )
             trace_logger, token_usage = engine.run(max_rounds=config["execution"]["max_rounds"])
 
@@ -323,6 +329,8 @@ def evaluate_single_task(
 
         # 步骤3：执行评测（仅推理模式则跳过）
         if judge is None:
+            if recorder:
+                recorder.complete_task(passed=None, token_usage=token_usage)
             return {
                 "task_id": task_id,
                 "mode": mode,
@@ -338,6 +346,9 @@ def evaluate_single_task(
 
         logger.info(f"  ✓ Result: {'PASS' if judgement['pass'] else 'FAIL'}")
 
+        if recorder:
+            recorder.complete_task(passed=judgement["pass"], judgement=judgement, token_usage=token_usage)
+
         return {
             "task_id": task_id,
             "mode": mode,
@@ -350,6 +361,8 @@ def evaluate_single_task(
 
     except Exception as e:
         logger.error(f"  ✗ Error: {e}", exc_info=True)
+        if recorder:
+            recorder.complete_task(passed=False, error=str(e))
         return {
             "task_id": task_id,
             "mode": mode,
@@ -388,6 +401,8 @@ def main():
                         help="Enable Semantic Validation Layer (SVL)")
     parser.add_argument("--disable-validation", action="store_true", default=None,
                         help="Disable Semantic Validation Layer (SVL)")
+    parser.add_argument("--run-id", type=str, default=None,
+                        help="Custom identifier for telemetry run")
 
     args = parser.parse_args()
 
@@ -454,6 +469,16 @@ def main():
         task_category=config["data"].get("task_category", "c1")
     )
 
+    # 初始化 TelemetryManager
+    telemetry = TelemetryManager(
+        run_id=args.run_id,
+        agent_type=agent_type,
+        model=config["agent"]["model"],
+        category=config["data"].get("task_category", "c1"),
+        config=config
+    )
+    logger.info(f"Telemetry initialized: run_id={telemetry.run_id} (records at {telemetry.records_dir})")
+
     # 加载任务列表
     logger.info("Loading tasks...")
     tasks = load_tasks(
@@ -467,6 +492,7 @@ def main():
 
     if not tasks:
         logger.error("No tasks found!")
+        telemetry.finalize_run()
         return
 
     # 执行评测
@@ -482,7 +508,7 @@ def main():
             for task in tasks:
                 future = executor.submit(
                     evaluate_single_task,
-                    task, config, tools_dir, judge, saver
+                    task, config, tools_dir, judge, saver, telemetry
                 )
                 futures.append(future)
 
@@ -499,7 +525,7 @@ def main():
         logger.info("Running sequentially")
         for task in tasks:
             result = evaluate_single_task(
-                task, config, tools_dir, judge, saver
+                task, config, tools_dir, judge, saver, telemetry
             )
             if "error" not in result and result.get("judgement"):
                 metrics.add_result(
@@ -507,6 +533,10 @@ def main():
                     result["inference_data"],
                     result["judgement"],
                 )
+
+    # 结束 Telemetry 运行
+    telemetry.finalize_run()
+    logger.info(f"Telemetry finalized: {telemetry.records_dir}")
 
     # 生成并保存指标报告
     logger.info("Generating metrics report...")
