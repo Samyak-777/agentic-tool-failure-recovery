@@ -36,7 +36,10 @@ def sanitize_and_redact(data: Any, max_string_len: int = 2000, depth: int = 0) -
         sanitized = {}
         for k, v in data.items():
             k_str = str(k)
-            if any(s in k_str.lower() for s in SENSITIVE_KEY_SUBSTRINGS):
+            k_lower = k_str.lower()
+            # Do not redact LLM metric token counts like "tokens", "total_tokens", "input_tokens", etc.
+            is_token_count = ("tokens" in k_lower)
+            if not is_token_count and any(s in k_lower for s in SENSITIVE_KEY_SUBSTRINGS):
                 sanitized[k_str] = "[REDACTED]"
             else:
                 sanitized[k_str] = sanitize_and_redact(v, max_string_len=max_string_len, depth=depth + 1)

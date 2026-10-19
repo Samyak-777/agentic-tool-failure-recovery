@@ -578,6 +578,18 @@ class TelemetryRecorder:
             "failure_reason": judgement.get("failure_reason") if judgement else error,
             "failed_tools": failed_tools,
             "tokens": self.token_usage,
+            "parameters": {
+                "user_input": self.task_json.get("user_input", {}),
+                "task_description": self.task_json.get("task_description", ""),
+                "template_id": self.task_json.get("template_id"),
+                "domains": self.task_json.get("domains", []),
+                "execution": self.manager.config.get("execution", {}),
+                "agent_config": {
+                    "model": self.manager.model,
+                    "temperature": self.manager.config.get("agent", {}).get("temperature"),
+                    "max_tokens": self.manager.config.get("agent", {}).get("max_tokens")
+                }
+            },
             "causal_attribution": attribution,
             "perturbation_tracking": {
                 "configured": self.tracker.configured_perturbations,

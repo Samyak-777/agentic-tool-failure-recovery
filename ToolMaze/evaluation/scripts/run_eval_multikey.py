@@ -15,6 +15,7 @@ sys.path.insert(0, str(project_root))
 
 from evaluation.core import ExecutionEngine, JudgeSystem, MetricsCalculator
 from evaluation.utils import ResultSaver
+from evaluation.telemetry import TelemetryManager, TelemetryRecorder
 from openai import OpenAI
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -173,9 +174,10 @@ def create_agent(config: Dict[str, Any], shared_pool=None):
         agent.force_p0_prompt = True
     return agent
 
-def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool):
+def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool, telemetry_manager=None):
     task_id = task_json["task_id"]
     mode = task_json.get("perturbation_mode", "P0")
+    recorder = TelemetryRecorder(telemetry_manager, task_json, agent_type="fc") if telemetry_manager else None
     logger.info(f"Processing {task_id} (Mode: {mode})")
     
     try:
@@ -192,13 +194,15 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         else:
             logger.info(f"  → {task_id} Running inference...")
             agent = create_agent(config, shared_pool)
-            engine = ExecutionEngine(task_json, agent, tools_dir=tools_dir)
+            engine = ExecutionEngine(task_json, agent, tools_dir=tools_dir, telemetry_recorder=recorder)
             trace_logger, token_usage = engine.run(max_rounds=config["execution"]["max_rounds"])
             inference_data = trace_logger.to_dict(token_usage=token_usage)
             saver.save_inference(task_id, mode, trace_logger, token_usage)
             logger.info(f"  ✓ {task_id} Inference saved | Tokens: {token_usage['total_tokens']}")
 
         if judge is None:
+            if recorder:
+                recorder.complete_task(passed=None, token_usage=token_usage)
             return {"task_id": task_id, "mode": mode, "passed": None, "task_json": task_json, "inference_data": inference_data}
 
         logger.info(f"  → {task_id} Running evaluation...")
@@ -206,10 +210,15 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         saver.save_evaluation(task_id, mode, judgement)
         logger.info(f"  ✓ {task_id} Result: {'PASS' if judgement['pass'] else 'FAIL'}")
 
+        if recorder:
+            recorder.complete_task(passed=judgement["pass"], judgement=judgement, token_usage=token_usage)
+
         return {"task_id": task_id, "mode": mode, "passed": judgement["pass"], "judgement": judgement, "task_json": task_json, "inference_data": inference_data}
 
     except Exception as e:
         logger.error(f"  ✗ {task_id} Error: {e}", exc_info=False)
+        if recorder:
+            recorder.complete_task(passed=False, error=str(e))
         return {"task_id": task_id, "mode": mode, "passed": False, "error": str(e)}
 
 def main():
@@ -219,6 +228,7 @@ def main():
     parser.add_argument("--task-id", type=str, default=None)
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0)
+    parser.add_argument("--run-id", type=str, default=None, help="Custom identifier for telemetry run")
     args, unknown = parser.parse_known_args()
 
     config = load_config(args.config)
@@ -237,12 +247,23 @@ def main():
     judge = JudgeSystem(llm_client=judge_client, model=config["judge"]["model"], template_dir=config["data"].get("template_dir"))
     metrics = MetricsCalculator()
 
+    category = config["data"].get("task_category", "c1")
     saver = ResultSaver(
         base_dir=config["data"]["output_dir"],
         model=config["agent"]["model"],
         agent_type="fc",
-        task_category=config["data"].get("task_category", "c1")
+        task_category=category
     )
+
+    # Initialize TelemetryManager for baseline multi-key run
+    telemetry = TelemetryManager(
+        run_id=args.run_id,
+        agent_type="fc",
+        model=config["agent"]["model"],
+        category=category,
+        config=config
+    )
+    logger.info(f"Telemetry initialized: run_id={telemetry.run_id} (records at {telemetry.records_dir})")
 
     tasks = load_tasks(config["data"]["task_dir"], modes=config["evaluation"]["modes"], task_id=args.task_id, offset=args.offset, limit=args.limit)
     logger.info(f"Loaded {len(tasks)} tasks")
@@ -251,11 +272,15 @@ def main():
     logger.info(f"Running in parallel with {max_workers} workers")
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(evaluate_single_task, task, config, tools_dir, judge, saver, shared_pool) for task in tasks]
+        futures = [executor.submit(evaluate_single_task, task, config, tools_dir, judge, saver, shared_pool, telemetry) for task in tasks]
         for future in as_completed(futures):
             res = future.result()
             if "error" not in res and res.get("judgement"):
                 metrics.add_result(res["task_json"], res["inference_data"], res["judgement"])
+
+    # Finalize telemetry records
+    telemetry.finalize_run()
+    logger.info(f"Telemetry finalized: {telemetry.records_dir}")
 
     report = metrics.generate_report()
     saver.save_metrics(report)
