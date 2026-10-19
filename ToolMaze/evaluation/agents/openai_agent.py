@@ -310,9 +310,11 @@ class OpenAIAgent(BaseAgent):
 
 TASK COMPLETION
 - The user query may describe multiple sub-tasks. You must complete ALL of them — do NOT skip any sub-tasks.
+- Do NOT deliver a final conversational answer or stop after an intermediate tool result. Continue calling tools step-by-step until the ENTIRE sequence of requested actions (all bookings, creations, and lookups) is fully completed.
 - Every fact, data retrieval, or state change must come from a tool call. Never substitute a tool result with internal knowledge, and never report a step as completed unless you actually called the corresponding tool and received its result in this conversation.
 
 FINAL ANSWER FORMAT
+- Deliver your final text answer ONLY after all sub-tasks and tool actions have finished.
 - Be CONCISE and DIRECT. No emojis, markdown formatting (**, ✅, etc.), or bullet points.
 - State only essential facts and requested results (e.g., confirmation codes). Omit internal technical details."""
 
@@ -322,6 +324,7 @@ FINAL ANSWER FORMAT
 
 TASK COMPLETION
 - The user query may describe multiple sub-tasks. You must complete ALL of them — do NOT skip any sub-tasks.
+- Do NOT deliver a final conversational answer or stop after an intermediate tool result. Continue calling tools step-by-step until the ENTIRE sequence of requested actions (all bookings, creations, and lookups) is fully completed.
 - Every fact, data retrieval, or state change must come from a tool call. Never substitute a tool result with internal knowledge, and never report a step as completed unless you actually called the corresponding tool and received its result in this conversation.
 - Sub-tasks may be accomplishable through different tool combinations.
 
@@ -330,6 +333,7 @@ FAULT HANDLING
 - If you determine that a required step cannot be accomplished by any available tool or approach, stop the workflow and clearly report which step failed and why, rather than proceeding with incomplete results.
 
 FINAL ANSWER FORMAT
+- Deliver your final text answer ONLY after all sub-tasks and tool actions have finished (or after halting).
 - Be CONCISE and DIRECT. No emojis, markdown formatting (**, ✅, etc.), or bullet points.
 - If SUCCESSFUL: State only essential facts and requested results (e.g., confirmation codes). Omit internal technical details.
 - If HALTED: State clearly that the task was aborted and the reason (e.g., "Task aborted: the pricing tool returned corrupted data after retry and no other alternative approaches exist"). Do not apologize excessively."""

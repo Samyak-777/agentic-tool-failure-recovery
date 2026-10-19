@@ -6,6 +6,7 @@ the perturbation information in the task JSON.
 
 import sys
 import uuid
+import time
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 
@@ -110,7 +111,8 @@ class ExecutionEngine:
         task_json: Dict[str, Any],
         agent: BaseAgent,
         tools_dir: Optional[str] = None,
-        validation_config: Optional[Any] = None
+        validation_config: Optional[Any] = None,
+        telemetry_recorder: Optional[Any] = None
     ):
         """Initialize execution engine.
 
@@ -119,9 +121,11 @@ class ExecutionEngine:
             agent: Agent instance to evaluate
             tools_dir: Directory containing tool plugins
             validation_config: Optional validation configuration (ValidationConfig or dict)
+            telemetry_recorder: Optional TelemetryRecorder for persistent structured telemetry
         """
         self.task_json = task_json
         self.agent = agent
+        self.telemetry_recorder = telemetry_recorder
 
         # 初始化 ToolLoader 与 ToolExecutor
         if tools_dir is None:
@@ -580,6 +584,18 @@ class ExecutionEngine:
             perturbation_status: "clean", "perturbed", or "n/a"
         """
         step = len(self.context.history) + 1
+        start_time = time.perf_counter()
+        call_id = f"tc_{step}_{tool_name}"
+        if self.telemetry_recorder:
+            try:
+                call_id = self.telemetry_recorder.record_tool_call_start(
+                    tool_name=tool_name,
+                    arguments=arguments,
+                    call_index=step,
+                    step=step
+                )
+            except Exception:
+                pass
 
         # C2: 保持原有 first-touch activation 语义
         if self.complexity == "C2" and tool_name in self.alternative_tools:
@@ -625,10 +641,33 @@ class ExecutionEngine:
                     result = val_result.to_agent_failure_payload(result)
             self._last_validation_result = val_result.to_dict() if val_result else None
 
+            duration_ms = (time.perf_counter() - start_time) * 1000
+            if self.telemetry_recorder:
+                try:
+                    self.telemetry_recorder.record_tool_call_completion(
+                        call_id=call_id,
+                        tool_name=tool_name,
+                        arguments=arguments,
+                        raw_result=result,
+                        status=status,
+                        duration_ms=duration_ms,
+                        perturbation_status="perturbed",
+                        validation_result=self._last_validation_result
+                    )
+                except Exception:
+                    pass
+
             return result, "perturbed"
 
         # 未触发扰动，执行真实工具
-        result = self.tool_executor.execute(tool_name, arguments, self.context, step)
+        try:
+            result = self.tool_executor.execute(tool_name, arguments, self.context, step)
+            status = "success"
+            error_msg = None
+        except Exception as e:
+            result = {"error": str(e)}
+            status = "error"
+            error_msg = str(e)
 
         val_result = None
         if self.svl is not None:
@@ -644,5 +683,22 @@ class ExecutionEngine:
             if val_result.pipeline_status.value == "INVALID":
                 result = val_result.to_agent_failure_payload(result)
         self._last_validation_result = val_result.to_dict() if val_result else None
+
+        duration_ms = (time.perf_counter() - start_time) * 1000
+        if self.telemetry_recorder:
+            try:
+                self.telemetry_recorder.record_tool_call_completion(
+                    call_id=call_id,
+                    tool_name=tool_name,
+                    arguments=arguments,
+                    raw_result=result,
+                    status=status,
+                    duration_ms=duration_ms,
+                    perturbation_status="clean",
+                    validation_result=self._last_validation_result,
+                    error_message=error_msg
+                )
+            except Exception:
+                pass
 
         return result, "clean"

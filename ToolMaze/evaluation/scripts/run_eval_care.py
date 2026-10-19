@@ -29,6 +29,7 @@ sys.path.insert(0, str(project_root))
 from evaluation.core import ExecutionEngine, JudgeSystem, MetricsCalculator
 from evaluation.utils import ResultSaver
 from evaluation.agents import BaseAgent, OpenAIAgent, CAREAgent
+from evaluation.telemetry import TelemetryManager, TelemetryRecorder
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("CARE_Eval")
@@ -246,9 +247,10 @@ def create_eval_agent(agent_type: str, config: Dict[str, Any], shared_pool: Opti
         return base_llm
 
 
-def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool, agent_type="care"):
+def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool, agent_type="care", telemetry_manager=None):
     task_id = task_json["task_id"]
     mode = task_json.get("perturbation_mode", "P0")
+    recorder = TelemetryRecorder(telemetry_manager, task_json, agent_type) if telemetry_manager else None
 
     eval_file = saver.evaluations_dir / f"{task_id}_{mode}_eval.json"
     inf_file = saver.inferences_dir / f"{task_id}_{mode}_inference.json"
@@ -259,6 +261,8 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
             with open(inf_file, "r", encoding="utf-8") as f:
                 inf_data = json.load(f)
             logger.info(f"[{agent_type.upper()}] Reusing existing result for {task_id} (Mode: {mode}) -> {'PASS' if judgement.get('pass') else 'FAIL'}")
+            if recorder:
+                recorder.complete_task(passed=judgement.get("pass", False), judgement=judgement)
             return {
                 "task_id": task_id,
                 "mode": mode,
@@ -277,19 +281,24 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         agent = create_eval_agent(agent_type, config, shared_pool)
         if hasattr(agent, "set_task_json"):
             agent.set_task_json(task_json)
+        if hasattr(agent, "set_telemetry_recorder") and recorder:
+            agent.set_telemetry_recorder(recorder)
 
         val_cfg = {"enabled": True, "fail_fast": False}
         engine = ExecutionEngine(
             task_json=task_json,
             agent=agent,
             tools_dir=tools_dir,
-            validation_config=val_cfg
+            validation_config=val_cfg,
+            telemetry_recorder=recorder
         )
         trace_logger, token_usage = engine.run(max_rounds=config["execution"]["max_rounds"])
         inference_data = trace_logger.to_dict(token_usage=token_usage)
         saver.save_inference(task_id, mode, trace_logger, token_usage)
 
         if judge is None:
+            if recorder:
+                recorder.complete_task(passed=None, token_usage=token_usage)
             return {"task_id": task_id, "mode": mode, "passed": None, "task_json": task_json, "inference_data": inference_data}
 
         judgement = judge.judge(task_json, inference_data)
@@ -303,6 +312,9 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         except Exception:
             pass
 
+        if recorder:
+            recorder.complete_task(passed=judgement["pass"], judgement=judgement, token_usage=token_usage)
+
         return {
             "task_id": task_id,
             "mode": mode,
@@ -314,6 +326,8 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         }
     except Exception as e:
         logger.error(f"  ✗ {task_id} Error: {e}", exc_info=False)
+        if recorder:
+            recorder.complete_task(passed=False, error=str(e))
         return {"task_id": task_id, "mode": mode, "passed": False, "error": str(e)}
 
 
@@ -332,6 +346,7 @@ def main():
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--max-workers", type=int, default=2)
     parser.add_argument("--output-dir", type=str, default=None, help="Custom output directory for results")
+    parser.add_argument("--run-id", type=str, default=None, help="Custom identifier for telemetry run")
     parser.add_argument("--no-resume", action="store_true", default=False, help="Disable caching and re-run all tasks")
     args, _ = parser.parse_known_args()
 
@@ -390,6 +405,16 @@ def main():
         task_category=category
     )
 
+    # Initialize Telemetry Manager
+    telemetry = TelemetryManager(
+        run_id=args.run_id,
+        agent_type=args.agent_type,
+        model=config["agent"]["model"],
+        category=category,
+        config=config
+    )
+    logger.info(f"Telemetry initialized: run_id={telemetry.run_id} (records at {telemetry.records_dir})")
+
     tasks = load_tasks(
         config["data"]["task_dir"],
         modes=config["evaluation"]["modes"],
@@ -404,7 +429,7 @@ def main():
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [
-            executor.submit(evaluate_single_task, task, config, tools_dir, judge, saver, shared_pool, args.agent_type)
+            executor.submit(evaluate_single_task, task, config, tools_dir, judge, saver, shared_pool, args.agent_type, telemetry)
             for task in tasks
         ]
         for future in as_completed(futures):
@@ -412,12 +437,17 @@ def main():
             if "error" not in res and res.get("judgement"):
                 metrics.add_result(res["task_json"], res["inference_data"], res["judgement"])
 
+    # Finalize telemetry records
+    telemetry.finalize_run()
+    logger.info(f"Telemetry finalized: {telemetry.records_dir}")
+
     report = metrics.generate_report()
     saver.save_metrics(report)
     print("\n" + "=" * 60)
     print(f"EVALUATION COMPLETE: [{args.agent_type.upper()}] on Category {category.upper()}")
     print("=" * 60)
     print(metrics.print_summary(report))
+    print(f"\nTelemetry saved to: {telemetry.records_dir}")
 
 
 if __name__ == "__main__":

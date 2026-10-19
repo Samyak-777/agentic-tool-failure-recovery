@@ -76,8 +76,10 @@ class CAREAgent(BaseAgent):
         enable_sov: bool = True,
         enable_care_recovery: bool = True,
         sov: Optional[Any] = None,
-        tools_dir: Optional[str] = None
+        tools_dir: Optional[str] = None,
+        telemetry_recorder: Optional[Any] = None
     ):
+        self.telemetry_recorder = telemetry_recorder
         # 1. Base Agent (Delegate LLM)
         if base_agent:
             self.base_agent = base_agent
@@ -198,6 +200,10 @@ class CAREAgent(BaseAgent):
 
         self.base_agent.initialize(task_description, tool_definitions)
 
+    def set_telemetry_recorder(self, recorder: Optional[Any]) -> None:
+        """Set task telemetry recorder."""
+        self.telemetry_recorder = recorder
+
     def set_task_json(self, task_json: Dict[str, Any]) -> None:
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
@@ -258,6 +264,18 @@ class CAREAgent(BaseAgent):
                     blacklisted_tools=self.health_registry.get_blacklisted_tools(),
                     executed_tools=self.tool_memory.get_executed_tools()
                 )
+                if self.telemetry_recorder:
+                    try:
+                        self.telemetry_recorder.record_dag_path_selection(
+                            failed_tool=action.tool_name,
+                            candidate_tools=getattr(candidate, "candidate_tools", []),
+                            selected_tool=getattr(candidate, "selected_tool", None),
+                            is_viable=getattr(candidate, "is_viable", False),
+                            reason=getattr(candidate, "reason", "Blacklist guard interception"),
+                            target_path=getattr(candidate, "target_path", None)
+                        )
+                    except Exception:
+                        pass
                 if candidate.is_viable and candidate.selected_tool:
                     original_tool = action.tool_name
                     replacement_tool = candidate.selected_tool
@@ -365,6 +383,23 @@ class CAREAgent(BaseAgent):
             step_num=self.step_counter
         )
 
+        if self.telemetry_recorder:
+            try:
+                cat_val = diagnosis.category.value if hasattr(diagnosis.category, "value") else str(diagnosis.category)
+                pers_val = diagnosis.persistence.value if hasattr(diagnosis.persistence, "value") else str(diagnosis.persistence)
+                act_val = diagnosis.recommended_action.value if hasattr(diagnosis.recommended_action, "value") else str(diagnosis.recommended_action)
+                self.telemetry_recorder.record_diagnosis(
+                    tool_name=tool_name,
+                    category=cat_val,
+                    persistence=pers_val,
+                    root_cause=diagnosis.root_cause,
+                    severity=diagnosis.severity,
+                    recommended_action=act_val,
+                    evidence={"validation": val_res_dict, "raw_error": diagnosis.raw_error}
+                )
+            except Exception:
+                pass
+
         # ----------------------------------------------------
         # Layer 7: Selective LLM Verification (if ambiguous)
         # ----------------------------------------------------
@@ -391,6 +426,28 @@ class CAREAgent(BaseAgent):
             executed_tools=self.tool_memory.get_executed_tools()
         )
         self.last_recovery_directive = recovery_decision.get("action")
+
+        if self.telemetry_recorder:
+            try:
+                self.telemetry_recorder.record_recovery_attempt(
+                    failed_tool=tool_name,
+                    action=recovery_decision.get("action", "unknown"),
+                    suggested_tool=recovery_decision.get("suggested_tool"),
+                    remaining_budget=self.budget_tracker.get_remaining_recovery_calls(),
+                    loop_warning=recovery_decision.get("loop_warning"),
+                    rationale=recovery_decision.get("rationale", "")
+                )
+                if recovery_decision.get("target_path") or recovery_decision.get("suggested_tool"):
+                    self.telemetry_recorder.record_dag_path_selection(
+                        failed_tool=tool_name,
+                        candidate_tools=[recovery_decision.get("suggested_tool")] if recovery_decision.get("suggested_tool") else [],
+                        selected_tool=recovery_decision.get("suggested_tool"),
+                        is_viable=bool(recovery_decision.get("suggested_tool")),
+                        reason=recovery_decision.get("rationale", ""),
+                        target_path=recovery_decision.get("target_path")
+                    )
+            except Exception:
+                pass
 
         if recovery_decision.get("action") in (RecoveryDirective.ABORT.value, "partial_completion"):
             # Fix #9: treat PARTIAL_COMPLETION as soft abort — stop calling tools
