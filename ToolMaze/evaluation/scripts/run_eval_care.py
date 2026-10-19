@@ -230,12 +230,17 @@ def create_eval_agent(agent_type: str, config: Dict[str, Any], shared_pool: Opti
 
     if agent_type == "care":
         tools_dir = config["data"].get("tools_dir")
+        # Fix #12: Pass topology for budget-aware initialization
+        from tool_memory.budget import get_topology_budget
+        topology = config["data"].get("task_category", "c1")
+        topo_budget_cfg = get_topology_budget(topology)
         return CAREAgent(
             base_agent=base_llm,
             model=model,
             enable_sov=True,
             enable_care_recovery=True,
-            tools_dir=tools_dir
+            tools_dir=tools_dir,
+            budget_config=topo_budget_cfg,
         )
     else:
         return base_llm
@@ -267,6 +272,7 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
 
     logger.info(f"[{agent_type.upper()}] Starting {task_id} (Mode: {mode})")
 
+    agent = None  # Fix #13: declare outside try for PRP extraction
     try:
         agent = create_eval_agent(agent_type, config, shared_pool)
         if hasattr(agent, "set_task_json"):
@@ -290,13 +296,21 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         saver.save_evaluation(task_id, mode, judgement)
         logger.info(f"  ✓ {task_id} Result: {'PASS' if judgement['pass'] else 'FAIL'}")
 
+        # Fix #13: Extract PRP if agent tracked it
+        prp = 0.0
+        try:
+            prp = agent.budget_tracker.get_partial_progress() if hasattr(agent, 'budget_tracker') else 0.0
+        except Exception:
+            pass
+
         return {
             "task_id": task_id,
             "mode": mode,
             "passed": judgement["pass"],
             "judgement": judgement,
             "task_json": task_json,
-            "inference_data": inference_data
+            "inference_data": inference_data,
+            "partial_progress": prp,
         }
     except Exception as e:
         logger.error(f"  ✗ {task_id} Error: {e}", exc_info=False)

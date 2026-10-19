@@ -172,11 +172,29 @@ class CAREAgent(BaseAgent):
         self.recovery_prompts_injected = 0
         self.force_abort = False
 
+        # Fix #12: Apply topology-aware budget
+        topology = self.task_json.get("topology", "c1") or "c1"
+        try:
+            from tool_memory.budget import get_topology_budget
+            topo_budget = get_topology_budget(topology)
+            self.budget_tracker.config = topo_budget
+        except Exception:
+            pass
+
+        # Fix #13: Wire task DAG step count into budget tracker for PRP
+        dag = self.task_json.get("dag", {})
+        dag_nodes = dag.get("nodes", []) if isinstance(dag, dict) else []
+        expected_steps = len(dag_nodes) if dag_nodes else 0
+
         self.health_registry.reset()
         self.tool_memory.reset()
         self.budget_tracker.reset()
         self.loop_detector.reset()
         self.recovery_controller.reset()
+
+        # Restore after reset
+        if expected_steps:
+            self.budget_tracker.set_total_steps(expected_steps)
 
         self.base_agent.initialize(task_description, tool_definitions)
 
@@ -331,6 +349,7 @@ class CAREAgent(BaseAgent):
                 step_num=self.step_counter,
                 task_json=self.task_json
             )
+            self.budget_tracker.record_step_completed()  # Fix #13: PRP tracking
             self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
             return
 
@@ -373,7 +392,9 @@ class CAREAgent(BaseAgent):
         )
         self.last_recovery_directive = recovery_decision.get("action")
 
-        if recovery_decision.get("action") == RecoveryDirective.ABORT.value:
+        if recovery_decision.get("action") in (RecoveryDirective.ABORT.value, "partial_completion"):
+            # Fix #9: treat PARTIAL_COMPLETION as soft abort — stop calling tools
+            # but let agent produce a best-effort answer from existing outputs
             self.force_abort = True
 
         # ----------------------------------------------------

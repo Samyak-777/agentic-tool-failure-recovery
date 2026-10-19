@@ -102,8 +102,26 @@ class RecoveryController:
         self.memory.record_call(tool_name, arguments, output=diagnosis.raw_error, is_valid=False, step_num=step_num)
         self.budget.record_tool_call(tool_name, is_recovery=True)
 
-        # 3. Check Budget Exceeded
+        # 3. Check Budget Exceeded — emit PARTIAL_COMPLETION instead of hard ABORT (Fix #9)
         if not self.budget.has_recovery_budget():
+            partial_progress = self.budget.get_partial_progress()
+            if partial_progress > 0.0:
+                return {
+                    "action": "partial_completion",
+                    "suggested_tool": None,
+                    "rationale": (
+                        f"Recovery budget exhausted after completing {partial_progress:.0%} of task steps. "
+                        "Partial results are available."
+                    ),
+                    "agent_prompt_guidance": (
+                        "PARTIAL COMPLETION: Recovery budget exceeded. "
+                        f"You have completed approximately {partial_progress:.0%} of the required steps. "
+                        "Do NOT attempt further tool calls. "
+                        "Formulate your best final answer using only the verified outputs already collected."
+                    ),
+                    "loop_warning": loop_warning,
+                    "partial_progress": partial_progress,
+                }
             return {
                 "action": RecoveryDirective.ABORT.value,
                 "suggested_tool": None,
@@ -112,7 +130,7 @@ class RecoveryController:
                     "CRITICAL: Recovery budget exceeded. Do not attempt further tool calls. "
                     "Formulate your best final answer based on already verified outputs."
                 ),
-                "loop_warning": loop_warning
+                "loop_warning": loop_warning,
             }
 
         # 4. Check Blacklist Status (Permanent failure or cycle-broken tool)
