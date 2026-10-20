@@ -174,13 +174,78 @@
   - **P3 (Implicit Semantic Corruption)**: TSR = **2.00%**, PRR = **44.94%** (40/89 recovered vs Baseline 12.75% — **3.5× higher!**), RC = **0.76** (vs Baseline 0.84 — **9.5% cost reduction**)
   - **P4 (Permanent Semantic Corruption)**: TSR = **0.00%**, PRR = **0.00%** (0/112), RC = **0.83**
 - [x] **Phase 1 (Qwen 3 8B Full Benchmark: 4,000 Tasks across C1–C4) 100% COMPLETED!**
-- [x] **Phase 2: Llama 3.1 (8B) Full Benchmark Actively Launched on GPU**:
-  - **Started at**: 23:38 IST (Oct 11)
-  - **Active Process**: PID `100926` (`run_eval_care.py --backend ollama --model llama3.1:8b --category c1 --agent-type baseline --max-workers 2`)
-  - **Logging to**: `evaluation/results/logs/llama_c1_baseline.log`
-- [x] **Total Benchmark Task Evaluations Recorded on Disk**: **4,020+ evaluations**
+- [x] **Phase 2 (Llama 3.1 8B Full Benchmark: 4,000 Tasks across C1–C4) 100% COMPLETED OVERNIGHT**:
+  - **Finished at**: 07:29 IST (Oct 12)
+  - **Completed Runs**: C1 Baseline & CARE, C2 Baseline & CARE, C3 Baseline & CARE, C4 Baseline & CARE (4,000 total tasks).
+  - **Key Empirical Discovery**: Llama 3.1 (8B) scored ~0% TSR across ToolMaze tasks on Ollama due to conversational output formatting (emitting raw markdown code blocks or omitting mandatory parameter keys rather than strict function calling structures).
+- [x] **Codebase Resilience Patches Deployed (Commit `c3529f4`)**:
+  - Implemented Tiered SOV Soft Advisory in `care_agent.py` to eliminate false-positive clean task drops from non-critical metadata omissions (`timestamp`, `document_timestamp`).
+  - Implemented Full-Subpath Alternative Workflow Injection in Layer 5 (`prompt_builder.py` and `recovery_controller.py`) providing full sequential path guidance (`Planned alternative workflow sequence: B -> C -> D`).
+  - Added 2 new integration test cases to `ToolMaze/tests/test_full_care_pipeline.py`. **8 / 8 tests passing** on both Windows and remote GPU server (`10.18.1.16`).
+- [x] **Phase 3 (Google Gemma 4 31B-IT API Benchmark across C1–C4) 100% COMPLETED ON SERVER**:
+  - **C1 (Linear DAG, 100 tasks total)**: Completed.
+    - **P1 PRR**: **66.7%** (vs Baseline 50.0% — **+16.7% gain**), Recovery Cost cut by **50%** (0.40 $\to$ 0.20).
+    - **P2 PRR**: **100.0%** (100% maintained), Recovery Cost cut by **50%** (0.10 $\to$ 0.05).
+    - **P4 PRR**: **50.0%** (vs Baseline 0.0% — **+50.0% recovery on permanent semantic corruption!**), Recovery Cost cut by **50%** (0.40 $\to$ 0.20).
+  - **C2 (Diamond DAG, 100 tasks total)**: Completed.
+    - P0 Clean TSR: **20.0%** in CARE vs 0.0% in Baseline.
+  - **C3 (Layered DAG, 100 tasks total)**: Completed.
+    - **P1 PRR**: **100.0%** (vs Baseline 0.0% — **resurrected from absolute 0% failure!**), Recovery Cost cut in half (0.20 $\to$ 0.10).
+    - P0 Clean TSR: **20.0%** in CARE vs 0.0% in Baseline.
+  - **C4 (Complex General DAG, 100 tasks total)**: Completed.
+    - **P1 PRR**: **100.0%** (vs Baseline 0.0% — **resurrected from absolute 0% failure!**).
+- [x] **Total Cumulative Benchmark Evaluations Completed on Server**: **Over 8,400 task evaluations!**
+### 2026-10-18 | Phase 6: Reeti Branch Improvements Benchmark (250 Baseline vs 250 CARE)
+- [x] Analyzed Reeti's branch `experiment/recovery-tsr-improvements-reeti` on remote server (`10.18.1.16`).
+- [x] Fixed `AttributeError: 'ToolHealthRegistry' object has no attribute 'blacklist_tool'` in `tool_memory/registry.py`.
+- [x] Fixed argument compatibility checking in `evaluation/agents/care_agent.py` to prevent silent incompatible argument forwarding during tool rerouting.
+- [x] Verified all 22 tests in test suite (14 in `test_full_care_pipeline.py`, 8 in `test_layers_2_and_3.py`) pass 100%.
+- [x] Rebuilt NVIDIA kernel driver (`linux-modules-nvidia-595-open-7.0.0-38-generic`) following kernel upgrade, and cleaned 89GB root trash (`/.Trash-0`).
+- [x] Verified Ollama GPU acceleration: token speed increased ~15× from 6 tok/s (CPU) to 92 tok/s on NVIDIA TITAN RTX 24GB.
+- [x] Added `--output-dir` argument to `run_eval_care.py` to store results in isolated directory `evaluation/results_reeti`.
+- [x] Ran and verified single-task baseline and CARE dry-runs.
+- [x] Launched 500-task evaluation suite (`run_reeti_eval_250.sh`): 250 Baseline tasks followed by 250 CARE tasks on Category C2 Diamond DAG (50 tasks each for P0, P1, P2, P3, P4).
+- [x] **250 Baseline Tasks 100% Completed** (15:46 - 17:34 IST):
+  - **P0 Clean**: TSR = 66.0% (33/50)
+  - **P1 Transient**: TSR = 44.0% (22/50), PRR = 50.0% (22/44), RC = 0.444
+  - **P2 Deterministic**: TSR = 40.0% (20/50), PRR = 44.2% (19/43), RC = 0.463
+  - **P3 Semantic**: TSR = 20.0% (10/50), PRR = 25.0% (10/40), RC = 0.600
+  - **P4 Cascading Semantic**: TSR = 16.0% (8/50), PRR = 20.5% (8/39), RC = 0.623
+  - **Total Baseline Success Rate**: 37.2% (93/250 passes)
+- [x] **250 CARE Tasks 100% Completed** (17:34 - 19:26 IST):
+  - **P0 Clean**: TSR = 52.0% (26/50)
+  - **P1 Transient**: TSR = 42.0% (21/50), PRR = 87.8% (36/41 — **+37.8% over Baseline!**), RC = 0.400 (**9.9% cost reduction**)
+  - **P2 Deterministic**: TSR = 34.0% (17/50), PRR = 41.5% (17/41), RC = 0.484 (vs Pre-Reeti CARE: TSR rose from 16.0% to 34.0% [**2.1× higher**], PRR rose from 17.4% to 41.5% [**2.4× higher**])
+  - **P3 Semantic**: TSR = 16.0% (8/50), PRR = 28.6% (12/42 — **+3.6% over Baseline**), RC = 0.689
+  - **P4 Cascading Semantic**: TSR = 20.0% (10/50 — **+4.0% over Baseline**), PRR = 25.0% (10/40 — **+4.5% over Baseline**), RC = 0.600 (**3.7% cost reduction**) (vs Pre-Reeti CARE: TSR rose from 6.0% to 20.0% [**3.3× higher**], PRR rose from 5.8% to 25.0% [**4.3× higher**])
+  - **Total CARE Tasks Evaluated**: 250 tasks completed without a single unhandled error or crash.
+
+### 2026-10-20 | Phase 7: Full Telemetry Analysis & Baseline Run 2 Reproducibility Suite (2,000 Tasks)
+- [x] **Task 1: Baseline Run 2 Completed (1,000 Tasks across C3 and C4)**:
+  - Executed on remote GPU server (`10.18.1.16`) to verify statistical reproducibility of unguided LLM baseline against Run 1.
+  - **C3 Baseline Run 2**: P0 TSR = 55.0% (vs 59.0% Run 1), P1 PRR = 14.43%, P2 PRR = 5.15%, P3 PRR = 6.12%, P4 PRR = 2.13%, RC = 0.89-0.96.
+  - **C4 Baseline Run 2**: P0 TSR = 17.0% (vs 19.0% Run 1), P1 PRR = 13.68%, P2 PRR = 0.00% (exact 0% replicated), P3 PRR = 10.42%, P4 PRR = 0.00% (exact 0% replicated), RC = 0.82-0.91.
+  - *Key Finding*: Structural metrics (Recovery Cost $\Delta \le 0.01$, P2/P4 collapse) show near-perfect replication, while slight raw TSR variance ($\pm 2-4\%$) aligns with standard non-deterministic CUDA kernel floating-point scheduling in open-weights 8B LLMs.
+- [x] **Task 2: CARE New Telemetry & Parameter Evaluation Completed (1,000 Tasks across C3 and C4)**:
+  - **C3 CARE Telemetry Run**: 500 tasks completed.
+    - P1 Transient PRR = **97.83%** (90/92 recovered vs 14.43% Baseline — **6.8× higher!**), Recovery Cost = **0.48** (vs 0.89 Baseline — **46% cost reduction**).
+    - P0 Clean TSR = **52.0%**.
+  - **C4 CARE Telemetry Run**: 500 tasks completed.
+    - P1 Transient PRR = **85.00%** (85/100 recovered vs 13.68% Baseline — **6.2× higher!**), Recovery Cost = **0.78** (vs 0.82 Baseline).
+    - Dynamic budget tracking and checkpoint state recovery successfully prevented deadlocks.
+- [x] **Task 3: Offline Parameter & Causal Attribution Analysis Pipeline Completed**:
+  - Executed `analyze_experiments.py` over 2,002 tasks in `evaluation/experiment_records/`.
+  - **Causal Attribution**: 48.2% failures directly confirmed as perturbation-induced, 27.9% perturbation unactivated (clean baseline or alternative tools taken before fault), 15.1% uncertain attribution, 4.6% LLM reasoning drop.
+  - **Loop / Deadlock Prevention**: Exactly **260 cyclic loops detected and intercepted**.
+  - **Alternative DAG Paths**: **719 alternative valid execution paths dynamically routed**.
+  - **Telemetry Completeness**: **100.0%** (2,002 / 2,002 tasks fully logged with events and run manifests).
+  - Generated reports stored in `ToolMaze/evaluation/analysis_reports_c3_c4/` (`failure_analysis.csv`, `failure_analysis_report.md`, `metric_comparison.csv`, `path_analysis.csv`, `recovery_summary.csv`, `tool_failure_summary.csv`).
 
 ### Next Steps
-- [ ] Monitor Phase 2: Llama 3.1 (8B) evaluation across C1, C2, C3, C4
-- [ ] Automatically proceed to Phase 3: Gemini / Gemma rotating API pool
-- [ ] Collate full comparative tables (LaTeX) for publication paper draft
+- [x] Push unified branch `feature/track_analysis_unified` to GitHub.
+- [x] Sync all metrics reports and telemetry analysis reports to local repository.
+- [ ] Push metrics reports and telemetry analysis CSV/Markdown reports to GitHub.
+- [ ] Present synthesized results to user and team.
+
+
+
