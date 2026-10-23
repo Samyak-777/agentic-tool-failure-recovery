@@ -255,13 +255,24 @@ def main():
         task_category=category
     )
 
-    # Initialize TelemetryManager for baseline multi-key run
+    # Initialize persistent experiment telemetry.
+    experiment_records_dir = (
+        Path(__file__).resolve().parent.parent / "experiment_records"
+    )
+    experiment_records_dir.mkdir(parents=True, exist_ok=True)
+
     telemetry = TelemetryManager(
         run_id=args.run_id,
-        agent_type="fc",
+        agent_type=agent_type,
         model=config["agent"]["model"],
-        category=category,
-        config=config
+        category=config["data"].get("task_category", "c1"),
+        config=config,
+        base_dir=experiment_records_dir,
+    )
+
+    logger.info(
+        "Persistent experiment records: %s",
+        telemetry.records_dir.resolve(),
     )
     logger.info(f"Telemetry initialized: run_id={telemetry.run_id} (records at {telemetry.records_dir})")
 

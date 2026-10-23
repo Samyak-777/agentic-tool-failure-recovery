@@ -568,6 +568,7 @@ class TelemetryRecorder:
             "task_id": self.task_id,
             "mode": self.mode,
             "complexity": self.complexity,
+            "task_definition": self.task_json,
             "agent_type": self.agent_type,
             "model": self.manager.model,
             "start_time": self.start_time,
