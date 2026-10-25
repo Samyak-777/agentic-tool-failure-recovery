@@ -1,0 +1,694 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_087",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_087",
+    "template_id": "C3_template_087",
+    "complexity": "C3",
+    "task_description": "Please check whether my investment account is active, then look up the latest AAPL price and send that quote to me in the app. After that, analyze the text summary of the quote, estimate the trading cost for a $1,500 stock trade at the VIP rate, and then place an order to sell 10 shares of AAPL.",
+    "user_input": {
+      "query": "Hi, this is high priority for user_01. Please check whether my investment account is active. Then look up the latest AAPL price for a stock and send that quote to me in the app, with the quote shown in EUR as the target_currency. After that, analyze the text summary of the quote, estimate the trading cost for a $1,500 trade at the vip rate for my user_tier, and then place an order to sell 10 shares of AAPL. My account_type is investment, the asset_type is stock, the channel is app, the quantity is 10, the ticker is AAPL, the trade_amount is 1500, and my priority is high.",
+      "account_type": "investment",
+      "asset_type": "stock",
+      "channel": "app",
+      "priority": "high",
+      "quantity": 10,
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "trade_amount": 1500,
+      "user_id": "user_01",
+      "user_tier": "vip"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "analyze_text",
+          "estimate_trading_cost",
+          "place_sell_order"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": null,
+              "symbol": "AAPL?",
+              "usd_last": -170.25,
+              "venue": "",
+              "quoted_at": "2026-02-30T25:61:99Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "output": {
+              "raw_content": "AAPL: 170.25 USD @ yahoo_native",
+              "character_count": 31,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 18,
+              "digit_count": 5,
+              "whitespace_count": 4,
+              "longest_word": "yahoo_native",
+              "longest_word_length": 12,
+              "average_word_length": 5.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "estimate_trading_cost",
+            "arguments": {
+              "amount": 1500,
+              "asset_type": "stock",
+              "user_tier": "vip"
+            },
+            "output": {
+              "amount": 1500.0,
+              "fee_rate": "0.05%",
+              "fee_amount": 0.75,
+              "total_cost": 1500.75,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "place_sell_order",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": null,
+                "symbol": "AAPL?",
+                "usd_last": -170.25,
+                "venue": "",
+                "quoted_at": "2026-02-30T25:61:99Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "estimate_trading_cost",
+              "arguments": {
+                "amount": 1500,
+                "asset_type": "stock",
+                "user_tier": "vip"
+              },
+              "output": {
+                "amount": 1500.0,
+                "fee_rate": "0.05%",
+                "fee_amount": 0.75,
+                "total_cost": 1500.75,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "analyze_text",
+          "estimate_trading_cost",
+          "place_sell_order"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": null,
+              "ticker_code": "EUR",
+              "local_last": 170.25,
+              "settlement_ccy": "USD",
+              "usd_reference": 156.63,
+              "fx_rate": -1.08
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 156.63,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": 0.92
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 156.63 EUR (fx 0.92)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 156.63 EUR (fx 0.92)"
+            },
+            "output": {
+              "raw_content": "AAPL: 156.63 EUR (fx 0.92)",
+              "character_count": 26,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 9,
+              "digit_count": 8,
+              "whitespace_count": 4,
+              "longest_word": "156.63",
+              "longest_word_length": 6,
+              "average_word_length": 4.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "estimate_trading_cost",
+            "arguments": {
+              "amount": 1500,
+              "asset_type": "stock",
+              "user_tier": "vip"
+            },
+            "output": {
+              "amount": 1500.0,
+              "fee_rate": "0.05%",
+              "fee_amount": 0.75,
+              "total_cost": 1500.75,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "place_sell_order",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": null,
+                "ticker_code": "EUR",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 156.63,
+                "fx_rate": -1.08
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 156.63,
+                  "settlement_ccy": "EUR",
+                  "usd_reference": 170.25,
+                  "fx_rate": 0.92
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 156.63 EUR (fx 0.92)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "estimate_trading_cost",
+              "arguments": {
+                "amount": 1500,
+                "asset_type": "stock",
+                "user_tier": "vip"
+              },
+              "output": {
+                "amount": 1500.0,
+                "fee_rate": "0.05%",
+                "fee_amount": 0.75,
+                "total_cost": 1500.75,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_fx_quote_ticket_native",
+      "get_quote_snapshot_native",
+      "publish_fx_quote_ticket_native",
+      "publish_quote_snapshot_native"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 1,
+    "corruption_type": "logic_violation"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T14:36:18.259671+00:00",
+  "end_time": "2026-10-25T14:37:59.735834+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, this is high priority for user_01. Please check whether my investment account is active. Then look up the latest AAPL price for a stock and send that quote to me in the app, with the quote shown in EUR as the target_currency. After that, analyze the text summary of the quote, estimate the trading cost for a $1,500 trade at the vip rate for my user_tier, and then place an order to sell 10 shares of AAPL. My account_type is investment, the asset_type is stock, the channel is app, the quantity is 10, the ticker is AAPL, the trade_amount is 1500, and my priority is high.",
+      "account_type": "investment",
+      "asset_type": "stock",
+      "channel": "app",
+      "priority": "high",
+      "quantity": 10,
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "trade_amount": 1500,
+      "user_id": "user_01",
+      "user_tier": "vip"
+    },
+    "task_description": "Please check whether my investment account is active, then look up the latest AAPL price and send that quote to me in the app. After that, analyze the text summary of the quote, estimate the trading cost for a $1,500 stock trade at the VIP rate, and then place an order to sell 10 shares of AAPL.",
+    "template_id": "C3_template_087",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_quote_snapshot_native', 'get_fx_quote_ticket_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_087_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": null,
+          "symbol": "AAPL?",
+          "usd_last": -170.25,
+          "venue": "",
+          "quoted_at": "2026-02-30T25:61:99Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_087_path_1_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": null,
+          "ticker_code": "EUR",
+          "local_last": 170.25,
+          "settlement_ccy": "USD",
+          "usd_reference": 156.63,
+          "fx_rate": -1.08
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "analyze_text",
+        "estimate_trading_cost",
+        "get_account_balance_bank_api",
+        "get_quote_snapshot_native",
+        "place_sell_order",
+        "publish_quote_snapshot_native"
+      ],
+      "insufficient_calls": {
+        "get_account_balance_bank_api": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "analyze_text": {
+          "expected": 1,
+          "actual": 0
+        },
+        "estimate_trading_cost": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_sell_order": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "analyze_text",
+              "estimate_trading_cost",
+              "place_sell_order"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "analyze_text",
+              "estimate_trading_cost",
+              "place_sell_order"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_fx_quote_ticket_native",
+          "get_quote_snapshot_native",
+          "publish_fx_quote_ticket_native",
+          "publish_quote_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}
