@@ -1,0 +1,686 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_012",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_012",
+    "template_id": "C3_template_012",
+    "complexity": "C3",
+    "task_description": "Please look up information for the Hilton Tokyo and find the gate and boarding details for flight CA1234. I need you to archive those flight details for my trip, check the weather in Tokyo, and then cancel my existing reservation BK-998877. Finally, please publish a bulletin update for me regarding these trip changes.",
+    "user_input": {
+      "query": "Hi, I'm user_12345 and I need some help managing my travel plans. Could you please look up information for the Hilton Tokyo and find the gate and boarding details for flight CA1234? I’d like you to archive those flight details for my trip records. Also, please check the weather in Tokyo for me. I need to cancel my existing reservation, booking ID BK-998877. Finally, please publish a bulletin update for me with the title \"Trip Update\" and the content \"Your flight and hotel details have been updated.\" Thanks!",
+      "bulletin_data": {
+        "title": "Trip Update",
+        "content": "Your flight and hotel details have been updated."
+      },
+      "city": "Tokyo",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "old_booking_id": "BK-998877",
+      "user_id": "user_12345"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_hotel_info",
+          "get_aviationstack_gate_board_native",
+          "archive_aviationstack_gate_board_native",
+          "get_weather_openweather",
+          "cancel_reservation",
+          "publish_currents_bulletin_pack_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "archive_aviationstack_gate_board_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "title": "Flight Details for Trip",
+              "user_id": "user_12345",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "aviationstack_gate_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Flight Details for Trip",
+              "transport_ref": "gate_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "cancel_reservation",
+            "arguments": {
+              "booking_id": "BK-998877",
+              "reason": "Re-organizing trip based on new flight and weather data."
+            },
+            "output": {
+              "message": "Booking cancelled successfully",
+              "booking_id": "BK-998877",
+              "cancellation_reason": "Re-organizing trip based on new flight and weather data.",
+              "refund_amount": 350,
+              "refund_currency": "USD",
+              "status": "cancelled"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_currents_bulletin_pack_native",
+            "arguments": {
+              "bulletin_pack": {
+                "title": "Trip Update",
+                "content": "Your flight and hotel details have been updated."
+              },
+              "user_id": "user_12345",
+              "priority": "low"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "currents_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_12345",
+              "news_ref": "currents_bulletin_pack",
+              "content": "general: News update"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_aviationstack_gate_board_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_ca1234",
+                  "flight_code": "CA1234",
+                  "dep_airport": "Beijing Capital Airport",
+                  "arr_airport": "Shanghai Pudong Airport",
+                  "gate_label": "A12",
+                  "status_text": "On Time"
+                },
+                "title": "Flight Details for Trip",
+                "user_id": "user_12345",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "aviationstack_gate_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Flight Details for Trip",
+                "transport_ref": "gate_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "cancel_reservation",
+              "arguments": {
+                "booking_id": "BK-998877",
+                "reason": "Re-organizing trip based on new flight and weather data."
+              },
+              "output": {
+                "message": "Booking cancelled successfully",
+                "booking_id": "BK-998877",
+                "cancellation_reason": "Re-organizing trip based on new flight and weather data.",
+                "refund_amount": 350,
+                "refund_currency": "USD",
+                "status": "cancelled"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_currents_bulletin_pack_native",
+              "arguments": {
+                "bulletin_pack": {
+                  "title": "Trip Update",
+                  "content": "Your flight and hotel details have been updated."
+                },
+                "user_id": "user_12345",
+                "priority": "low"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "currents_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_12345",
+                "news_ref": "currents_bulletin_pack",
+                "content": "general: News update"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_hotel_info",
+          "get_flightaware_trip_timeline_native",
+          "archive_flightaware_trip_timeline_native",
+          "get_weather_openweather",
+          "cancel_reservation",
+          "publish_currents_bulletin_pack_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "archive_flightaware_trip_timeline_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "title": "Flight Details for Trip",
+              "user_id": "user_12345",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "flightaware_timeline_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Flight Details for Trip",
+              "transport_ref": "trip_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "cancel_reservation",
+            "arguments": {
+              "booking_id": "BK-998877",
+              "reason": "Re-organizing trip based on new flight and weather data."
+            },
+            "output": {
+              "message": "Booking cancelled successfully",
+              "booking_id": "BK-998877",
+              "cancellation_reason": "Re-organizing trip based on new flight and weather data.",
+              "refund_amount": 350,
+              "refund_currency": "USD",
+              "status": "cancelled"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_currents_bulletin_pack_native",
+            "arguments": {
+              "bulletin_pack": {
+                "title": "Trip Update",
+                "content": "Your flight and hotel details have been updated."
+              },
+              "user_id": "user_12345",
+              "priority": "low"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "currents_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_12345",
+              "news_ref": "currents_bulletin_pack",
+              "content": "general: News update"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_flightaware_trip_timeline_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_ca1234",
+                  "flight_no": "CA1234",
+                  "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "A12"
+                },
+                "title": "Flight Details for Trip",
+                "user_id": "user_12345",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "flightaware_timeline_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Flight Details for Trip",
+                "transport_ref": "trip_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "cancel_reservation",
+              "arguments": {
+                "booking_id": "BK-998877",
+                "reason": "Re-organizing trip based on new flight and weather data."
+              },
+              "output": {
+                "message": "Booking cancelled successfully",
+                "booking_id": "BK-998877",
+                "cancellation_reason": "Re-organizing trip based on new flight and weather data.",
+                "refund_amount": 350,
+                "refund_currency": "USD",
+                "status": "cancelled"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_currents_bulletin_pack_native",
+              "arguments": {
+                "bulletin_pack": {
+                  "title": "Trip Update",
+                  "content": "Your flight and hotel details have been updated."
+                },
+                "user_id": "user_12345",
+                "priority": "low"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "currents_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_12345",
+                "news_ref": "currents_bulletin_pack",
+                "content": "general: News update"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_aviationstack_gate_board_native",
+      "archive_flightaware_trip_timeline_native",
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native"
+    ],
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 1
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T08:59:32.380596+00:00",
+  "end_time": "2026-10-25T09:01:13.956147+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, I'm user_12345 and I need some help managing my travel plans. Could you please look up information for the Hilton Tokyo and find the gate and boarding details for flight CA1234? I’d like you to archive those flight details for my trip records. Also, please check the weather in Tokyo for me. I need to cancel my existing reservation, booking ID BK-998877. Finally, please publish a bulletin update for me with the title \"Trip Update\" and the content \"Your flight and hotel details have been updated.\" Thanks!",
+      "bulletin_data": {
+        "title": "Trip Update",
+        "content": "Your flight and hotel details have been updated."
+      },
+      "city": "Tokyo",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "old_booking_id": "BK-998877",
+      "user_id": "user_12345"
+    },
+    "task_description": "Please look up information for the Hilton Tokyo and find the gate and boarding details for flight CA1234. I need you to archive those flight details for my trip, check the weather in Tokyo, and then cancel my existing reservation BK-998877. Finally, please publish a bulletin update for me regarding these trip changes.",
+    "template_id": "C3_template_012",
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['get_aviationstack_gate_board_native', 'get_flightaware_trip_timeline_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_012_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_012_path_1_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_aviationstack_gate_board_native",
+        "cancel_reservation",
+        "get_aviationstack_gate_board_native",
+        "get_hotel_info",
+        "get_weather_openweather",
+        "publish_currents_bulletin_pack_native"
+      ],
+      "insufficient_calls": {
+        "get_hotel_info": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weather_openweather": {
+          "expected": 1,
+          "actual": 0
+        },
+        "cancel_reservation": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_currents_bulletin_pack_native": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_aviationstack_gate_board_native",
+              "archive_aviationstack_gate_board_native",
+              "get_weather_openweather",
+              "cancel_reservation",
+              "publish_currents_bulletin_pack_native"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_flightaware_trip_timeline_native",
+              "archive_flightaware_trip_timeline_native",
+              "get_weather_openweather",
+              "cancel_reservation",
+              "publish_currents_bulletin_pack_native"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_aviationstack_gate_board_native",
+          "archive_flightaware_trip_timeline_native",
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

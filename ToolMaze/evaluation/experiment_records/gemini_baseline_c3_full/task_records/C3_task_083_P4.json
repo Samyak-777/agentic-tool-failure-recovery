@@ -1,0 +1,713 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_083",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_083",
+    "template_id": "C3_template_083",
+    "complexity": "C3",
+    "task_description": "Please check the living room main light status, get the current local time in Los Angeles, then scan the living room devices and pick the thermostat. After that, set the living room AC to cool at 22°C, and then tell me what 22°C is in Fahrenheit.",
+    "user_input": {
+      "query": "Please check whether the main light in the living_room is on or off, specifically the light with ID light_living. Then get the current local time in Los Angeles using the timezone America/Los_Angeles. After that, scan the devices in the living_room and find the thermostat, with target_device_type thermostat and thermostat_device_id ac_living. Once you’ve got it, set the living room AC to hvac_mode cool at 22°C, using target_temperature_c 22. Finally, tell me what 22°C is in Fahrenheit.",
+      "area": "living_room",
+      "hvac_mode": "cool",
+      "light_id": "light_living",
+      "target_device_type": "thermostat",
+      "target_temperature_c": 22,
+      "thermostat_device_id": "ac_living",
+      "timezone": "America/Los_Angeles"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_light_mesh_snapshot_native",
+          "get_local_time_capsule_native",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "adjust_temperature",
+          "temperature_converter"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/Los_Angeles"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "07:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/Los_Angeles",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "kitchen",
+              "device_count": 0,
+              "devices": [],
+              "message": "Scan complete successfully. No devices found in living_room."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "thermostat"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "device_type": "thermostat",
+              "device_name": "Living Room AC",
+              "location": "living_room",
+              "selection_reason": "selected_first_thermostat"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/Los_Angeles"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "07:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/Los_Angeles",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "kitchen",
+                "device_count": 0,
+                "devices": [],
+                "message": "Scan complete successfully. No devices found in living_room."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "thermostat"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "device_type": "thermostat",
+                "device_name": "Living Room AC",
+                "location": "living_room",
+                "selection_reason": "selected_first_thermostat"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 22,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_light_mesh_snapshot_native",
+          "get_local_time_capsule_native",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "adjust_temperature",
+          "temperature_converter"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/Los_Angeles"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "07:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/Los_Angeles",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "thermostat"
+            },
+            "output": {
+              "found": -1,
+              "area_name": "kitchen",
+              "total_items": 4,
+              "items": []
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "thermostat"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "device_type": "thermostat",
+              "area": "living_room",
+              "selection_reason": "resolved_first_thermostat"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/Los_Angeles"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "07:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/Los_Angeles",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "thermostat"
+              },
+              "output": {
+                "found": -1,
+                "area_name": "kitchen",
+                "total_items": 4,
+                "items": []
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "thermostat"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "device_type": "thermostat",
+                "area": "living_room",
+                "selection_reason": "resolved_first_thermostat"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 22,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "discover_smart_devices",
+      "query_connected_devices",
+      "resolve_connected_device_by_type",
+      "select_discovered_device_by_type"
+    ],
+    "domains": [
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T06:55:38.166975+00:00",
+  "end_time": "2026-10-25T06:57:18.288012+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the main light in the living_room is on or off, specifically the light with ID light_living. Then get the current local time in Los Angeles using the timezone America/Los_Angeles. After that, scan the devices in the living_room and find the thermostat, with target_device_type thermostat and thermostat_device_id ac_living. Once you’ve got it, set the living room AC to hvac_mode cool at 22°C, using target_temperature_c 22. Finally, tell me what 22°C is in Fahrenheit.",
+      "area": "living_room",
+      "hvac_mode": "cool",
+      "light_id": "light_living",
+      "target_device_type": "thermostat",
+      "target_temperature_c": 22,
+      "thermostat_device_id": "ac_living",
+      "timezone": "America/Los_Angeles"
+    },
+    "task_description": "Please check the living room main light status, get the current local time in Los Angeles, then scan the living room devices and pick the thermostat. After that, set the living room AC to cool at 22°C, and then tell me what 22°C is in Fahrenheit.",
+    "template_id": "C3_template_083",
+    "domains": [
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['discover_smart_devices', 'query_connected_devices'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_083_path_0_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": "kitchen",
+          "device_count": 0,
+          "devices": [],
+          "message": "Scan complete successfully. No devices found in living_room."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution"
+        ]
+      },
+      {
+        "config_id": "C3_task_083_path_1_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": -1,
+          "area_name": "kitchen",
+          "total_items": 4,
+          "items": []
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "adjust_temperature",
+        "discover_smart_devices",
+        "get_light_mesh_snapshot_native",
+        "get_local_time_capsule_native",
+        "select_discovered_device_by_type",
+        "temperature_converter"
+      ],
+      "insufficient_calls": {
+        "get_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_local_time_capsule_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "discover_smart_devices": {
+          "expected": 1,
+          "actual": 0
+        },
+        "select_discovered_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "adjust_temperature": {
+          "expected": 1,
+          "actual": 0
+        },
+        "temperature_converter": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_light_mesh_snapshot_native",
+              "get_local_time_capsule_native",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "adjust_temperature",
+              "temperature_converter"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_light_mesh_snapshot_native",
+              "get_local_time_capsule_native",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "adjust_temperature",
+              "temperature_converter"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "discover_smart_devices",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "select_discovered_device_by_type"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

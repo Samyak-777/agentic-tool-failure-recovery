@@ -1,0 +1,803 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_017",
+  "mode": "P1",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_017",
+    "template_id": "C3_template_017",
+    "complexity": "C3",
+    "task_description": "Please convert 85.5 degrees Fahrenheit to Celsius and check the current time in New York. I also need you to look up the information for the Hilton Tokyo and retrieve my booking stay sheet for that hotel. Additionally, please get the gate board details for flight CA1234, archive those flight details as a high-priority email for a trip cancellation, and finally cancel my reservation at the Hilton Tokyo.",
+    "user_input": {
+      "query": "Hi there, I need some help managing my travel plans. First, can you convert 85.5 degrees Fahrenheit to Celsius for me? I would also like to know the current time in New York, as I'm following the America/New_York timezone. Regarding my trip, please look up the general information for the Hilton Tokyo and retrieve my booking stay sheet for that hotel; my ID is user_8891. I also need you to check the gate board details for flight CA1234. Once you have those flight details, please archive them as a high-priority email regarding a trip cancellation. Finally, please go ahead and cancel my reservation at the Hilton Tokyo.",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "local_temp": 85.5,
+      "user_id": "user_8891",
+      "user_timezone": "America/New_York"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "temperature_converter",
+          "get_current_time",
+          "get_hotel_info",
+          "get_booking_stay_sheet_native",
+          "get_aviationstack_gate_board_native",
+          "archive_aviationstack_gate_board_native",
+          "cancel_reservation"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 85.5,
+              "from_unit": "fahrenheit",
+              "to_unit": "celsius"
+            },
+            "output": {
+              "converted_value": 29.72,
+              "from_unit": "fahrenheit",
+              "to_unit": "celsius",
+              "original_value": 85.5
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_booking_stay_sheet_native",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "stay_sheet_id": "booking_hilton_tokyo",
+              "property_name": "Hilton Tokyo",
+              "city_label": "Tokyo, Japan",
+              "nightly_usd": 180,
+              "availability_state": "Available",
+              "rating_value": 4.5
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Upstream Service Error"
+            },
+            "status": "error",
+            "error_message": "502 UpstreamError",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "board_ref": "gate_ca1234",
+              "flight_code": "CA1234",
+              "dep_airport": "Beijing Capital Airport",
+              "arr_airport": "Shanghai Pudong Airport",
+              "gate_label": "A12",
+              "status_text": "On Time"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_aviationstack_gate_board_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "title": "Trip Cancellation Archive",
+              "user_id": "user_8891",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "aviationstack_gate_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Cancellation Archive",
+              "transport_ref": "gate_ca1234"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "cancel_reservation",
+            "arguments": {
+              "booking_id": "booking_hilton_tokyo",
+              "reason": "archived"
+            },
+            "output": {
+              "message": "Booking cancelled successfully",
+              "booking_id": "booking_hilton_tokyo",
+              "cancellation_reason": "archived",
+              "refund_amount": 350,
+              "refund_currency": "USD",
+              "status": "cancelled"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 85.5,
+                "from_unit": "fahrenheit",
+                "to_unit": "celsius"
+              },
+              "output": {
+                "converted_value": 29.72,
+                "from_unit": "fahrenheit",
+                "to_unit": "celsius",
+                "original_value": 85.5
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_booking_stay_sheet_native",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "stay_sheet_id": "booking_hilton_tokyo",
+                "property_name": "Hilton Tokyo",
+                "city_label": "Tokyo, Japan",
+                "nightly_usd": 180,
+                "availability_state": "Available",
+                "rating_value": 4.5
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Upstream Service Error"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_aviationstack_gate_board_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_ca1234",
+                  "flight_code": "CA1234",
+                  "dep_airport": "Beijing Capital Airport",
+                  "arr_airport": "Shanghai Pudong Airport",
+                  "gate_label": "A12",
+                  "status_text": "On Time"
+                },
+                "title": "Trip Cancellation Archive",
+                "user_id": "user_8891",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "aviationstack_gate_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Cancellation Archive",
+                "transport_ref": "gate_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "cancel_reservation",
+              "arguments": {
+                "booking_id": "booking_hilton_tokyo",
+                "reason": "archived"
+              },
+              "output": {
+                "message": "Booking cancelled successfully",
+                "booking_id": "booking_hilton_tokyo",
+                "cancellation_reason": "archived",
+                "refund_amount": 350,
+                "refund_currency": "USD",
+                "status": "cancelled"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "temperature_converter",
+          "get_current_time",
+          "get_hotel_info",
+          "get_booking_stay_sheet_native",
+          "get_flightaware_trip_timeline_native",
+          "archive_flightaware_trip_timeline_native",
+          "cancel_reservation"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 85.5,
+              "from_unit": "fahrenheit",
+              "to_unit": "celsius"
+            },
+            "output": {
+              "converted_value": 29.72,
+              "from_unit": "fahrenheit",
+              "to_unit": "celsius",
+              "original_value": 85.5
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_booking_stay_sheet_native",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "stay_sheet_id": "booking_hilton_tokyo",
+              "property_name": "Hilton Tokyo",
+              "city_label": "Tokyo, Japan",
+              "nightly_usd": 180,
+              "availability_state": "Available",
+              "rating_value": 4.5
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Gateway Timeout"
+            },
+            "status": "error",
+            "error_message": "504 Timeout",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "timeline_id": "trip_ca1234",
+              "flight_no": "CA1234",
+              "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+              "latest_state": "On Time",
+              "checkpoint_gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_flightaware_trip_timeline_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "title": "Trip Cancellation Archive",
+              "user_id": "user_8891",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "flightaware_timeline_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Cancellation Archive",
+              "transport_ref": "trip_ca1234"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "cancel_reservation",
+            "arguments": {
+              "booking_id": "booking_hilton_tokyo",
+              "reason": "archived"
+            },
+            "output": {
+              "message": "Booking cancelled successfully",
+              "booking_id": "booking_hilton_tokyo",
+              "cancellation_reason": "archived",
+              "refund_amount": 350,
+              "refund_currency": "USD",
+              "status": "cancelled"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 85.5,
+                "from_unit": "fahrenheit",
+                "to_unit": "celsius"
+              },
+              "output": {
+                "converted_value": 29.72,
+                "from_unit": "fahrenheit",
+                "to_unit": "celsius",
+                "original_value": 85.5
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_booking_stay_sheet_native",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "stay_sheet_id": "booking_hilton_tokyo",
+                "property_name": "Hilton Tokyo",
+                "city_label": "Tokyo, Japan",
+                "nightly_usd": 180,
+                "availability_state": "Available",
+                "rating_value": 4.5
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Gateway Timeout"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_flightaware_trip_timeline_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_ca1234",
+                  "flight_no": "CA1234",
+                  "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "A12"
+                },
+                "title": "Trip Cancellation Archive",
+                "user_id": "user_8891",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "flightaware_timeline_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Cancellation Archive",
+                "transport_ref": "trip_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "cancel_reservation",
+              "arguments": {
+                "booking_id": "booking_hilton_tokyo",
+                "reason": "archived"
+              },
+              "output": {
+                "message": "Booking cancelled successfully",
+                "booking_id": "booking_hilton_tokyo",
+                "cancellation_reason": "archived",
+                "refund_amount": 350,
+                "refund_currency": "USD",
+                "status": "cancelled"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_aviationstack_gate_board_native",
+      "archive_flightaware_trip_timeline_native",
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native"
+    ],
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 4
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T09:23:12.126122+00:00",
+  "end_time": "2026-10-25T09:24:56.431943+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi there, I need some help managing my travel plans. First, can you convert 85.5 degrees Fahrenheit to Celsius for me? I would also like to know the current time in New York, as I'm following the America/New_York timezone. Regarding my trip, please look up the general information for the Hilton Tokyo and retrieve my booking stay sheet for that hotel; my ID is user_8891. I also need you to check the gate board details for flight CA1234. Once you have those flight details, please archive them as a high-priority email regarding a trip cancellation. Finally, please go ahead and cancel my reservation at the Hilton Tokyo.",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "local_temp": 85.5,
+      "user_id": "user_8891",
+      "user_timezone": "America/New_York"
+    },
+    "task_description": "Please convert 85.5 degrees Fahrenheit to Celsius and check the current time in New York. I also need you to look up the information for the Hilton Tokyo and retrieve my booking stay sheet for that hotel. Additionally, please get the gate board details for flight CA1234, archive those flight details as a high-priority email for a trip cancellation, and finally cancel my reservation at the Hilton Tokyo.",
+    "template_id": "C3_template_017",
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['get_aviationstack_gate_board_native', 'get_flightaware_trip_timeline_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_017_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 5,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Upstream Service Error"
+        },
+        "error_message": "502 UpstreamError",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_017_path_1_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 5,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_aviationstack_gate_board_native",
+        "cancel_reservation",
+        "get_aviationstack_gate_board_native",
+        "get_booking_stay_sheet_native",
+        "get_current_time",
+        "get_hotel_info",
+        "temperature_converter"
+      ],
+      "insufficient_calls": {
+        "temperature_converter": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_current_time": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_hotel_info": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_booking_stay_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "cancel_reservation": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "temperature_converter",
+              "get_current_time",
+              "get_hotel_info",
+              "get_booking_stay_sheet_native",
+              "get_aviationstack_gate_board_native",
+              "archive_aviationstack_gate_board_native",
+              "cancel_reservation"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "temperature_converter",
+              "get_current_time",
+              "get_hotel_info",
+              "get_booking_stay_sheet_native",
+              "get_flightaware_trip_timeline_native",
+              "archive_flightaware_trip_timeline_native",
+              "cancel_reservation"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_aviationstack_gate_board_native",
+          "archive_flightaware_trip_timeline_native",
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

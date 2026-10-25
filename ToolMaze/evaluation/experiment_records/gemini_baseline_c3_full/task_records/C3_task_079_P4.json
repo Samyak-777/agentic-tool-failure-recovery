@@ -1,0 +1,795 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_079",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_079",
+    "template_id": "C3_template_079",
+    "complexity": "C3",
+    "task_description": "Please check whether NASDAQ is open, then get AAPL’s current price in EUR and its latest quote snapshot. After that, send that AAPL quote snapshot to me in the app with high priority, analyze the text “AAPL: 170.25 USD @ yahoo_native,” check my active investment account balance status, and then save a snapshot of the market-watch workspace and alert me in the app with high priority.",
+    "user_input": {
+      "query": "Please check whether NASDAQ is open, then get the current price for AAPL in EUR and its latest quote snapshot. After that, send that AAPL quote snapshot to me in the app on channel app with high priority for user_id user_01. Also analyze this text exactly: “AAPL: 170.25 USD @ yahoo_native,” then check the balance status of my active investment account. Finally, save a snapshot of the market-watch workspace at /workspaces/market-watch using the backup name aapl-monitor-session, and alert me in the app with high priority when that’s done.",
+      "backup_name": "aapl-monitor-session",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "priority": "high",
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "user_id": "user_01",
+      "workspace_path": "/workspaces/market-watch"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status",
+          "get_stock_price_and_convert",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "analyze_text",
+          "get_account_balance",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 156.63,
+              "currency": "EUR",
+              "ticker": "AAPL",
+              "price_usd": 170.25,
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "weather_tokyo_20260222",
+              "symbol": "TYO-WEATHER",
+              "usd_last": 12400.0,
+              "venue": "jma_feed",
+              "quoted_at": "2026-02-22T06:00:00Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "output": {
+              "raw_content": "AAPL: 170.25 USD @ yahoo_native",
+              "character_count": 31,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 18,
+              "digit_count": 5,
+              "whitespace_count": 4,
+              "longest_word": "yahoo_native",
+              "longest_word_length": 12,
+              "average_word_length": 5.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/workspaces/market-watch",
+              "backup_name": "aapl-monitor-session",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspaces/market-watch",
+              "backup_name": "aapl-monitor-session",
+              "size_mb": 340,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "weather_tokyo_20260222",
+                "symbol": "TYO-WEATHER",
+                "usd_last": 12400.0,
+                "venue": "jma_feed",
+                "quoted_at": "2026-02-22T06:00:00Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/workspaces/market-watch",
+                "backup_name": "aapl-monitor-session",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspaces/market-watch",
+                "backup_name": "aapl-monitor-session",
+                "size_mb": 340,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status",
+          "get_stock_price_and_convert",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "analyze_text",
+          "get_account_balance",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 156.63,
+              "currency": "EUR",
+              "ticker": "AAPL",
+              "price_usd": 170.25,
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": "fxt_tsla",
+              "ticker_code": "TSLA",
+              "local_last": -228.47,
+              "settlement_ccy": "JPY",
+              "usd_reference": 245.12,
+              "fx_rate": 147.35
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 156.63,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": 0.92
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 156.63 EUR (fx 0.92)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 156.63 EUR (fx 0.92)"
+            },
+            "output": {
+              "raw_content": "AAPL: 156.63 EUR (fx 0.92)",
+              "character_count": 26,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 9,
+              "digit_count": 8,
+              "whitespace_count": 4,
+              "longest_word": "156.63",
+              "longest_word_length": 6,
+              "average_word_length": 4.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/workspaces/market-watch",
+              "backup_name": "aapl-monitor-session",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspaces/market-watch",
+              "backup_name": "aapl-monitor-session",
+              "size_mb": 340,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": "fxt_tsla",
+                "ticker_code": "TSLA",
+                "local_last": -228.47,
+                "settlement_ccy": "JPY",
+                "usd_reference": 245.12,
+                "fx_rate": 147.35
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 156.63,
+                  "settlement_ccy": "EUR",
+                  "usd_reference": 170.25,
+                  "fx_rate": 0.92
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 156.63 EUR (fx 0.92)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/workspaces/market-watch",
+                "backup_name": "aapl-monitor-session",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspaces/market-watch",
+                "backup_name": "aapl-monitor-session",
+                "size_mb": 340,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_fx_quote_ticket_native",
+      "get_quote_snapshot_native",
+      "publish_fx_quote_ticket_native",
+      "publish_quote_snapshot_native"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "irrelevant_response"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T06:38:56.074286+00:00",
+  "end_time": "2026-10-25T06:40:37.349153+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether NASDAQ is open, then get the current price for AAPL in EUR and its latest quote snapshot. After that, send that AAPL quote snapshot to me in the app on channel app with high priority for user_id user_01. Also analyze this text exactly: “AAPL: 170.25 USD @ yahoo_native,” then check the balance status of my active investment account. Finally, save a snapshot of the market-watch workspace at /workspaces/market-watch using the backup name aapl-monitor-session, and alert me in the app with high priority when that’s done.",
+      "backup_name": "aapl-monitor-session",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "priority": "high",
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "user_id": "user_01",
+      "workspace_path": "/workspaces/market-watch"
+    },
+    "task_description": "Please check whether NASDAQ is open, then get AAPL’s current price in EUR and its latest quote snapshot. After that, send that AAPL quote snapshot to me in the app with high priority, analyze the text “AAPL: 170.25 USD @ yahoo_native,” check my active investment account balance status, and then save a snapshot of the market-watch workspace and alert me in the app with high priority.",
+    "template_id": "C3_template_079",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_quote_snapshot_native', 'get_fx_quote_ticket_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_079_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "weather_tokyo_20260222",
+          "symbol": "TYO-WEATHER",
+          "usd_last": 12400.0,
+          "venue": "jma_feed",
+          "quoted_at": "2026-02-22T06:00:00Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_079_path_1_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_tsla",
+          "ticker_code": "TSLA",
+          "local_last": -228.47,
+          "settlement_ccy": "JPY",
+          "usd_reference": 245.12,
+          "fx_rate": 147.35
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "analyze_text",
+        "get_account_balance",
+        "get_market_status",
+        "get_quote_snapshot_native",
+        "get_stock_price_and_convert",
+        "publish_quote_snapshot_native",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "get_market_status": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_stock_price_and_convert": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "analyze_text": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_account_balance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status",
+              "get_stock_price_and_convert",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "analyze_text",
+              "get_account_balance",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status",
+              "get_stock_price_and_convert",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "analyze_text",
+              "get_account_balance",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_fx_quote_ticket_native",
+          "get_quote_snapshot_native",
+          "publish_fx_quote_ticket_native",
+          "publish_quote_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

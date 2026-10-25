@@ -1,0 +1,741 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_094",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_094",
+    "template_id": "C3_template_094",
+    "complexity": "C3",
+    "task_description": "Please check which light is connected in the bedroom, then prepare a restart for it and grab its current light mesh state. After that, archive that pre-restart snapshot, restart the bedroom light, and then save a maintenance record and send me an app notification.",
+    "user_input": {
+      "query": "Please check which light is connected in the bedroom area and confirm the device status for light_bedroom: device_id light_bedroom, online true, power_state on. Then prepare a restart for that bedroom light and grab its current light mesh state. After that, archive the pre-restart snapshot with the title Bedroom Light Pre-Restart Archive, restart the bedroom light, and save a maintenance record named light_bedroom_restart_record in /ops/iot/maintenance. Once everything is done, send a medium priority notification to user_01 through the app channel.",
+      "archive_title": "Bedroom Light Pre-Restart Archive",
+      "area": "bedroom",
+      "backup_name": "light_bedroom_restart_record",
+      "channel": "app",
+      "device_status": {
+        "device_id": "light_bedroom",
+        "online": true,
+        "power_state": "on"
+      },
+      "priority": "medium",
+      "user_id": "user_01",
+      "workspace_path": "/ops/iot/maintenance"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_connected_devices",
+          "build_device_restart_request",
+          "get_light_mesh_snapshot_native",
+          "archive_light_mesh_snapshot_native",
+          "restart_device",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_light_archive_native_2to2:mesh_light_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "bedroom",
+              "device_type": "light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "bedroom",
+              "total_items": 5,
+              "items": [
+                "lock_bedroom",
+                "light_bedroom",
+                "ac_bedroom",
+                "sensor_bedroom_window",
+                "tv_bedroom"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_bedroom",
+                "online": true,
+                "power_state": "on"
+              }
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_bedroom"
+            },
+            "output": {
+              "mesh_node": "thermostat_hallway",
+              "lamp_state": "cooling",
+              "level_pct": 0,
+              "hue_name": "eco"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_light_mesh_snapshot_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_bedroom",
+                "lamp_state": "on",
+                "level_pct": 50,
+                "hue_name": "white"
+              },
+              "title": "Bedroom Light Pre-Restart Archive",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "mesh_light_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Bedroom Light Pre-Restart Archive",
+              "light_ref": "light_bedroom"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "restart_device",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "status": "rebooting",
+              "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+              "timestamp": "2026-02-22T23:04:54.104641"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "bedroom",
+                "device_type": "light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "bedroom",
+                "total_items": 5,
+                "items": [
+                  "lock_bedroom",
+                  "light_bedroom",
+                  "ac_bedroom",
+                  "sensor_bedroom_window",
+                  "tv_bedroom"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_restart_request",
+              "arguments": {
+                "device_status": {
+                  "device_id": "light_bedroom",
+                  "online": true,
+                  "power_state": "on"
+                }
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "restart_reason": "status_driven_recovery"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_bedroom"
+              },
+              "output": {
+                "mesh_node": "thermostat_hallway",
+                "lamp_state": "cooling",
+                "level_pct": 0,
+                "hue_name": "eco"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_light_mesh_snapshot_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_bedroom",
+                  "lamp_state": "on",
+                  "level_pct": 50,
+                  "hue_name": "white"
+                },
+                "title": "Bedroom Light Pre-Restart Archive",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "mesh_light_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Bedroom Light Pre-Restart Archive",
+                "light_ref": "light_bedroom"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "restart_device",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "status": "rebooting",
+                "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+                "timestamp": "2026-02-22T23:04:54.104641"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_connected_devices",
+          "build_device_restart_request",
+          "get_light_bridge_payload_native",
+          "archive_light_bridge_payload_native",
+          "restart_device",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_light_archive_native_2to2:bridge_light_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "bedroom",
+              "device_type": "light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "bedroom",
+              "total_items": 5,
+              "items": [
+                "lock_bedroom",
+                "light_bedroom",
+                "ac_bedroom",
+                "sensor_bedroom_window",
+                "tv_bedroom"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_bedroom",
+                "online": true,
+                "power_state": "on"
+              }
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "bridge_light_id": "speaker_kitchen",
+              "bridge_state": "playing",
+              "dimmer": 0,
+              "tone": "podcast"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_light_bridge_payload_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_bedroom",
+                "bridge_state": "on",
+                "dimmer": 50,
+                "tone": "white"
+              },
+              "title": "Bedroom Light Pre-Restart Archive",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "bridge_light_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Bedroom Light Pre-Restart Archive",
+              "light_ref": "light_bedroom"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "restart_device",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "status": "rebooting",
+              "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+              "timestamp": "2026-02-22T23:04:54.104641"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "bedroom",
+                "device_type": "light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "bedroom",
+                "total_items": 5,
+                "items": [
+                  "lock_bedroom",
+                  "light_bedroom",
+                  "ac_bedroom",
+                  "sensor_bedroom_window",
+                  "tv_bedroom"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_restart_request",
+              "arguments": {
+                "device_status": {
+                  "device_id": "light_bedroom",
+                  "online": true,
+                  "power_state": "on"
+                }
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "restart_reason": "status_driven_recovery"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "bridge_light_id": "speaker_kitchen",
+                "bridge_state": "playing",
+                "dimmer": 0,
+                "tone": "podcast"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_light_bridge_payload_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_bedroom",
+                  "bridge_state": "on",
+                  "dimmer": 50,
+                  "tone": "white"
+                },
+                "title": "Bedroom Light Pre-Restart Archive",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "bridge_light_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Bedroom Light Pre-Restart Archive",
+                "light_ref": "light_bedroom"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "restart_device",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "status": "rebooting",
+                "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+                "timestamp": "2026-02-22T23:04:54.104641"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_light_bridge_payload_native",
+      "archive_light_mesh_snapshot_native",
+      "get_light_bridge_payload_native",
+      "get_light_mesh_snapshot_native"
+    ],
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "irrelevant_response"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T07:40:15.080919+00:00",
+  "end_time": "2026-10-25T07:41:56.304912+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check which light is connected in the bedroom area and confirm the device status for light_bedroom: device_id light_bedroom, online true, power_state on. Then prepare a restart for that bedroom light and grab its current light mesh state. After that, archive the pre-restart snapshot with the title Bedroom Light Pre-Restart Archive, restart the bedroom light, and save a maintenance record named light_bedroom_restart_record in /ops/iot/maintenance. Once everything is done, send a medium priority notification to user_01 through the app channel.",
+      "archive_title": "Bedroom Light Pre-Restart Archive",
+      "area": "bedroom",
+      "backup_name": "light_bedroom_restart_record",
+      "channel": "app",
+      "device_status": {
+        "device_id": "light_bedroom",
+        "online": true,
+        "power_state": "on"
+      },
+      "priority": "medium",
+      "user_id": "user_01",
+      "workspace_path": "/ops/iot/maintenance"
+    },
+    "task_description": "Please check which light is connected in the bedroom, then prepare a restart for it and grab its current light mesh state. After that, archive that pre-restart snapshot, restart the bedroom light, and then save a maintenance record and send me an app notification.",
+    "template_id": "C3_template_094",
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_light_mesh_snapshot_native', 'get_light_bridge_payload_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_094_path_0_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "thermostat_hallway",
+          "lamp_state": "cooling",
+          "level_pct": 0,
+          "hue_name": "eco"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_light_archive_native_2to2:mesh_light_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_094_path_1_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "speaker_kitchen",
+          "bridge_state": "playing",
+          "dimmer": 0,
+          "tone": "podcast"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_light_archive_native_2to2:bridge_light_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_light_mesh_snapshot_native",
+        "build_device_restart_request",
+        "get_light_mesh_snapshot_native",
+        "query_connected_devices",
+        "restart_device",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "query_connected_devices": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_device_restart_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "restart_device": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_connected_devices",
+              "build_device_restart_request",
+              "get_light_mesh_snapshot_native",
+              "archive_light_mesh_snapshot_native",
+              "restart_device",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_connected_devices",
+              "build_device_restart_request",
+              "get_light_bridge_payload_native",
+              "archive_light_bridge_payload_native",
+              "restart_device",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_light_bridge_payload_native",
+          "archive_light_mesh_snapshot_native",
+          "get_light_bridge_payload_native",
+          "get_light_mesh_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

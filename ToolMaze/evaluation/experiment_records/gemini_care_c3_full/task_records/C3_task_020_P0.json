@@ -1,0 +1,661 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_020",
+  "mode": "P0",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_020",
+    "template_id": "C3_template_020",
+    "complexity": "C3",
+    "task_description": "Check Alice Smith's availability for October 24th, 2024, then look up the Hilton Tokyo and book a standard room for her from October 24th to the 28th. After that, check the weather alerts for Tokyo, archive the weather report as a high-priority \"Destination Weather Archive\" for Alice, and finally send her a notification that it has been archived.",
+    "user_input": {
+      "query": "Could you please check the schedule for calendar user u_alice to see if Alice Smith is available on 2024-10-24? Then, look up the Hilton Tokyo and book a standard room for her from 2024-10-24 to 2024-10-28. Once the booking is sorted, check the current weather alerts for Tokyo. Please save that weather report as a high-priority \"Destination Weather Archive\" for Alice. Finally, send a message to my contact alice to notify her that the weather report has been archived.",
+      "calendar_user": "u_alice",
+      "contact_name": "alice",
+      "guest_name": "Alice Smith",
+      "target_hotel": "Hilton Tokyo",
+      "trip_end_date": "2024-10-28",
+      "trip_start_date": "2024-10-24"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_hotel_info_expedia",
+          "book_hotel",
+          "get_weatherapi_alert_card_native",
+          "archive_weatherapi_alert_card_native",
+          "push_alert_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "guest_name": "Alice Smith",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice Smith",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "Tokyo, Japan"
+            },
+            "output": {
+              "alert_card_id": "wapi_tokyo,_japan",
+              "city_label": "Tokyo, Japan",
+              "celsius_now": 20,
+              "sky_text": "Clear",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_tokyo,_japan",
+                "city_label": "Tokyo, Japan",
+                "celsius_now": 20,
+                "sky_text": "Clear",
+                "advice_level": "normal"
+              },
+              "title": "Destination Weather Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Destination Weather Archive",
+              "weather_ref": "wapi_tokyo,_japan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "archived",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "archived",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_availability_google_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "step_2_get_hotel_info_expedia": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice Smith",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_weatherapi_alert_card_native": {
+              "alert_card_id": "wapi_tokyo,_japan",
+              "city_label": "Tokyo, Japan",
+              "celsius_now": 20,
+              "sky_text": "Clear",
+              "advice_level": "normal"
+            },
+            "step_5_archive_weatherapi_alert_card_native": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Destination Weather Archive",
+              "weather_ref": "wapi_tokyo,_japan"
+            },
+            "step_6_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "archived",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_hotel_info_expedia",
+          "book_hotel",
+          "get_visualcrossing_forecast_chip_native",
+          "archive_visualcrossing_forecast_chip_native",
+          "push_alert_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "guest_name": "Alice Smith",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice Smith",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "Tokyo, Japan"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_tokyo,_japan",
+              "locality": "Tokyo, Japan",
+              "metric_temp": 20,
+              "conditions_brief": "Clear",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_tokyo,_japan",
+                "locality": "Tokyo, Japan",
+                "metric_temp": 20,
+                "conditions_brief": "Clear",
+                "advice_level": "normal"
+              },
+              "title": "Destination Weather Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "visualcrossing_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Destination Weather Archive",
+              "weather_ref": "vc_tokyo,_japan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "archived",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "archived",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_availability_google_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "step_2_get_hotel_info_expedia": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice Smith",
+              "check_in_date": "2024-10-24",
+              "check_out_date": "2024-10-28",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_visualcrossing_forecast_chip_native": {
+              "forecast_chip_ref": "vc_tokyo,_japan",
+              "locality": "Tokyo, Japan",
+              "metric_temp": 20,
+              "conditions_brief": "Clear",
+              "advice_level": "normal"
+            },
+            "step_5_archive_visualcrossing_forecast_chip_native": {
+              "status": "archived",
+              "strategy": "visualcrossing_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Destination Weather Archive",
+              "weather_ref": "vc_tokyo,_japan"
+            },
+            "step_6_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "archived",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_visualcrossing_forecast_chip_native",
+      "archive_weatherapi_alert_card_native",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native"
+    ],
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T09:36:55.416795+00:00",
+  "end_time": "2026-10-25T09:38:37.575505+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C3 P0 failed: no complete valid path executed successfully; missing_tools=['archive_weatherapi_alert_card_native', 'book_hotel', 'get_hotel_info_expedia', 'get_weatherapi_alert_card_native', 'push_alert_contact_by_name', 'query_availability_google_calendar']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the schedule for calendar user u_alice to see if Alice Smith is available on 2024-10-24? Then, look up the Hilton Tokyo and book a standard room for her from 2024-10-24 to 2024-10-28. Once the booking is sorted, check the current weather alerts for Tokyo. Please save that weather report as a high-priority \"Destination Weather Archive\" for Alice. Finally, send a message to my contact alice to notify her that the weather report has been archived.",
+      "calendar_user": "u_alice",
+      "contact_name": "alice",
+      "guest_name": "Alice Smith",
+      "target_hotel": "Hilton Tokyo",
+      "trip_end_date": "2024-10-28",
+      "trip_start_date": "2024-10-24"
+    },
+    "task_description": "Check Alice Smith's availability for October 24th, 2024, then look up the Hilton Tokyo and book a standard room for her from October 24th to the 28th. After that, check the weather alerts for Tokyo, archive the weather report as a high-priority \"Destination Weather Archive\" for Alice, and finally send her a notification that it has been archived.",
+    "template_id": "C3_template_020",
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C3 P0 failed: no complete valid path executed successfully; missing_tools=['archive_weatherapi_alert_card_native', 'book_hotel', 'get_hotel_info_expedia', 'get_weatherapi_alert_card_native', 'push_alert_contact_by_name', 'query_availability_google_calendar']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_weatherapi_alert_card_native",
+        "book_hotel",
+        "get_hotel_info_expedia",
+        "get_weatherapi_alert_card_native",
+        "push_alert_contact_by_name",
+        "query_availability_google_calendar"
+      ],
+      "insufficient_calls": {
+        "query_availability_google_calendar": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_hotel_info_expedia": {
+          "expected": 1,
+          "actual": 0
+        },
+        "book_hotel": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert_contact_by_name": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_hotel_info_expedia",
+              "book_hotel",
+              "get_weatherapi_alert_card_native",
+              "archive_weatherapi_alert_card_native",
+              "push_alert_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_hotel_info_expedia",
+              "book_hotel",
+              "get_visualcrossing_forecast_chip_native",
+              "archive_visualcrossing_forecast_chip_native",
+              "push_alert_contact_by_name"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_visualcrossing_forecast_chip_native",
+          "archive_weatherapi_alert_card_native",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

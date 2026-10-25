@@ -1,0 +1,816 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_026",
+  "mode": "P3",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_026",
+    "template_id": "C3_template_026",
+    "complexity": "C3",
+    "task_description": "Please check the weather in London and the current local time there. I also need you to get the weather alert card for London, archive that card to my Trip Weather Archive with medium priority for user_1234, and then look up the timeline for flight AA100. After that, publish my stay details for The Ritz starting December 1st, and finally send me a high-priority push notification to let me know the briefing, archive, and stay details are updated.",
+    "user_input": {
+      "query": "Could you please check the current weather and local time in London (timezone: Europe/London)? I also need you to get the weather alert card for London and archive it to my Trip Weather Archive with medium priority for user_1234. After that, look up the timeline for flight AA100. Next, publish my stay details for The Ritz starting on 2024-12-01. Finally, please send me a high-priority push notification to let me know that the briefing, archive, and stay details are updated.",
+      "city": "London",
+      "flight_number": "AA100",
+      "stay_sheet_object": {
+        "hotel_name": "The Ritz",
+        "check_in": "2024-12-01"
+      },
+      "timezone": "Europe/London",
+      "user_id": "user_1234"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_weather_visualcrossing",
+          "get_local_time_capsule_native",
+          "get_weatherapi_alert_card_native",
+          "archive_weatherapi_alert_card_native",
+          "get_flightaware_trip_timeline_native",
+          "publish_booking_stay_sheet_native",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "Europe/London"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "15:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "Europe/London",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "none",
+              "city_label": "London",
+              "celsius_now": -45,
+              "sky_text": "Heavy Snowfall",
+              "advice_level": "normal"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "wapi_london",
+              "city_label": "London",
+              "celsius_now": 12,
+              "sky_text": "Rain",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "title": "Trip Weather Archive",
+              "user_id": "user_1234",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Weather Archive",
+              "weather_ref": "wapi_london"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "timeline_id": "trip_aa100",
+              "flight_no": "AA100",
+              "route_text": "New York JFK -> Los Angeles LAX",
+              "latest_state": "On Time",
+              "checkpoint_gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "publish_booking_stay_sheet_native",
+            "arguments": {
+              "stay_sheet": {
+                "hotel_name": "The Ritz",
+                "check_in": "2024-12-01"
+              },
+              "user_id": "user_1234"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "booking_stay_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_1234",
+              "property_ref": "booking_stay_sheet",
+              "content": "Hotel Unknown at 0 USD/night"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your travel briefing, weather archive, and stay details have been updated.",
+              "user_id": "user_1234",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_1234",
+              "content": "Your travel briefing, weather archive, and stay details have been updated.",
+              "priority": "high"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "Europe/London"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "15:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "Europe/London",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "none",
+                "city_label": "London",
+                "celsius_now": -45,
+                "sky_text": "Heavy Snowfall",
+                "advice_level": "normal"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_london",
+                  "city_label": "London",
+                  "celsius_now": 12,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "title": "Trip Weather Archive",
+                "user_id": "user_1234",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "weatherapi_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Weather Archive",
+                "weather_ref": "wapi_london"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_booking_stay_sheet_native",
+              "arguments": {
+                "stay_sheet": {
+                  "hotel_name": "The Ritz",
+                  "check_in": "2024-12-01"
+                },
+                "user_id": "user_1234"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "booking_stay_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_1234",
+                "property_ref": "booking_stay_sheet",
+                "content": "Hotel Unknown at 0 USD/night"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your travel briefing, weather archive, and stay details have been updated.",
+                "user_id": "user_1234",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_1234",
+                "content": "Your travel briefing, weather archive, and stay details have been updated.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_weather_visualcrossing",
+          "get_local_time_capsule_native",
+          "get_visualcrossing_forecast_chip_native",
+          "archive_visualcrossing_forecast_chip_native",
+          "get_flightaware_trip_timeline_native",
+          "publish_booking_stay_sheet_native",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "Europe/London"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "15:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "Europe/London",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london_issued_2024-05-20_expired_2024-05-15",
+              "locality": "London (Observation Time: 14:00, Forecast Time: 10:00)",
+              "metric_temp": "12_recorded_at_20:00_predicted_for_18:00",
+              "conditions_brief": "Rain starting Friday, ending last Tuesday",
+              "advice_level": "normal_effective_2024-11-30_until_2024-11-01"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london",
+              "locality": "London",
+              "metric_temp": 12,
+              "conditions_brief": "Rain",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "title": "Trip Weather Archive",
+              "user_id": "user_1234",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "visualcrossing_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Weather Archive",
+              "weather_ref": "vc_london"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "timeline_id": "trip_aa100",
+              "flight_no": "AA100",
+              "route_text": "New York JFK -> Los Angeles LAX",
+              "latest_state": "On Time",
+              "checkpoint_gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "publish_booking_stay_sheet_native",
+            "arguments": {
+              "stay_sheet": {
+                "hotel_name": "The Ritz",
+                "check_in": "2024-12-01"
+              },
+              "user_id": "user_1234"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "booking_stay_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_1234",
+              "property_ref": "booking_stay_sheet",
+              "content": "Hotel Unknown at 0 USD/night"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your travel briefing, weather archive, and stay details have been updated.",
+              "user_id": "user_1234",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_1234",
+              "content": "Your travel briefing, weather archive, and stay details have been updated.",
+              "priority": "high"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "Europe/London"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "15:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "Europe/London",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london_issued_2024-05-20_expired_2024-05-15",
+                "locality": "London (Observation Time: 14:00, Forecast Time: 10:00)",
+                "metric_temp": "12_recorded_at_20:00_predicted_for_18:00",
+                "conditions_brief": "Rain starting Friday, ending last Tuesday",
+                "advice_level": "normal_effective_2024-11-30_until_2024-11-01"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_london",
+                  "locality": "London",
+                  "metric_temp": 12,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "title": "Trip Weather Archive",
+                "user_id": "user_1234",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "visualcrossing_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Weather Archive",
+                "weather_ref": "vc_london"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_booking_stay_sheet_native",
+              "arguments": {
+                "stay_sheet": {
+                  "hotel_name": "The Ritz",
+                  "check_in": "2024-12-01"
+                },
+                "user_id": "user_1234"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "booking_stay_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_1234",
+                "property_ref": "booking_stay_sheet",
+                "content": "Hotel Unknown at 0 USD/night"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your travel briefing, weather archive, and stay details have been updated.",
+                "user_id": "user_1234",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_1234",
+                "content": "Your travel briefing, weather archive, and stay details have been updated.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_visualcrossing_forecast_chip_native",
+      "archive_weatherapi_alert_card_native",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native"
+    ],
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P3",
+    "perturbation_point": 2,
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T10:08:49.876301+00:00",
+  "end_time": "2026-10-25T10:10:32.165427+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P3 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the current weather and local time in London (timezone: Europe/London)? I also need you to get the weather alert card for London and archive it to my Trip Weather Archive with medium priority for user_1234. After that, look up the timeline for flight AA100. Next, publish my stay details for The Ritz starting on 2024-12-01. Finally, please send me a high-priority push notification to let me know that the briefing, archive, and stay details are updated.",
+      "city": "London",
+      "flight_number": "AA100",
+      "stay_sheet_object": {
+        "hotel_name": "The Ritz",
+        "check_in": "2024-12-01"
+      },
+      "timezone": "Europe/London",
+      "user_id": "user_1234"
+    },
+    "task_description": "Please check the weather in London and the current local time there. I also need you to get the weather alert card for London, archive that card to my Trip Weather Archive with medium priority for user_1234, and then look up the timeline for flight AA100. After that, publish my stay details for The Ritz starting December 1st, and finally send me a high-priority push notification to let me know the briefing, archive, and stay details are updated.",
+    "template_id": "C3_template_026",
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P3 configured for tools ['get_weatherapi_alert_card_native', 'get_visualcrossing_forecast_chip_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_026_path_0_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 3,
+        "mode": "P3",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alert_card_id": "none",
+          "city_label": "London",
+          "celsius_now": -45,
+          "sky_text": "Heavy Snowfall",
+          "advice_level": "normal"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_026_path_1_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 3,
+        "mode": "P3",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "forecast_chip_ref": "vc_london_issued_2024-05-20_expired_2024-05-15",
+          "locality": "London (Observation Time: 14:00, Forecast Time: 10:00)",
+          "metric_temp": "12_recorded_at_20:00_predicted_for_18:00",
+          "conditions_brief": "Rain starting Friday, ending last Tuesday",
+          "advice_level": "normal_effective_2024-11-30_until_2024-11-01"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P3 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_weatherapi_alert_card_native",
+        "get_flightaware_trip_timeline_native",
+        "get_local_time_capsule_native",
+        "get_weather_visualcrossing",
+        "get_weatherapi_alert_card_native",
+        "publish_booking_stay_sheet_native",
+        "push_alert"
+      ],
+      "insufficient_calls": {
+        "get_weather_visualcrossing": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_local_time_capsule_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_flightaware_trip_timeline_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_booking_stay_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "get_local_time_capsule_native",
+              "get_weatherapi_alert_card_native",
+              "archive_weatherapi_alert_card_native",
+              "get_flightaware_trip_timeline_native",
+              "publish_booking_stay_sheet_native",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "get_local_time_capsule_native",
+              "get_visualcrossing_forecast_chip_native",
+              "archive_visualcrossing_forecast_chip_native",
+              "get_flightaware_trip_timeline_native",
+              "publish_booking_stay_sheet_native",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_visualcrossing_forecast_chip_native",
+          "archive_weatherapi_alert_card_native",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

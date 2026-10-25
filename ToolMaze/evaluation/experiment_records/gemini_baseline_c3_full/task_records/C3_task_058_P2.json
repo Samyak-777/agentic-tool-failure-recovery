@@ -1,0 +1,682 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_058",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_058",
+    "template_id": "C3_template_058",
+    "complexity": "C3",
+    "task_description": "Please check the weather in Tokyo and get the current weather alert card for the city. Once you have that, archive the weather alert card to my daily archive with a medium priority, and then look up the details for the Hilton Tokyo. After that, prepare a checked flight request for John Doe on flight NH202 for November 1st in economy, and finally send me a high-priority SMS notification confirming that the weather data is archived and the flight request is ready.",
+    "user_input": {
+      "query": "Hi, I’m user_123. Could you please check the weather in Tokyo and get the current weather alert card for the city? Once you have that, I need you to archive the weather alert card to my daily archive with a medium priority. After that, please look up the details for the Hilton Tokyo. I also need you to prepare a checked flight request for John Doe on flight NH202 for 2024-11-01 in economy. Finally, please send me a high-priority SMS notification confirming that the weather data has been archived and the flight request is ready.",
+      "city": "Tokyo",
+      "flight_info_obj": {
+        "flight_number": "NH202",
+        "departure": "2024-11-01"
+      },
+      "hotel_name": "Hilton Tokyo",
+      "passenger_name": "John Doe",
+      "user_id": "user_123"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_weather_visualcrossing",
+          "get_weatherapi_alert_card_native",
+          "archive_weatherapi_alert_card_native",
+          "get_hotel_info_booking",
+          "build_checked_flight_request",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "error": "Service Unavailable In Your Region"
+            },
+            "status": "error",
+            "error_message": "451 GeoBlocked",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_tokyo",
+                "city_label": "Tokyo",
+                "celsius_now": 22,
+                "sky_text": "Sunny",
+                "advice_level": "normal"
+              },
+              "title": "Daily Weather Archive",
+              "user_id": "user_123",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Weather Archive",
+              "weather_ref": "wapi_tokyo"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_checked_flight_request",
+            "arguments": {
+              "flight_data": {
+                "flight_number": "NH202",
+                "departure": "2024-11-01"
+              },
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "flight_number": "NH202",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "current_status": "Unknown",
+              "booking_ready": true
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Weather data archived and flight booking request has been prepared for your trip.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "sms"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Weather data archived and flight booking request has been prepared for your trip.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "error": "Service Unavailable In Your Region"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_tokyo",
+                  "city_label": "Tokyo",
+                  "celsius_now": 22,
+                  "sky_text": "Sunny",
+                  "advice_level": "normal"
+                },
+                "title": "Daily Weather Archive",
+                "user_id": "user_123",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "weatherapi_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Weather Archive",
+                "weather_ref": "wapi_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_checked_flight_request",
+              "arguments": {
+                "flight_data": {
+                  "flight_number": "NH202",
+                  "departure": "2024-11-01"
+                },
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "flight_number": "NH202",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "current_status": "Unknown",
+                "booking_ready": true
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Weather data archived and flight booking request has been prepared for your trip.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "sms"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Weather data archived and flight booking request has been prepared for your trip.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_weather_visualcrossing",
+          "get_visualcrossing_forecast_chip_native",
+          "archive_visualcrossing_forecast_chip_native",
+          "get_hotel_info_booking",
+          "build_checked_flight_request",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "archive_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_tokyo",
+                "locality": "Tokyo",
+                "metric_temp": 22,
+                "conditions_brief": "Sunny",
+                "advice_level": "normal"
+              },
+              "title": "Daily Weather Archive",
+              "user_id": "user_123",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "visualcrossing_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Weather Archive",
+              "weather_ref": "vc_tokyo"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_checked_flight_request",
+            "arguments": {
+              "flight_data": {
+                "flight_number": "NH202",
+                "departure": "2024-11-01"
+              },
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "flight_number": "NH202",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "current_status": "Unknown",
+              "booking_ready": true
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Weather data archived and flight booking request has been prepared for your trip.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "sms"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Weather data archived and flight booking request has been prepared for your trip.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_tokyo",
+                  "locality": "Tokyo",
+                  "metric_temp": 22,
+                  "conditions_brief": "Sunny",
+                  "advice_level": "normal"
+                },
+                "title": "Daily Weather Archive",
+                "user_id": "user_123",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "visualcrossing_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Weather Archive",
+                "weather_ref": "vc_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_checked_flight_request",
+              "arguments": {
+                "flight_data": {
+                  "flight_number": "NH202",
+                  "departure": "2024-11-01"
+                },
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "flight_number": "NH202",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "current_status": "Unknown",
+                "booking_ready": true
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Weather data archived and flight booking request has been prepared for your trip.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "sms"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Weather data archived and flight booking request has been prepared for your trip.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_visualcrossing_forecast_chip_native",
+      "archive_weatherapi_alert_card_native",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native"
+    ],
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 1
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T05:06:26.765444+00:00",
+  "end_time": "2026-10-25T05:08:06.197463+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, I’m user_123. Could you please check the weather in Tokyo and get the current weather alert card for the city? Once you have that, I need you to archive the weather alert card to my daily archive with a medium priority. After that, please look up the details for the Hilton Tokyo. I also need you to prepare a checked flight request for John Doe on flight NH202 for 2024-11-01 in economy. Finally, please send me a high-priority SMS notification confirming that the weather data has been archived and the flight request is ready.",
+      "city": "Tokyo",
+      "flight_info_obj": {
+        "flight_number": "NH202",
+        "departure": "2024-11-01"
+      },
+      "hotel_name": "Hilton Tokyo",
+      "passenger_name": "John Doe",
+      "user_id": "user_123"
+    },
+    "task_description": "Please check the weather in Tokyo and get the current weather alert card for the city. Once you have that, archive the weather alert card to my daily archive with a medium priority, and then look up the details for the Hilton Tokyo. After that, prepare a checked flight request for John Doe on flight NH202 for November 1st in economy, and finally send me a high-priority SMS notification confirming that the weather data is archived and the flight request is ready.",
+    "template_id": "C3_template_058",
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['get_weatherapi_alert_card_native', 'get_visualcrossing_forecast_chip_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_058_path_0_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Unavailable In Your Region"
+        },
+        "error_message": "451 GeoBlocked",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_058_path_1_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_weatherapi_alert_card_native",
+        "build_checked_flight_request",
+        "get_hotel_info_booking",
+        "get_weather_visualcrossing",
+        "get_weatherapi_alert_card_native",
+        "push_alert"
+      ],
+      "insufficient_calls": {
+        "get_weather_visualcrossing": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_hotel_info_booking": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_checked_flight_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "get_weatherapi_alert_card_native",
+              "archive_weatherapi_alert_card_native",
+              "get_hotel_info_booking",
+              "build_checked_flight_request",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "get_visualcrossing_forecast_chip_native",
+              "archive_visualcrossing_forecast_chip_native",
+              "get_hotel_info_booking",
+              "build_checked_flight_request",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_visualcrossing_forecast_chip_native",
+          "archive_weatherapi_alert_card_native",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

@@ -1,0 +1,706 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_013",
+  "mode": "P1",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_013",
+    "template_id": "C3_template_013",
+    "complexity": "C3",
+    "task_description": "Please find Alice's contact information and check the weather in Tokyo. Then, archive the Tokyo weather card under the title \"Daily Weather Archive\" for Alice with medium priority, send the weather card ID to her as an instant message, and finally send her a push notification to let her know the weather archive has been completed and sent.",
+    "user_input": {
+      "query": "Could you please find the contact information for alice and check the current weather in Tokyo? Once you have the details, I need you to archive the Tokyo weather card under the title \"Daily Weather Archive\" for alice with medium priority. After that is done, please send the weather card ID to her as an instant message. Finally, send alice a push notification to let her know that the weather archive has been completed and sent to her. Thanks for your help!",
+      "contact_name": "alice",
+      "target_city": "Tokyo"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info_hris",
+          "get_weatherapi_alert_card_native",
+          "archive_weatherapi_alert_card_native",
+          "stringify_data",
+          "send_instant_message",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_hris",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "error": "Service Temporarily Unavailable"
+            },
+            "status": "error",
+            "error_message": "503 ServiceUnavailable",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "alert_card_id": "wapi_tokyo",
+              "city_label": "Tokyo",
+              "celsius_now": 22,
+              "sky_text": "Sunny",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_tokyo",
+                "city_label": "Tokyo",
+                "celsius_now": 22,
+                "sky_text": "Sunny",
+                "advice_level": "normal"
+              },
+              "title": "Daily Weather Archive",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Weather Archive",
+              "weather_ref": "wapi_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": "wapi_tokyo"
+            },
+            "output": {
+              "serialized_text": "wapi_tokyo",
+              "source_type": "str",
+              "preview": "wapi_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_alice",
+              "message": "wapi_tokyo"
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_alice",
+              "message_preview": "wapi_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Weather archive completed and sent.",
+              "user_id": "u_alice",
+              "priority": "low",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Weather archive completed and sent.",
+              "priority": "low"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_hris",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "error": "Service Temporarily Unavailable"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "alert_card_id": "wapi_tokyo",
+                "city_label": "Tokyo",
+                "celsius_now": 22,
+                "sky_text": "Sunny",
+                "advice_level": "normal"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_tokyo",
+                  "city_label": "Tokyo",
+                  "celsius_now": 22,
+                  "sky_text": "Sunny",
+                  "advice_level": "normal"
+                },
+                "title": "Daily Weather Archive",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "weatherapi_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Weather Archive",
+                "weather_ref": "wapi_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": "wapi_tokyo"
+              },
+              "output": {
+                "serialized_text": "wapi_tokyo",
+                "source_type": "str",
+                "preview": "wapi_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "send_instant_message",
+              "arguments": {
+                "user_id": "u_alice",
+                "message": "wapi_tokyo"
+              },
+              "output": {
+                "status": "sent",
+                "channel": "IM (Teams/Slack)",
+                "recipient_id": "u_alice",
+                "message_preview": "wapi_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Weather archive completed and sent.",
+                "user_id": "u_alice",
+                "priority": "low",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Weather archive completed and sent.",
+                "priority": "low"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info_hris",
+          "get_visualcrossing_forecast_chip_native",
+          "archive_visualcrossing_forecast_chip_native",
+          "stringify_data",
+          "send_instant_message",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_hris",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "error": "Too Many Requests"
+            },
+            "status": "error",
+            "error_message": "429 RateLimitExceeded",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_tokyo",
+              "locality": "Tokyo",
+              "metric_temp": 22,
+              "conditions_brief": "Sunny",
+              "advice_level": "normal"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_tokyo",
+                "locality": "Tokyo",
+                "metric_temp": 22,
+                "conditions_brief": "Sunny",
+                "advice_level": "normal"
+              },
+              "title": "Daily Weather Archive",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "visualcrossing_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Weather Archive",
+              "weather_ref": "vc_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": "vc_tokyo"
+            },
+            "output": {
+              "serialized_text": "vc_tokyo",
+              "source_type": "str",
+              "preview": "vc_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_alice",
+              "message": "vc_tokyo"
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_alice",
+              "message_preview": "vc_tokyo"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Weather archive completed and sent.",
+              "user_id": "u_alice",
+              "priority": "low",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Weather archive completed and sent.",
+              "priority": "low"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_hris",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "error": "Too Many Requests"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_tokyo",
+                "locality": "Tokyo",
+                "metric_temp": 22,
+                "conditions_brief": "Sunny",
+                "advice_level": "normal"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_tokyo",
+                  "locality": "Tokyo",
+                  "metric_temp": 22,
+                  "conditions_brief": "Sunny",
+                  "advice_level": "normal"
+                },
+                "title": "Daily Weather Archive",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "visualcrossing_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Weather Archive",
+                "weather_ref": "vc_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": "vc_tokyo"
+              },
+              "output": {
+                "serialized_text": "vc_tokyo",
+                "source_type": "str",
+                "preview": "vc_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "send_instant_message",
+              "arguments": {
+                "user_id": "u_alice",
+                "message": "vc_tokyo"
+              },
+              "output": {
+                "status": "sent",
+                "channel": "IM (Teams/Slack)",
+                "recipient_id": "u_alice",
+                "message_preview": "vc_tokyo"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Weather archive completed and sent.",
+                "user_id": "u_alice",
+                "priority": "low",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Weather archive completed and sent.",
+                "priority": "low"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_visualcrossing_forecast_chip_native",
+      "archive_weatherapi_alert_card_native",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native"
+    ],
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 1
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T09:02:56.218312+00:00",
+  "end_time": "2026-10-25T09:04:38.395940+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please find the contact information for alice and check the current weather in Tokyo? Once you have the details, I need you to archive the Tokyo weather card under the title \"Daily Weather Archive\" for alice with medium priority. After that is done, please send the weather card ID to her as an instant message. Finally, send alice a push notification to let her know that the weather archive has been completed and sent to her. Thanks for your help!",
+      "contact_name": "alice",
+      "target_city": "Tokyo"
+    },
+    "task_description": "Please find Alice's contact information and check the weather in Tokyo. Then, archive the Tokyo weather card under the title \"Daily Weather Archive\" for Alice with medium priority, send the weather card ID to her as an instant message, and finally send her a push notification to let her know the weather archive has been completed and sent.",
+    "template_id": "C3_template_013",
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['get_weatherapi_alert_card_native', 'get_visualcrossing_forecast_chip_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_013_path_0_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Temporarily Unavailable"
+        },
+        "error_message": "503 ServiceUnavailable",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:weatherapi_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_013_path_1_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Too Many Requests"
+        },
+        "error_message": "429 RateLimitExceeded",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_weather_archive_native_2to2:visualcrossing_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_weatherapi_alert_card_native",
+        "get_contact_info_hris",
+        "get_weatherapi_alert_card_native",
+        "push_alert",
+        "send_instant_message",
+        "stringify_data"
+      ],
+      "insufficient_calls": {
+        "get_contact_info_hris": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "stringify_data": {
+          "expected": 1,
+          "actual": 0
+        },
+        "send_instant_message": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info_hris",
+              "get_weatherapi_alert_card_native",
+              "archive_weatherapi_alert_card_native",
+              "stringify_data",
+              "send_instant_message",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info_hris",
+              "get_visualcrossing_forecast_chip_native",
+              "archive_visualcrossing_forecast_chip_native",
+              "stringify_data",
+              "send_instant_message",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_visualcrossing_forecast_chip_native",
+          "archive_weatherapi_alert_card_native",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

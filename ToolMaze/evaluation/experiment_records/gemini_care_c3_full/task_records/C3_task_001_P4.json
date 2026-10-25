@@ -1,0 +1,754 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c3_full",
+  "task_id": "C3_task_001",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_001",
+    "template_id": "C3_template_001",
+    "complexity": "C3",
+    "task_description": "Please find Alice's contact card to check her availability on November 15th, and also look up the gate board for flight CA1234. Then, archive those flight details for her with high priority via email, publish a 60-minute slot ticket for her in the app, and finally book Conference Room A for two people on the 15th from 2:00 PM to 3:00 PM.",
+    "user_input": {
+      "query": "Can you help me with a few tasks for my colleague alice? First, please find her contact card to check if she is available on 2024-11-15. I also need you to look up the gate board for flight CA1234 and archive those specific flight details for her via a high-priority email. After that, please publish a 60-minute slot ticket, using slot_999, for her in the app. Finally, I need to book Conference Room A, which has a capacity of 10, for a meeting with two people on 2024-11-15 starting at 14:00 and ending at 15:00.",
+      "colleague_name": "alice",
+      "flight_date": "2024-11-15",
+      "flight_number": "CA1234",
+      "meeting_end": "15:00",
+      "meeting_slot_ticket": {
+        "slot_id": "slot_999",
+        "duration": 60
+      },
+      "meeting_start": "14:00",
+      "room_selection": {
+        "room_name": "Conference Room A",
+        "capacity": 10
+      }
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_directory_contact_card_native",
+          "query_availability_outlook_calendar",
+          "get_aviationstack_gate_board_native",
+          "archive_aviationstack_gate_board_native",
+          "publish_google_slot_ticket_native",
+          "build_room_booking_request"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_directory_contact_card_native",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "card_id": "dir_u_alice",
+              "display_name": "Alice",
+              "primary_email": "alice@company.com",
+              "org_unit": "Engineering",
+              "directory_user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-11-15"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-15",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "board_ref": "SELECT * FROM gate_assignments WHERE flight_id = 'CA1234'",
+              "flight_code": "gpt-4o-mini-internal-call-01",
+              "dep_airport": "http://internal-api-gateway/v1/airports/PEK/debug_info",
+              "arr_airport": "NullPointerException at com.aviationstack.services.AirportService.get(AirportService.java:154)",
+              "gate_label": "DEBUG: /cluster/nodes/gate-mapping/A12",
+              "status_text": "DB_CONNECTION_POOL_EXHAUSTED_RETRY_BACKOFF"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_aviationstack_gate_board_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "title": "Colleague Flight Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "aviationstack_gate_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Colleague Flight Archive",
+              "transport_ref": "gate_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_google_slot_ticket_native",
+            "arguments": {
+              "slot_ticket": {
+                "slot_id": "slot_999",
+                "duration": 60
+              },
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "google_slot_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "slot_ref": "google_slot_ticket",
+              "content": "Google slot 2024-10-24 09:00-10:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "build_room_booking_request",
+            "arguments": {
+              "selection_data": {
+                "room_name": "Conference Room A",
+                "capacity": 10
+              },
+              "date": "2024-11-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 2
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "date": "2024-11-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 2,
+              "selection_reason": ""
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_directory_contact_card_native",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "card_id": "dir_u_alice",
+                "display_name": "Alice",
+                "primary_email": "alice@company.com",
+                "org_unit": "Engineering",
+                "directory_user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-11-15"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-15",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "board_ref": "SELECT * FROM gate_assignments WHERE flight_id = 'CA1234'",
+                "flight_code": "gpt-4o-mini-internal-call-01",
+                "dep_airport": "http://internal-api-gateway/v1/airports/PEK/debug_info",
+                "arr_airport": "NullPointerException at com.aviationstack.services.AirportService.get(AirportService.java:154)",
+                "gate_label": "DEBUG: /cluster/nodes/gate-mapping/A12",
+                "status_text": "DB_CONNECTION_POOL_EXHAUSTED_RETRY_BACKOFF"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_aviationstack_gate_board_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_ca1234",
+                  "flight_code": "CA1234",
+                  "dep_airport": "Beijing Capital Airport",
+                  "arr_airport": "Shanghai Pudong Airport",
+                  "gate_label": "A12",
+                  "status_text": "On Time"
+                },
+                "title": "Colleague Flight Archive",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "aviationstack_gate_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Colleague Flight Archive",
+                "transport_ref": "gate_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_google_slot_ticket_native",
+              "arguments": {
+                "slot_ticket": {
+                  "slot_id": "slot_999",
+                  "duration": 60
+                },
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "google_slot_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_alice",
+                "slot_ref": "google_slot_ticket",
+                "content": "Google slot 2024-10-24 09:00-10:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_room_booking_request",
+              "arguments": {
+                "selection_data": {
+                  "room_name": "Conference Room A",
+                  "capacity": 10
+                },
+                "date": "2024-11-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 2
+              },
+              "output": {
+                "room_name": "Conference Room A",
+                "date": "2024-11-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 2,
+                "selection_reason": ""
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_directory_contact_card_native",
+          "query_availability_outlook_calendar",
+          "get_flightaware_trip_timeline_native",
+          "archive_flightaware_trip_timeline_native",
+          "publish_google_slot_ticket_native",
+          "build_room_booking_request"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_directory_contact_card_native",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "card_id": "dir_u_alice",
+              "display_name": "Alice",
+              "primary_email": "alice@company.com",
+              "org_unit": "Engineering",
+              "directory_user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-11-15"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-15",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "timeline_id": "trip_ca1234_DEBUG_INTERNAL_PATH_/api/v2/flights/CA1234",
+              "flight_no": "CA1234 (Model: gpt-4o-mini)",
+              "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport; SQL_QUERY: SELECT id, status FROM flights WHERE flight_no = 'CA1234'",
+              "latest_state": "On Time; Error: java.lang.NullPointerException at com.internal.FlightTracker.getState(FlightTracker.java:42)",
+              "checkpoint_gate": "A12 [INTERNAL_ENDPOINT: 10.0.4.12:8080/gate-status]"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_flightaware_trip_timeline_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "title": "Colleague Flight Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "flightaware_timeline_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Colleague Flight Archive",
+              "transport_ref": "trip_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_google_slot_ticket_native",
+            "arguments": {
+              "slot_ticket": {
+                "slot_id": "slot_999",
+                "duration": 60
+              },
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "google_slot_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "slot_ref": "google_slot_ticket",
+              "content": "Google slot 2024-10-24 09:00-10:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "build_room_booking_request",
+            "arguments": {
+              "selection_data": {
+                "room_name": "Conference Room A",
+                "capacity": 10
+              },
+              "date": "2024-11-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 2
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "date": "2024-11-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 2,
+              "selection_reason": ""
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_directory_contact_card_native",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "card_id": "dir_u_alice",
+                "display_name": "Alice",
+                "primary_email": "alice@company.com",
+                "org_unit": "Engineering",
+                "directory_user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-11-15"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-15",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "timeline_id": "trip_ca1234_DEBUG_INTERNAL_PATH_/api/v2/flights/CA1234",
+                "flight_no": "CA1234 (Model: gpt-4o-mini)",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport; SQL_QUERY: SELECT id, status FROM flights WHERE flight_no = 'CA1234'",
+                "latest_state": "On Time; Error: java.lang.NullPointerException at com.internal.FlightTracker.getState(FlightTracker.java:42)",
+                "checkpoint_gate": "A12 [INTERNAL_ENDPOINT: 10.0.4.12:8080/gate-status]"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_flightaware_trip_timeline_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_ca1234",
+                  "flight_no": "CA1234",
+                  "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "A12"
+                },
+                "title": "Colleague Flight Archive",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "flightaware_timeline_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Colleague Flight Archive",
+                "transport_ref": "trip_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_google_slot_ticket_native",
+              "arguments": {
+                "slot_ticket": {
+                  "slot_id": "slot_999",
+                  "duration": 60
+                },
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "google_slot_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_alice",
+                "slot_ref": "google_slot_ticket",
+                "content": "Google slot 2024-10-24 09:00-10:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_room_booking_request",
+              "arguments": {
+                "selection_data": {
+                  "room_name": "Conference Room A",
+                  "capacity": 10
+                },
+                "date": "2024-11-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 2
+              },
+              "output": {
+                "room_name": "Conference Room A",
+                "date": "2024-11-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 2,
+                "selection_reason": ""
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_aviationstack_gate_board_native",
+      "archive_flightaware_trip_timeline_native",
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native"
+    ],
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "tool_leakage"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T08:11:10.701936+00:00",
+  "end_time": "2026-10-25T08:12:54.357908+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Can you help me with a few tasks for my colleague alice? First, please find her contact card to check if she is available on 2024-11-15. I also need you to look up the gate board for flight CA1234 and archive those specific flight details for her via a high-priority email. After that, please publish a 60-minute slot ticket, using slot_999, for her in the app. Finally, I need to book Conference Room A, which has a capacity of 10, for a meeting with two people on 2024-11-15 starting at 14:00 and ending at 15:00.",
+      "colleague_name": "alice",
+      "flight_date": "2024-11-15",
+      "flight_number": "CA1234",
+      "meeting_end": "15:00",
+      "meeting_slot_ticket": {
+        "slot_id": "slot_999",
+        "duration": 60
+      },
+      "meeting_start": "14:00",
+      "room_selection": {
+        "room_name": "Conference Room A",
+        "capacity": 10
+      }
+    },
+    "task_description": "Please find Alice's contact card to check her availability on November 15th, and also look up the gate board for flight CA1234. Then, archive those flight details for her with high priority via email, publish a 60-minute slot ticket for her in the app, and finally book Conference Room A for two people on the 15th from 2:00 PM to 3:00 PM.",
+    "template_id": "C3_template_001",
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_aviationstack_gate_board_native', 'get_flightaware_trip_timeline_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_001_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "board_ref": "SELECT * FROM gate_assignments WHERE flight_id = 'CA1234'",
+          "flight_code": "gpt-4o-mini-internal-call-01",
+          "dep_airport": "http://internal-api-gateway/v1/airports/PEK/debug_info",
+          "arr_airport": "NullPointerException at com.aviationstack.services.AirportService.get(AirportService.java:154)",
+          "gate_label": "DEBUG: /cluster/nodes/gate-mapping/A12",
+          "status_text": "DB_CONNECTION_POOL_EXHAUSTED_RETRY_BACKOFF"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_001_path_1_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "timeline_id": "trip_ca1234_DEBUG_INTERNAL_PATH_/api/v2/flights/CA1234",
+          "flight_no": "CA1234 (Model: gpt-4o-mini)",
+          "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport; SQL_QUERY: SELECT id, status FROM flights WHERE flight_no = 'CA1234'",
+          "latest_state": "On Time; Error: java.lang.NullPointerException at com.internal.FlightTracker.getState(FlightTracker.java:42)",
+          "checkpoint_gate": "A12 [INTERNAL_ENDPOINT: 10.0.4.12:8080/gate-status]"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_aviationstack_gate_board_native",
+        "build_room_booking_request",
+        "get_aviationstack_gate_board_native",
+        "get_directory_contact_card_native",
+        "publish_google_slot_ticket_native",
+        "query_availability_outlook_calendar"
+      ],
+      "insufficient_calls": {
+        "get_directory_contact_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "query_availability_outlook_calendar": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_google_slot_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_room_booking_request": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_directory_contact_card_native",
+              "query_availability_outlook_calendar",
+              "get_aviationstack_gate_board_native",
+              "archive_aviationstack_gate_board_native",
+              "publish_google_slot_ticket_native",
+              "build_room_booking_request"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_directory_contact_card_native",
+              "query_availability_outlook_calendar",
+              "get_flightaware_trip_timeline_native",
+              "archive_flightaware_trip_timeline_native",
+              "publish_google_slot_ticket_native",
+              "build_room_booking_request"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_aviationstack_gate_board_native",
+          "archive_flightaware_trip_timeline_native",
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

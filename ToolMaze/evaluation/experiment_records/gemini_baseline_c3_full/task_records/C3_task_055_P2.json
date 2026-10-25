@@ -1,0 +1,652 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_055",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_055",
+    "template_id": "C3_template_055",
+    "complexity": "C3",
+    "task_description": "Please check the current status of the NYSE and then look up the balance and balance sheet for my investment account (user_01). I also need you to get the USD to EUR exchange rate, publish my investment balance sheet via high-priority email, and finally verify the balance on that account through the bank API.",
+    "user_input": {
+      "query": "Could you please check the current status of the NYSE for me? After that, I need you to look up the balance and balance sheet for my investment account associated with user_01. I also need to know the current USD to EUR exchange rate. Once you have the details, please publish my investment balance sheet by sending it out via a high-priority email. Finally, make sure to verify the balance on that account directly through the bank API. Thanks!",
+      "account_type": "investment",
+      "exchange": "NYSE",
+      "target_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status_alpha",
+          "get_account_balance",
+          "get_exchange_rate_exchangerate",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native",
+          "get_account_balance_bank_api"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_exchangerate",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_exchangerate",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status_alpha",
+          "get_account_balance",
+          "get_exchange_rate_exchangerate",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native",
+          "get_account_balance_bank_api"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_exchangerate",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_exchangerate",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_bank_balance_sheet_native",
+      "get_broker_balance_ledger_native",
+      "publish_bank_balance_sheet_native",
+      "publish_broker_balance_ledger_native"
+    ],
+    "domains": [
+      "Financial"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 3
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T04:53:08.482637+00:00",
+  "end_time": "2026-10-25T04:54:48.992958+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the current status of the NYSE for me? After that, I need you to look up the balance and balance sheet for my investment account associated with user_01. I also need to know the current USD to EUR exchange rate. Once you have the details, please publish my investment balance sheet by sending it out via a high-priority email. Finally, make sure to verify the balance on that account directly through the bank API. Thanks!",
+      "account_type": "investment",
+      "exchange": "NYSE",
+      "target_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "task_description": "Please check the current status of the NYSE and then look up the balance and balance sheet for my investment account (user_01). I also need you to get the USD to EUR exchange rate, publish my investment balance sheet via high-priority email, and finally verify the balance on that account through the bank API.",
+    "template_id": "C3_template_055",
+    "domains": [
+      "Financial"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['get_bank_balance_sheet_native', 'get_broker_balance_ledger_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_055_path_0_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 4,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_055_path_1_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 4,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "get_account_balance",
+        "get_account_balance_bank_api",
+        "get_bank_balance_sheet_native",
+        "get_exchange_rate_exchangerate",
+        "get_market_status_alpha",
+        "publish_bank_balance_sheet_native"
+      ],
+      "insufficient_calls": {
+        "get_market_status_alpha": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_account_balance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_exchange_rate_exchangerate": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_account_balance_bank_api": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_account_balance",
+              "get_exchange_rate_exchangerate",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native",
+              "get_account_balance_bank_api"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_account_balance",
+              "get_exchange_rate_exchangerate",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native",
+              "get_account_balance_bank_api"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_bank_balance_sheet_native",
+          "get_broker_balance_ledger_native",
+          "publish_bank_balance_sheet_native",
+          "publish_broker_balance_ledger_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}
