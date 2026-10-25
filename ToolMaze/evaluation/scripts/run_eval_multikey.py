@@ -248,10 +248,11 @@ def main():
     metrics = MetricsCalculator()
 
     category = config["data"].get("task_category", "c1")
+    agent_type = "fc"
     saver = ResultSaver(
         base_dir=config["data"]["output_dir"],
         model=config["agent"]["model"],
-        agent_type="fc",
+        agent_type=agent_type,
         task_category=category
     )
 

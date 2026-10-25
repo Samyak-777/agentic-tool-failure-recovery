@@ -601,10 +601,48 @@ class ExperimentAnalyzer:
                 w.writerow(["complexity", c, s["total"], s["passed"], s["failed"], f"{s['tsr']:.4f}", "N/A"])
 
     def _export_json(self, report: Dict[str, Any]) -> None:
-        """Export comprehensive JSON summary."""
+        """Export comprehensive JSON summaries for all analysis outputs."""
+        # 1. Master failure analysis JSON
         json_file = self.output_dir / "failure_analysis.json"
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2, ensure_ascii=False)
+
+        # 2. Metric comparison JSON (by mode, by complexity)
+        mc_json = self.output_dir / "metric_comparison.json"
+        with open(mc_json, "w", encoding="utf-8") as f:
+            json.dump(report.get("metrics", {}), f, indent=2, ensure_ascii=False)
+
+        # 3. Recovery summary JSON
+        rec_json = self.output_dir / "recovery_summary.json"
+        with open(rec_json, "w", encoding="utf-8") as f:
+            json.dump(report.get("recovery_analysis", {}), f, indent=2, ensure_ascii=False)
+
+        # 4. Tool failure summary JSON
+        tf_json = self.output_dir / "tool_failure_summary.json"
+        with open(tf_json, "w", encoding="utf-8") as f:
+            json.dump(report.get("tool_failures", {}), f, indent=2, ensure_ascii=False)
+
+        # 5. Causal attribution JSON
+        causal_json = self.output_dir / "causal_attribution.json"
+        with open(causal_json, "w", encoding="utf-8") as f:
+            json.dump(report.get("causal_attribution", {}), f, indent=2, ensure_ascii=False)
+
+        # 6. Path analysis JSON (DAG decisions)
+        path_decisions = []
+        for tr in self.task_records:
+            for dag in tr.get("dag_decisions", []):
+                path_decisions.append({
+                    "task_id": tr.get("task_id"),
+                    "mode": tr.get("mode"),
+                    "failed_tool": dag.get("failed_tool"),
+                    "selected_tool": dag.get("selected_tool"),
+                    "is_viable": dag.get("is_viable"),
+                    "reason": dag.get("reason"),
+                    "target_path": dag.get("target_path", [])
+                })
+        path_json = self.output_dir / "path_analysis.json"
+        with open(path_json, "w", encoding="utf-8") as f:
+            json.dump(path_decisions, f, indent=2, ensure_ascii=False)
 
     def _export_markdown_report(self, report: Dict[str, Any]) -> None:
         """Generate human-readable Markdown summary report."""
