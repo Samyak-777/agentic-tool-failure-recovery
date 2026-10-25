@@ -1,0 +1,1353 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c2_full",
+  "task_id": "C2_task_064",
+  "mode": "P0",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_064",
+    "template_id": "C2_template_064",
+    "complexity": "C2",
+    "task_description": "Please look up headphones in electronics, check what coupons are available for me, and prepare an invoice recommendation for one Sony XM5 using PayPal and sending it to alice@company.com. Then place an express checkout order for the silver Sony XM5, and after that generate the invoice for that item using my available coupon and email it to alice@company.com with PayPal payment.",
+    "user_input": {
+      "query": "Hi, for user_id default_user, please look up headphones in the electronics category and show me up to 10 results. Also check what coupons are available for me, including coupon_code SAVE15. Then prepare an invoice recommendation for quantity 1 of one Sony XM5 using paypal and send it to alice@company.com. After that, place an express checkout order for the silver Sony XM5, and then generate the invoice for that item using my available coupon and email it to alice@company.com with paypal payment. Please include product_id p_sony_xm5_blk in the request details.",
+      "category": "electronics",
+      "coupon_code": "SAVE15",
+      "email": "alice@company.com",
+      "max_results": 10,
+      "payment_gateway": "paypal",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "user_id": "default_user"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_catalog",
+          "get_available_coupons",
+          "build_recommended_invoice_request",
+          "express_checkout",
+          "generate_invoice_from_cart"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quick_buy:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_catalog",
+            "arguments": {
+              "query": "headphones",
+              "category": "electronics",
+              "max_results": 10
+            },
+            "output": {
+              "query": "headphones",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "default_user"
+            },
+            "output": {
+              "count": 2,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "default_user"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "build_recommended_invoice_request",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "default_user",
+              "category": "electronics",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 399.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "default_user",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "express_checkout",
+            "arguments": {
+              "product_id": "p_sony_xm5_slv",
+              "user_id": "default_user"
+            },
+            "output": {
+              "type": "quick_buy_order",
+              "order_id": "QB-7E3A1B2C",
+              "product_id": "p_sony_xm5_slv",
+              "item": "Sony WH-1000XM5 Headphones (Silver)",
+              "quantity": 1,
+              "total_paid": 399.0,
+              "status": "completed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "generate_invoice_from_cart",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "default_user",
+              "coupon_code": "SAVE15",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully",
+              "item_count": 1
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_catalog": {
+              "query": "headphones",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "step_2_get_available_coupons": {
+              "count": 2,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "default_user"
+            },
+            "step_3_build_recommended_invoice_request": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 399.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "default_user",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "step_4_express_checkout": {
+              "type": "quick_buy_order",
+              "order_id": "QB-7E3A1B2C",
+              "product_id": "p_sony_xm5_slv",
+              "item": "Sony WH-1000XM5 Headphones (Silver)",
+              "quantity": 1,
+              "total_paid": 399.0,
+              "status": "completed"
+            },
+            "step_5_generate_invoice_from_cart": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully",
+              "item_count": 1
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_catalog",
+          "get_available_coupons",
+          "build_recommended_invoice_request",
+          "hold_inventory",
+          "confirm_order",
+          "generate_invoice_from_cart"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quick_buy:reserve_then_finalize"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_catalog",
+            "arguments": {
+              "query": "headphones",
+              "category": "electronics",
+              "max_results": 10
+            },
+            "output": {
+              "query": "headphones",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "default_user"
+            },
+            "output": {
+              "count": 2,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "default_user"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "build_recommended_invoice_request",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "default_user",
+              "category": "electronics",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 399.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "default_user",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "hold_inventory",
+            "arguments": {
+              "product_id": "p_sony_xm5_slv",
+              "user_id": "default_user"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "confirm_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548"
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": null,
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "generate_invoice_from_cart",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "default_user",
+              "coupon_code": "SAVE15",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully",
+              "item_count": 1
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_catalog": {
+              "query": "headphones",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "step_2_get_available_coupons": {
+              "count": 2,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "default_user"
+            },
+            "step_3_build_recommended_invoice_request": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 399.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "default_user",
+              "email": "alice@company.com",
+              "payment_gateway": "paypal",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "step_4_hold_inventory": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              }
+            },
+            "step_5_confirm_order": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": null,
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days"
+            },
+            "step_6_generate_invoice_from_cart": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully",
+              "item_count": 1
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "confirm_order",
+      "express_checkout",
+      "hold_inventory"
+    ],
+    "domains": [
+      "Shopping"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T19:23:01.829537+00:00",
+  "end_time": "2026-10-23T19:24:36.906591+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['generate_invoice_from_cart']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 14994,
+    "output_tokens": 5497,
+    "total_tokens": 20491
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, for user_id default_user, please look up headphones in the electronics category and show me up to 10 results. Also check what coupons are available for me, including coupon_code SAVE15. Then prepare an invoice recommendation for quantity 1 of one Sony XM5 using paypal and send it to alice@company.com. After that, place an express checkout order for the silver Sony XM5, and then generate the invoice for that item using my available coupon and email it to alice@company.com with paypal payment. Please include product_id p_sony_xm5_blk in the request details.",
+      "category": "electronics",
+      "coupon_code": "SAVE15",
+      "email": "alice@company.com",
+      "max_results": 10,
+      "payment_gateway": "paypal",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "user_id": "default_user"
+    },
+    "task_description": "Please look up headphones in electronics, check what coupons are available for me, and prepare an invoice recommendation for one Sony XM5 using PayPal and sending it to alice@company.com. Then place an express checkout order for the silver Sony XM5, and after that generate the invoice for that item using my available coupon and email it to alice@company.com with PayPal payment.",
+    "template_id": "C2_template_064",
+    "domains": [
+      "Shopping"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_catalog",
+      "tool_name": "query_catalog",
+      "arguments": {
+        "category": "electronics",
+        "query": "headphones",
+        "max_results": 10
+      },
+      "result_sample": {
+        "query": "headphones",
+        "count": 2,
+        "results": [
+          {
+            "name": "Sony WH-1000XM5 Headphones (Black)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "id": "p_sony_xm5_blk"
+          },
+          {
+            "name": "Sony WH-1000XM5 Headphones (Silver)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "id": "p_sony_xm5_slv"
+          }
+        ],
+        "hint": "Use check_inventory to verify availability."
+      },
+      "status": "success",
+      "duration_ms": 0.40356407407671213,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T19:23:49.284856+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "arguments": {
+        "user_id": "default_user"
+      },
+      "result_sample": {
+        "count": 2,
+        "coupons": [
+          {
+            "code": "SAVE15",
+            "description": "Save $15.00 on orders over $100.00",
+            "condition": {
+              "min_spend": 100.0,
+              "type": "fixed"
+            }
+          },
+          {
+            "code": "WELCOME10",
+            "description": "Save 10% on any order",
+            "condition": {
+              "min_spend": 0.0,
+              "type": "percent"
+            }
+          }
+        ],
+        "user_id": "default_user"
+      },
+      "status": "success",
+      "duration_ms": 0.3220409853383899,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T19:23:59.095130+00:00"
+    },
+    {
+      "call_id": "tc_3_3_build_recommended_invoice_request",
+      "tool_name": "build_recommended_invoice_request",
+      "arguments": {
+        "category": "electronics",
+        "email": "alice@company.com",
+        "payment_gateway": "stripe",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 1,
+        "user_id": "default_user"
+      },
+      "result_sample": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 1
+          }
+        ],
+        "payment_amount": 399.0,
+        "reservation_id": "RESV-14729548",
+        "user_id": "default_user",
+        "email": "alice@company.com",
+        "payment_gateway": "stripe",
+        "original_product_id": "p_sony_xm5_blk",
+        "recommended_product_id": "p_sony_xm5_slv"
+      },
+      "status": "success",
+      "duration_ms": 0.467879930511117,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T19:24:22.605999+00:00"
+    },
+    {
+      "call_id": "tc_4_4_express_checkout",
+      "tool_name": "express_checkout",
+      "arguments": {
+        "quantity": 1,
+        "user_id": "default_user",
+        "payment_method": "stripe",
+        "product_id": "p_sony_xm5_blk"
+      },
+      "result_sample": {
+        "type": "quick_buy_order",
+        "order_id": "QB-7E3A1B2C",
+        "product_id": "p_sony_xm5_blk",
+        "item": "Sony WH-1000XM5 Headphones (Black)",
+        "quantity": 1,
+        "total_paid": 399.0,
+        "status": "completed"
+      },
+      "status": "success",
+      "duration_ms": 0.5351930158212781,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T19:24:30.644957+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_catalog",
+      "tool_name": "query_catalog",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_catalog",
+            "verified_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.028
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_catalog",
+            "checked_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_catalog",
+            "verified_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.032
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_catalog'",
+          "details": {
+            "arguments": [
+              "category",
+              "query",
+              "max_results"
+            ],
+            "output": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_catalog' output",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T19:23:49.285119+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "checked_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.029
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "default_user",
+                "returned": "default_user",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_available_coupons' output",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T19:23:59.095380+00:00"
+    },
+    {
+      "call_id": "tc_3_3_build_recommended_invoice_request",
+      "tool_name": "build_recommended_invoice_request",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "build_recommended_invoice_request",
+            "verified_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway",
+              "original_product_id",
+              "recommended_product_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_recommended_invoice_request",
+            "checked_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway",
+              "original_product_id",
+              "recommended_product_id"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "build_recommended_invoice_request",
+            "verified_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway",
+              "original_product_id",
+              "recommended_product_id"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_recommended_invoice_request'",
+          "details": {
+            "tool_name": "build_recommended_invoice_request"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_recommended_invoice_request'",
+          "details": {
+            "tool_name": "build_recommended_invoice_request"
+          },
+          "latency_ms": 0.06
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (2 entity field(s) matched)",
+          "details": {
+            "tool_name": "build_recommended_invoice_request",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "default_user",
+                "returned": "default_user",
+                "match": true
+              },
+              {
+                "arg_key": "email",
+                "res_key": "email",
+                "requested": "alice@company.com",
+                "returned": "alice@company.com",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_recommended_invoice_request'",
+          "details": {
+            "tool_name": "build_recommended_invoice_request"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_recommended_invoice_request' output",
+          "details": {
+            "tool_name": "build_recommended_invoice_request"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_recommended_invoice_request'",
+          "details": {
+            "tool_name": "build_recommended_invoice_request"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T19:24:22.606268+00:00"
+    },
+    {
+      "call_id": "tc_4_4_express_checkout",
+      "tool_name": "express_checkout",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "express_checkout",
+            "verified_fields": [
+              "type",
+              "order_id",
+              "product_id",
+              "item",
+              "quantity",
+              "total_paid",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.015
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "express_checkout",
+            "checked_fields": [
+              "type",
+              "order_id",
+              "product_id",
+              "item",
+              "quantity",
+              "total_paid",
+              "status"
+            ]
+          },
+          "latency_ms": 0.018
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "express_checkout",
+            "verified_fields": [
+              "type",
+              "order_id",
+              "product_id",
+              "item",
+              "quantity",
+              "total_paid",
+              "status"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'express_checkout'",
+          "details": {
+            "tool_name": "express_checkout"
+          },
+          "latency_ms": 0.019
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'express_checkout'",
+          "details": {
+            "tool_name": "express_checkout"
+          },
+          "latency_ms": 0.092
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'express_checkout'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "user_id",
+              "payment_method",
+              "product_id"
+            ],
+            "output": [
+              "type",
+              "order_id",
+              "product_id",
+              "item",
+              "quantity",
+              "total_paid",
+              "status"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'express_checkout'",
+          "details": {
+            "tool_name": "express_checkout"
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'express_checkout' output",
+          "details": {
+            "tool_name": "express_checkout"
+          },
+          "latency_ms": 0.015
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'express_checkout'",
+          "details": {
+            "tool_name": "express_checkout"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T19:24:30.645366+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['generate_invoice_from_cart']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "generate_invoice_from_cart"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_catalog",
+              "get_available_coupons",
+              "build_recommended_invoice_request",
+              "express_checkout",
+              "generate_invoice_from_cart"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_catalog",
+              "get_available_coupons",
+              "build_recommended_invoice_request",
+              "hold_inventory",
+              "confirm_order",
+              "generate_invoice_from_cart"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "confirm_order",
+          "express_checkout",
+          "hold_inventory"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_catalog",
+          "get_available_coupons",
+          "build_recommended_invoice_request",
+          "express_checkout"
+        ]
+      }
+    }
+  }
+}

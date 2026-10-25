@@ -1,0 +1,878 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c1_full",
+  "task_id": "C1_task_010",
+  "mode": "P2",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_010",
+    "template_id": "C1_template_010",
+    "complexity": "C1",
+    "task_description": "Please check the status of flight CA1234, then get the current weather in Paris and the current time in New York. After that, create a note titled “Daily Log” with those travel details, and then send Alice a message saying the note was saved and summarizing the flight status, Paris weather, and the check time.",
+    "user_input": {
+      "query": "Please check the status of flight CA1234, then get the current weather in Paris and the current time in New York using the timezone America/New_York. After that, create a note titled “Daily Log” with those travel details and include the tags finance and travel. Finally, send a message to alice saying the note was saved and give a short summary of the flight status, the Paris weather, and the time the check was done.",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "note_title": "Daily Log",
+      "recipient_user_id": "alice",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "timezone": "America/New_York"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_flight_info_flightaware",
+        "arguments": {
+          "flight_number": "CA1234"
+        },
+        "output": {
+          "flight_number": "CA1234",
+          "airline": "Air China",
+          "departure": "Beijing Capital Airport",
+          "arrival": "Shanghai Pudong Airport",
+          "departure_time": "08:30",
+          "arrival_time": "11:00",
+          "status": "On Time",
+          "gate": "A12"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "get_weather_visualcrossing",
+        "arguments": {
+          "city": "Paris"
+        },
+        "output": {
+          "temperature_celsius": 18,
+          "condition": "Cloudy"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "get_current_time",
+        "arguments": {
+          "timezone": "America/New_York"
+        },
+        "output": {
+          "datetime": "2026-02-22 10:04:54",
+          "date": "2026-02-22",
+          "time": "10:04:54",
+          "timestamp": 1771772694,
+          "timezone": "America/New_York",
+          "weekday": "Sunday",
+          "iso_format": "2026-02-22T10:04:54.104554-05:00"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "create_document",
+        "arguments": {
+          "title": "Daily Log",
+          "content": "Flight CA1234 (Air China) from Beijing Capital Airport to Shanghai Pudong Airport is currently On Time at gate A12. Departure: 08:30. Arrival: 11:00. Current weather in Paris: 18C, Cloudy. Report generated at 2026-02-22 10:04:54.",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "output": {
+          "error": "API Version Deprecated"
+        },
+        "status": "error",
+        "error_message": "410 APIDeprecated",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "send_instant_message",
+        "arguments": {
+          "user_id": "alice",
+          "message": "Travel update saved as note 'Daily Log': Flight CA1234 is On Time. Destination weather in Paris is 18C and Cloudy. Checked at 10:04:54."
+        },
+        "output": {
+          "status": "sent",
+          "channel": "IM (Teams/Slack)",
+          "recipient_id": "alice",
+          "message_preview": "Travel update saved as note 'Daily Log': Flight CA..."
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_flight_info_flightaware",
+          "arguments": {
+            "flight_number": "CA1234"
+          },
+          "output": {
+            "flight_number": "CA1234",
+            "airline": "Air China",
+            "departure": "Beijing Capital Airport",
+            "arrival": "Shanghai Pudong Airport",
+            "departure_time": "08:30",
+            "arrival_time": "11:00",
+            "status": "On Time",
+            "gate": "A12"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_weather_visualcrossing",
+          "arguments": {
+            "city": "Paris"
+          },
+          "output": {
+            "temperature_celsius": 18,
+            "condition": "Cloudy"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_current_time",
+          "arguments": {
+            "timezone": "America/New_York"
+          },
+          "output": {
+            "datetime": "2026-02-22 10:04:54",
+            "date": "2026-02-22",
+            "time": "10:04:54",
+            "timestamp": 1771772694,
+            "timezone": "America/New_York",
+            "weekday": "Sunday",
+            "iso_format": "2026-02-22T10:04:54.104554-05:00"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document",
+          "arguments": {
+            "title": "Daily Log",
+            "content": "Flight CA1234 (Air China) from Beijing Capital Airport to Shanghai Pudong Airport is currently On Time at gate A12. Departure: 08:30. Arrival: 11:00. Current weather in Paris: 18C, Cloudy. Report generated at 2026-02-22 10:04:54.",
+            "tags": [
+              "finance",
+              "travel"
+            ]
+          },
+          "output": {
+            "error": "API Version Deprecated"
+          },
+          "status": "error",
+          "is_perturbed": true
+        }
+      ]
+    },
+    "domains": [
+      "Travel",
+      "General",
+      "Office"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 3
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T07:17:19.889496+00:00",
+  "end_time": "2026-10-23T07:17:46.392827+00:00",
+  "status": "completed",
+  "passed": true,
+  "error": null,
+  "failure_reason": null,
+  "failed_tools": [
+    "create_document"
+  ],
+  "tokens": {
+    "input_tokens": 9435,
+    "output_tokens": 1574,
+    "total_tokens": 11009
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check the status of flight CA1234, then get the current weather in Paris and the current time in New York using the timezone America/New_York. After that, create a note titled “Daily Log” with those travel details and include the tags finance and travel. Finally, send a message to alice saying the note was saved and give a short summary of the flight status, the Paris weather, and the time the check was done.",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "note_title": "Daily Log",
+      "recipient_user_id": "alice",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "timezone": "America/New_York"
+    },
+    "task_description": "Please check the status of flight CA1234, then get the current weather in Paris and the current time in New York. After that, create a note titled “Daily Log” with those travel details, and then send Alice a message saying the note was saved and summarizing the flight status, Paris weather, and the check time.",
+    "template_id": "C1_template_010",
+    "domains": [
+      "Travel",
+      "General",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_execution_no_failure",
+    "confidence": "HIGH",
+    "evidence": "Perturbation altered output of create_document, but task ultimately succeeded (successful recovery or bypass).",
+    "configured_count": 1,
+    "activated_count": 1,
+    "recovered_count": 1
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_010_step_4_create_document",
+        "target_tool": "create_document",
+        "step": 4,
+        "mode": "P2",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "all_calls",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_create_document",
+        "tool_name": "create_document",
+        "step": 4,
+        "timestamp": "2026-10-23T07:17:43.293894+00:00",
+        "config_id": "C1_task_010_step_4_create_document",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "title": "Daily Log",
+          "content": "Flight CA1234: Air China, Beijing Capital Airport to Shanghai Pudong Airport, On Time (Departs 08:30, Arrives 11:00, Gate A12). Paris weather: 18°C, Cloudy. New York time: 10:04:54 on Sunday, February 22, 2026 (America/New_York).",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "modified_output_sample": {
+          "error": "API Version Deprecated"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "flight_number": "CA1234",
+        "airline": "Air China",
+        "departure": "Beijing Capital Airport",
+        "arrival": "Shanghai Pudong Airport",
+        "departure_time": "08:30",
+        "arrival_time": "11:00",
+        "status": "On Time",
+        "gate": "A12"
+      },
+      "status": "success",
+      "duration_ms": 0.5341640207916498,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:17:28.583676+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_weather_visualcrossing",
+      "tool_name": "get_weather_visualcrossing",
+      "arguments": {
+        "city": "Paris"
+      },
+      "result_sample": {
+        "temperature_celsius": 18,
+        "condition": "Cloudy"
+      },
+      "status": "success",
+      "duration_ms": 0.35421201027929783,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:17:31.986978+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_current_time",
+      "tool_name": "get_current_time",
+      "arguments": {
+        "timezone": "America/New_York"
+      },
+      "result_sample": {
+        "datetime": "2026-02-22 10:04:54",
+        "date": "2026-02-22",
+        "time": "10:04:54",
+        "timestamp": 1771772694,
+        "timezone": "America/New_York",
+        "weekday": "Sunday",
+        "iso_format": "2026-02-22T10:04:54.104554-05:00"
+      },
+      "status": "success",
+      "duration_ms": 0.4404600476846099,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:17:34.407031+00:00"
+    },
+    {
+      "call_id": "tc_4_4_create_document",
+      "tool_name": "create_document",
+      "arguments": {
+        "title": "Daily Log",
+        "content": "Flight CA1234: Air China, Beijing Capital Airport to Shanghai Pudong Airport, On Time (Departs 08:30, Arrives 11:00, Gate A12). Paris weather: 18°C, Cloudy. New York time: 10:04:54 on Sunday, February 22, 2026 (America/New_York).",
+        "tags": [
+          "finance",
+          "travel"
+        ]
+      },
+      "result_sample": {
+        "error": "API Version Deprecated"
+      },
+      "status": "error",
+      "duration_ms": 0.3798899706453085,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:17:43.293894+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.213
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "CA1234",
+                "returned": "CA1234",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info_flightaware' output",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:17:28.583930+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_weather_visualcrossing",
+      "tool_name": "get_weather_visualcrossing",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "checked_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.024
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_weather_visualcrossing'",
+          "details": {
+            "arguments": [
+              "city"
+            ],
+            "output": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_weather_visualcrossing' output",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:17:31.987197+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_current_time",
+      "tool_name": "get_current_time",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "get_current_time",
+            "verified_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_current_time",
+            "checked_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "get_current_time",
+            "verified_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 4 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_current_time",
+            "checked_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.111
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_current_time'",
+          "details": {
+            "arguments": [
+              "timezone"
+            ],
+            "output": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_current_time' output",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:17:34.407268+00:00"
+    },
+    {
+      "call_id": "tc_4_4_create_document",
+      "tool_name": "create_document",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.008
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.004
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.004
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "API Version Deprecated"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:17:43.294529+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": true,
+    "failure_reason": null,
+    "trace_check": {
+      "match": true,
+      "victim_tool": "create_document",
+      "missing_tools": [],
+      "forbidden_tools_called": [],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "get_flight_info_flightaware",
+          "get_weather_visualcrossing",
+          "get_current_time",
+          "create_document",
+          "send_instant_message"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info_flightaware",
+          "get_weather_visualcrossing",
+          "get_current_time",
+          "create_document"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): []"
+    }
+  }
+}

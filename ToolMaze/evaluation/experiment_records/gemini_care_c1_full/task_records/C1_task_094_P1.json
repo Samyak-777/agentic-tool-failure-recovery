@@ -1,0 +1,350 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c1_full",
+  "task_id": "C1_task_094",
+  "mode": "P1",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_094",
+    "template_id": "C1_template_094",
+    "complexity": "C1",
+    "task_description": "Please check whether the NASDAQ market is open, estimate the trading cost for a standard-tier stock trade of $1,500, then back up my trading workspace before selling 10 shares of AAPL, and after that send Alice a high-priority app alert that the order was executed successfully.",
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and estimate the trading cost for a standard-tier stock trade of $1500 for me. If everything looks good, back up my trading workspace at /trading/session using the backup name pre_sell_backup before selling 10 shares of AAPL. After the sale is completed, send Alice a high-priority alert through the app confirming that the order was executed successfully. Please make sure my user ID u_alice is associated with this, and note that my user tier is standard.",
+      "amount": 1500,
+      "backup_name": "pre_sell_backup",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "recipient_name": "Alice",
+      "ticker": "AAPL",
+      "user_id": "u_alice",
+      "user_tier": "standard",
+      "workspace_path": "/trading/session"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_market_status_alpha",
+        "arguments": {
+          "exchange": "NASDAQ"
+        },
+        "output": {
+          "exchange": "NASDAQ",
+          "is_open": true,
+          "session": "regular",
+          "details": {
+            "is_open": true,
+            "session": "regular",
+            "next_close": "16:00 EST"
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "estimate_trading_cost",
+        "arguments": {
+          "amount": 1500,
+          "asset_type": "stock",
+          "user_tier": "standard"
+        },
+        "output": {
+          "amount": 1500.0,
+          "fee_rate": "0.33%",
+          "fee_amount": 5.0,
+          "total_cost": 1505.0,
+          "currency": "USD"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "snapshot_workspace",
+        "arguments": {
+          "workspace_path": "/trading/session",
+          "backup_name": "pre_sell_backup"
+        },
+        "output": {
+          "message": "Backup created successfully",
+          "backup_id": "BACKUPA3B2C",
+          "workspace_path": "/trading/session",
+          "backup_name": "pre_sell_backup",
+          "size_mb": 260,
+          "status": "completed",
+          "timestamp": "2024-12-08 12:00:00"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "place_sell_order",
+        "arguments": {
+          "ticker": "AAPL",
+          "quantity": 10
+        },
+        "output": {
+          "error": "Internal Server Error"
+        },
+        "status": "error",
+        "error_message": "500 InternalServerError",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "place_sell_order",
+        "arguments": {
+          "ticker": "AAPL",
+          "quantity": 10
+        },
+        "output": {
+          "order_id": "ORD-SELL-FAEF1",
+          "ticker": "AAPL",
+          "action": "SELL",
+          "quantity": 10,
+          "status": "filled",
+          "realized_pnl": 1702.5,
+          "message": "Order executed successfully"
+        },
+        "status": "success"
+      },
+      {
+        "step": 6,
+        "tool_name": "push_alert_to_contact",
+        "arguments": {
+          "user_id": "u_alice",
+          "recipient_name": "Alice",
+          "message": "Order executed successfully",
+          "priority": "high",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "u_alice",
+          "content": "Order executed successfully",
+          "priority": "high",
+          "recipient_name": "Alice",
+          "status": "sent"
+        },
+        "status": "success"
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_market_status_alpha",
+          "arguments": {
+            "exchange": "NASDAQ"
+          },
+          "output": {
+            "exchange": "NASDAQ",
+            "is_open": true,
+            "session": "regular",
+            "details": {
+              "is_open": true,
+              "session": "regular",
+              "next_close": "16:00 EST"
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "estimate_trading_cost",
+          "arguments": {
+            "amount": 1500,
+            "asset_type": "stock",
+            "user_tier": "standard"
+          },
+          "output": {
+            "amount": 1500.0,
+            "fee_rate": "0.33%",
+            "fee_amount": 5.0,
+            "total_cost": 1505.0,
+            "currency": "USD"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "snapshot_workspace",
+          "arguments": {
+            "workspace_path": "/trading/session",
+            "backup_name": "pre_sell_backup"
+          },
+          "output": {
+            "message": "Backup created successfully",
+            "backup_id": "BACKUPA3B2C",
+            "workspace_path": "/trading/session",
+            "backup_name": "pre_sell_backup",
+            "size_mb": 260,
+            "status": "completed",
+            "timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "place_sell_order",
+          "arguments": {
+            "ticker": "AAPL",
+            "quantity": 10
+          },
+          "output": {
+            "error": "Internal Server Error"
+          },
+          "status": "error",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "place_sell_order",
+          "arguments": {
+            "ticker": "AAPL",
+            "quantity": 10
+          },
+          "output": {
+            "order_id": "ORD-SELL-FAEF1",
+            "ticker": "AAPL",
+            "action": "SELL",
+            "quantity": 10,
+            "status": "filled",
+            "realized_pnl": 1702.5,
+            "message": "Order executed successfully"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "push_alert_to_contact",
+          "arguments": {
+            "user_id": "u_alice",
+            "recipient_name": "Alice",
+            "message": "Order executed successfully",
+            "priority": "high",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "u_alice",
+            "content": "Order executed successfully",
+            "priority": "high",
+            "recipient_name": "Alice",
+            "status": "sent"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Financial",
+      "General",
+      "Office"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 3
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T10:06:05.287442+00:00",
+  "end_time": "2026-10-24T10:07:46.576863+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no retry on 'place_sell_order' (called 0 time(s), need >=2); 'place_sell_order' never succeeded after retries; missing required tools: ['place_sell_order', 'get_market_status_alpha', 'snapshot_workspace', 'estimate_trading_cost', 'push_alert_to_contact']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and estimate the trading cost for a standard-tier stock trade of $1500 for me. If everything looks good, back up my trading workspace at /trading/session using the backup name pre_sell_backup before selling 10 shares of AAPL. After the sale is completed, send Alice a high-priority alert through the app confirming that the order was executed successfully. Please make sure my user ID u_alice is associated with this, and note that my user tier is standard.",
+      "amount": 1500,
+      "backup_name": "pre_sell_backup",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "recipient_name": "Alice",
+      "ticker": "AAPL",
+      "user_id": "u_alice",
+      "user_tier": "standard",
+      "workspace_path": "/trading/session"
+    },
+    "task_description": "Please check whether the NASDAQ market is open, estimate the trading cost for a standard-tier stock trade of $1,500, then back up my trading workspace before selling 10 shares of AAPL, and after that send Alice a high-priority app alert that the order was executed successfully.",
+    "template_id": "C1_template_094",
+    "domains": [
+      "Financial",
+      "General",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['place_sell_order'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_094_step_4_place_sell_order",
+        "target_tool": "place_sell_order",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Internal Server Error"
+        },
+        "error_message": "500 InternalServerError",
+        "trigger_condition": "first_call",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no retry on 'place_sell_order' (called 0 time(s), need >=2); 'place_sell_order' never succeeded after retries; missing required tools: ['place_sell_order', 'get_market_status_alpha', 'snapshot_workspace', 'estimate_trading_cost', 'push_alert_to_contact']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "place_sell_order",
+      "missing_tools": [
+        "place_sell_order",
+        "get_market_status_alpha",
+        "snapshot_workspace",
+        "estimate_trading_cost",
+        "push_alert_to_contact"
+      ],
+      "ground_truth": {
+        "execution_trace": [
+          "get_market_status_alpha",
+          "estimate_trading_cost",
+          "snapshot_workspace",
+          "place_sell_order",
+          "place_sell_order",
+          "push_alert_to_contact"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

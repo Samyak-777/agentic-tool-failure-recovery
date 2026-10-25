@@ -1,0 +1,2743 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_052",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_052",
+    "template_id": "C4_template_052",
+    "complexity": "C4",
+    "task_description": "Please look up the Hilton Tokyo and find Alice in the company directory, confirm which Alice it is, then check her availability for 2026-01-16. After that, find meeting rooms for 8 people starting at 10:00 that day, pick the smallest suitable room, prepare the reservation details for 10:00–11:00, book it, and then email Alice a high-priority note titled “Trip Meeting Coordination” saying the meeting room was booked successfully.",
+    "user_input": {
+      "query": "Please look up Hilton Tokyo and find alice in the company directory, confirm which Alice it is, and then check her availability for 2026-01-16. After that, find meeting rooms at Hilton Tokyo for 8 attendees starting at 10:00 on 2026-01-16, choose the smallest room that fits 8 people, and prepare the reservation details for 10:00–11:00. Please go ahead and book it, then send Alice a high-priority email titled “Trip Meeting Coordination” letting her know the meeting room was booked successfully.",
+      "attendees": 8,
+      "colleague_name": "alice",
+      "end_time": "11:00",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-16",
+      "start_time": "10:00"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_hotel_info",
+          "get_contact_info_directory",
+          "resolve_directory_contact_identity",
+          "query_availability",
+          "get_meeting_rooms_office365",
+          "select_meeting_room",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": false,
+              "name": "Bob",
+              "email": "alice@company",
+              "phone": "12345",
+              "department": "Finance",
+              "user_id": "u_bob"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_directory_contact_identity",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "name": "alice"
+            },
+            "output": {
+              "identity_method": "directory_contact",
+              "display_name": "Alice",
+              "user_id": "u_alice",
+              "department": "Engineering",
+              "contact_channel": "email",
+              "contact_value": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": 500,
+              "total_slots": 3
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2026-01-16",
+              "start_time": "10:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "select_meeting_room",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Trip Meeting Coordination",
+              "content": "Meeting room booked successfully",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Meeting room booked successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Meeting Coordination",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": false,
+                "name": "Bob",
+                "email": "alice@company",
+                "phone": "12345",
+                "department": "Finance",
+                "user_id": "u_bob"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_directory_contact_identity",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "name": "alice"
+              },
+              "output": {
+                "identity_method": "directory_contact",
+                "display_name": "Alice",
+                "user_id": "u_alice",
+                "department": "Engineering",
+                "contact_channel": "email",
+                "contact_value": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms_office365",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 8,
+                  "date": "2026-01-16",
+                  "start_time": "10:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_meeting_room",
+              "arguments": {
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_shortlist_reservation_request",
+              "arguments": {
+                "shortlist_data": {
+                  "room_name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ],
+                  "selection_reason": "Smallest available room that fits 8 attendees"
+                },
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "reserve_shortlisted_room",
+              "arguments": {
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "reservation_strategy": "shortlist_then_reserve"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_hotel_info",
+          "get_contact_info_directory",
+          "resolve_directory_contact_identity",
+          "query_availability_outlook_calendar",
+          "get_meeting_rooms_office365",
+          "select_meeting_room",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": "maybe",
+              "name": "Bob",
+              "email": "not-an-email",
+              "phone": "12345",
+              "department": "Finance",
+              "user_id": "u_bob"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_directory_contact_identity",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "name": "alice"
+            },
+            "output": {
+              "identity_method": "directory_contact",
+              "display_name": "Alice",
+              "user_id": "u_alice",
+              "department": "Engineering",
+              "contact_channel": "email",
+              "contact_value": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                {
+                  "start": "25:00",
+                  "end": "24:60"
+                }
+              ],
+              "total_slots": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2026-01-16",
+              "start_time": "10:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "select_meeting_room",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Trip Meeting Coordination",
+              "content": "Meeting room booked successfully",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Meeting room booked successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Meeting Coordination",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": "maybe",
+                "name": "Bob",
+                "email": "not-an-email",
+                "phone": "12345",
+                "department": "Finance",
+                "user_id": "u_bob"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_directory_contact_identity",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "name": "alice"
+              },
+              "output": {
+                "identity_method": "directory_contact",
+                "display_name": "Alice",
+                "user_id": "u_alice",
+                "department": "Engineering",
+                "contact_channel": "email",
+                "contact_value": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms_office365",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 8,
+                  "date": "2026-01-16",
+                  "start_time": "10:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_meeting_room",
+              "arguments": {
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_shortlist_reservation_request",
+              "arguments": {
+                "shortlist_data": {
+                  "room_name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ],
+                  "selection_reason": "Smallest available room that fits 8 attendees"
+                },
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "reserve_shortlisted_room",
+              "arguments": {
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "reservation_strategy": "shortlist_then_reserve"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_hotel_info",
+          "get_employee_id",
+          "resolve_employee_record_identity",
+          "query_availability",
+          "get_meeting_rooms_office365",
+          "select_meeting_room",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_employee_id",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "status": "failure",
+              "department": "Human Resources",
+              "user_id": "u_bob"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_employee_record_identity",
+            "arguments": {
+              "employee_data": {
+                "status": "success",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "name": "alice"
+            },
+            "output": {
+              "identity_method": "employee_record",
+              "display_name": "Alice",
+              "user_id": "u_alice",
+              "department": "Engineering",
+              "contact_channel": "im",
+              "contact_value": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                {
+                  "start": "25:00",
+                  "end": "24:61"
+                }
+              ],
+              "total_slots": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2026-01-16",
+              "start_time": "10:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "select_meeting_room",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Trip Meeting Coordination",
+              "content": "Meeting room booked successfully",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Meeting room booked successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Meeting Coordination",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_employee_id",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "status": "failure",
+                "department": "Human Resources",
+                "user_id": "u_bob"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_employee_record_identity",
+              "arguments": {
+                "employee_data": {
+                  "status": "success",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "name": "alice"
+              },
+              "output": {
+                "identity_method": "employee_record",
+                "display_name": "Alice",
+                "user_id": "u_alice",
+                "department": "Engineering",
+                "contact_channel": "im",
+                "contact_value": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms_office365",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 8,
+                  "date": "2026-01-16",
+                  "start_time": "10:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_meeting_room",
+              "arguments": {
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_shortlist_reservation_request",
+              "arguments": {
+                "shortlist_data": {
+                  "room_name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ],
+                  "selection_reason": "Smallest available room that fits 8 attendees"
+                },
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "reserve_shortlisted_room",
+              "arguments": {
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "reservation_strategy": "shortlist_then_reserve"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_hotel_info",
+          "get_employee_id",
+          "resolve_employee_record_identity",
+          "query_availability_outlook_calendar",
+          "get_meeting_rooms_office365",
+          "select_meeting_room",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_employee_id",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "status": "failure",
+              "department": "Human Resources",
+              "user_id": "u_bob"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_employee_record_identity",
+            "arguments": {
+              "employee_data": {
+                "status": "success",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "name": "alice"
+            },
+            "output": {
+              "identity_method": "employee_record",
+              "display_name": "Alice",
+              "user_id": "u_alice",
+              "department": "Engineering",
+              "contact_channel": "im",
+              "contact_value": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                {
+                  "start": "25:00",
+                  "end": "24:61"
+                }
+              ],
+              "total_slots": 9
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2026-01-16",
+              "start_time": "10:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "select_meeting_room",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "output": {
+              "room_name": "Meeting Room 1",
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "selection_reason": "Smallest available room that fits 8 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16",
+              "start_time": "10:00",
+              "end_time": "11:00",
+              "attendees": 8,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 8 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Trip Meeting Coordination",
+              "content": "Meeting room booked successfully",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Meeting room booked successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Meeting Coordination",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_employee_id",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "status": "failure",
+                "department": "Human Resources",
+                "user_id": "u_bob"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_employee_record_identity",
+              "arguments": {
+                "employee_data": {
+                  "status": "success",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "name": "alice"
+              },
+              "output": {
+                "identity_method": "employee_record",
+                "display_name": "Alice",
+                "user_id": "u_alice",
+                "department": "Engineering",
+                "contact_channel": "im",
+                "contact_value": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms_office365",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2026-01-16",
+                "start_time": "10:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 8,
+                  "date": "2026-01-16",
+                  "start_time": "10:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_meeting_room",
+              "arguments": {
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_shortlist_reservation_request",
+              "arguments": {
+                "shortlist_data": {
+                  "room_name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ],
+                  "selection_reason": "Smallest available room that fits 8 attendees"
+                },
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "output": {
+                "room_name": "Meeting Room 1",
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "reserve_shortlisted_room",
+              "arguments": {
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "selection_reason": "Smallest available room that fits 8 attendees"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16",
+                "start_time": "10:00",
+                "end_time": "11:00",
+                "attendees": 8,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 8 attendees",
+                "reservation_strategy": "shortlist_then_reserve"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_contact_info_directory",
+      "get_employee_id",
+      "query_availability",
+      "query_availability_outlook_calendar",
+      "resolve_directory_contact_identity",
+      "resolve_employee_record_identity"
+    ],
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s2",
+        "s3"
+      ]
+    },
+    "corruption_type": "fact_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T06:54:56.967195+00:00",
+  "end_time": "2026-10-24T06:56:27.482311+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_contact_info_directory' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_contact_info_directory"
+  ],
+  "tokens": {
+    "input_tokens": 8842,
+    "output_tokens": 2398,
+    "total_tokens": 11240
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up Hilton Tokyo and find alice in the company directory, confirm which Alice it is, and then check her availability for 2026-01-16. After that, find meeting rooms at Hilton Tokyo for 8 attendees starting at 10:00 on 2026-01-16, choose the smallest room that fits 8 people, and prepare the reservation details for 10:00–11:00. Please go ahead and book it, then send Alice a high-priority email titled “Trip Meeting Coordination” letting her know the meeting room was booked successfully.",
+      "attendees": 8,
+      "colleague_name": "alice",
+      "end_time": "11:00",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-16",
+      "start_time": "10:00"
+    },
+    "task_description": "Please look up the Hilton Tokyo and find Alice in the company directory, confirm which Alice it is, then check her availability for 2026-01-16. After that, find meeting rooms for 8 people starting at 10:00 that day, pick the smallest suitable room, prepare the reservation details for 10:00–11:00, book it, and then email Alice a high-priority note titled “Trip Meeting Coordination” saying the meeting room was booked successfully.",
+    "template_id": "C4_template_052",
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_contact_info_directory'], matching recorded execution failure in tools ['get_contact_info_directory'] leading to task failure.",
+    "configured_count": 8,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_052_path_0_get_contact_info_directory",
+        "target_tool": "get_contact_info_directory",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": false,
+          "name": "Bob",
+          "email": "alice@company",
+          "phone": "12345",
+          "department": "Finance",
+          "user_id": "u_bob"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_0_query_availability",
+        "target_tool": "query_availability",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": 500,
+          "total_slots": 3
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_1_get_contact_info_directory",
+        "target_tool": "get_contact_info_directory",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": "maybe",
+          "name": "Bob",
+          "email": "not-an-email",
+          "phone": "12345",
+          "department": "Finance",
+          "user_id": "u_bob"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_1_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            {
+              "start": "25:00",
+              "end": "24:60"
+            }
+          ],
+          "total_slots": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:directory_contact_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_2_get_employee_id",
+        "target_tool": "get_employee_id",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "status": "failure",
+          "department": "Human Resources",
+          "user_id": "u_bob"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_2_query_availability",
+        "target_tool": "query_availability",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            {
+              "start": "25:00",
+              "end": "24:61"
+            }
+          ],
+          "total_slots": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_3_get_employee_id",
+        "target_tool": "get_employee_id",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "status": "failure",
+          "department": "Human Resources",
+          "user_id": "u_bob"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ]
+      },
+      {
+        "config_id": "C4_task_052_path_3_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            {
+              "start": "25:00",
+              "end": "24:61"
+            }
+          ],
+          "total_slots": 9
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_contact_identity_resolution_2to2:employee_record_identity",
+          "alt_availability_default_outlook:outlook_calendar"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_contact_info_directory",
+        "tool_name": "get_contact_info_directory",
+        "step": 2,
+        "timestamp": "2026-10-24T06:56:17.059788+00:00",
+        "config_id": "C4_task_052_path_0_get_contact_info_directory",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "name": "alice"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested name='alice', but output returned name='Bob'",
+          "validation_failed_checks": [
+            "entity"
+          ],
+          "untrusted_output": {
+            "found": false,
+            "name": "Bob",
+            "email": "alice@company",
+            "phone": "12345",
+            "department": "Finance",
+            "user_id": "u_bob"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "arguments": {
+        "hotel_name": "Hilton Tokyo"
+      },
+      "result_sample": {
+        "hotel_name": "Hilton Tokyo",
+        "location": "Tokyo, Japan",
+        "price_per_night": 180,
+        "currency": "USD",
+        "rating": 4.5,
+        "availability": "Available"
+      },
+      "status": "success",
+      "duration_ms": 0.3689610166475177,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:56:09.055370+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_contact_info_directory",
+      "tool_name": "get_contact_info_directory",
+      "arguments": {
+        "name": "alice"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested name='alice', but output returned name='Bob'",
+        "validation_failed_checks": [
+          "entity"
+        ],
+        "untrusted_output": {
+          "found": false,
+          "name": "Bob",
+          "email": "alice@company",
+          "phone": "12345",
+          "department": "Finance",
+          "user_id": "u_bob"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.36967406049370766,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:56:17.059788+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "verified_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "checked_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "verified_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_hotel_info'",
+          "details": {
+            "arguments": [
+              "hotel_name"
+            ],
+            "output": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_hotel_info' output",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:56:09.055602+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_contact_info_directory",
+      "tool_name": "get_contact_info_directory",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "checked_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.07
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "INVALID",
+          "reason": "Entity mismatch detected: Requested name='alice', but output returned name='Bob'",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "violations": [
+              {
+                "field": "name",
+                "requested": "alice",
+                "returned": "Bob",
+                "reason": "Requested name='alice', but output returned name='Bob'"
+              }
+            ],
+            "compared_pairs": [
+              {
+                "arg_key": "name",
+                "res_key": "name",
+                "requested": "alice",
+                "returned": "Bob",
+                "match": false
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "VALID",
+          "reason": "State consistency preserved across 2 entity binding(s)",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "checked_bindings": [
+              "user_id:alice",
+              "email:alice"
+            ]
+          },
+          "latency_ms": 0.028
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "entity"
+      ],
+      "timestamp": "2026-10-24T06:56:17.060211+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_contact_info_directory' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_contact_info_directory",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_shortlist_reservation_request",
+        "create_document_and_alert",
+        "get_meeting_rooms_office365",
+        "query_availability",
+        "reserve_shortlisted_room",
+        "resolve_directory_contact_identity",
+        "select_meeting_room"
+      ],
+      "insufficient_calls": {
+        "resolve_directory_contact_identity": {
+          "expected": 1,
+          "actual": 0
+        },
+        "query_availability": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_meeting_rooms_office365": {
+          "expected": 1,
+          "actual": 0
+        },
+        "select_meeting_room": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_shortlist_reservation_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "reserve_shortlisted_room": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_contact_info_directory",
+              "resolve_directory_contact_identity",
+              "query_availability",
+              "get_meeting_rooms_office365",
+              "select_meeting_room",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_contact_info_directory",
+              "resolve_directory_contact_identity",
+              "query_availability_outlook_calendar",
+              "get_meeting_rooms_office365",
+              "select_meeting_room",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_employee_id",
+              "resolve_employee_record_identity",
+              "query_availability",
+              "get_meeting_rooms_office365",
+              "select_meeting_room",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_hotel_info",
+              "get_employee_id",
+              "resolve_employee_record_identity",
+              "query_availability_outlook_calendar",
+              "get_meeting_rooms_office365",
+              "select_meeting_room",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "create_document_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_contact_info_directory",
+          "get_employee_id",
+          "query_availability",
+          "query_availability_outlook_calendar",
+          "resolve_directory_contact_identity",
+          "resolve_employee_record_identity"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s2",
+            "s3"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_hotel_info",
+          "get_contact_info_directory"
+        ]
+      }
+    }
+  }
+}

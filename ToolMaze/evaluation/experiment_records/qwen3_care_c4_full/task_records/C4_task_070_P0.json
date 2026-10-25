@@ -1,0 +1,4232 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c4_full",
+  "task_id": "C4_task_070",
+  "mode": "P0",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_070",
+    "template_id": "C4_template_070",
+    "complexity": "C4",
+    "task_description": "Please check the living room devices by first looking through the /projects folder for any .txt files, then scan the living room devices, pick the smart light, check its status, and prepare a restart request for it. After that, get the discovered lock ticket for the living room and archive it as a high-priority “Maintenance lock audit” for u_alice in the app, then lock the main door lock with PIN 2026, send Bob a message that the area is secured and the maintenance workflow has started, alert Alice in the app that maintenance is completed and the lock has been secured, and finally create an “IoT maintenance log” document with those maintenance and security details and send it as a high-priority app alert to u_alice.",
+    "user_input": {
+      "query": "Please look in the /projects folder for any .txt files, then scan the living_room devices and find the smart_light with device_id light_living. Check its status and prepare a restart request for it. After that, find the discovered lock ticket for the living_room and archive it in the app as a high-priority Maintenance lock audit for u_alice. Then lock the main door lock lock_main by setting its state to lock using PIN 2026. Send u_bob the message “Area secured and maintenance workflow started.” Also alert alice in the app with the high-priority message “Maintenance completed and the lock has been secured.” Finally, create a document titled “IoT maintenance log” containing “Device status checked, restart request prepared, lock audit archived, and stakeholders notified.” Include the tags iot, maintenance, and security, and send it as a high-priority app alert to u_alice.",
+      "area": "living_room",
+      "channel": "app",
+      "contact_message": "Maintenance completed and the lock has been secured.",
+      "contact_name": "alice",
+      "device_id": "light_living",
+      "document_content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+      "document_title": "IoT maintenance log",
+      "extension": ".txt",
+      "folder_path": "/projects",
+      "im_message": "Area secured and maintenance workflow started.",
+      "im_recipient": "u_bob",
+      "lock_archive_title": "Maintenance lock audit",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "2026",
+      "priority": "high",
+      "tags": [
+        "iot",
+        "maintenance",
+        "security"
+      ],
+      "target_device_type": "smart_light",
+      "user_id": "u_alice"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_iot_device_status",
+          "build_device_restart_request",
+          "get_discovered_lock_ticket_native",
+          "archive_discovered_lock_ticket_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3a",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution",
+          "alt_iot_device_status:get_status",
+          "alt_lock_archive_native_2to2:discovered_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_3_select_discovered_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "step_4_get_iot_device_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_discovered_lock_ticket_native": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "step_7_archive_discovered_lock_ticket_native": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_iot_device_status",
+          "build_device_restart_request",
+          "get_connected_lock_pass_native",
+          "archive_connected_lock_pass_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3a",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution",
+          "alt_iot_device_status:get_status",
+          "alt_lock_archive_native_2to2:connected_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_3_select_discovered_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "step_4_get_iot_device_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_connected_lock_pass_native": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "step_7_archive_connected_lock_pass_native": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_light_status",
+          "build_device_restart_request",
+          "get_discovered_lock_ticket_native",
+          "archive_discovered_lock_ticket_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3b",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution",
+          "alt_iot_device_status:get_light",
+          "alt_lock_archive_native_2to2:discovered_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_3_select_discovered_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "step_4_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_discovered_lock_ticket_native": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "step_7_archive_discovered_lock_ticket_native": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_light_status",
+          "build_device_restart_request",
+          "get_connected_lock_pass_native",
+          "archive_connected_lock_pass_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3b",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution",
+          "alt_iot_device_status:get_light",
+          "alt_lock_archive_native_2to2:connected_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_3_select_discovered_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "device_name": "Living Room Main Light",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_light"
+            },
+            "step_4_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_connected_lock_pass_native": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "step_7_archive_connected_lock_pass_native": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "build_device_restart_request",
+          "get_discovered_lock_ticket_native",
+          "archive_discovered_lock_ticket_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3a",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution",
+          "alt_iot_device_status:get_status",
+          "alt_lock_archive_native_2to2:discovered_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_3_resolve_connected_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "step_4_get_iot_device_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_discovered_lock_ticket_native": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "step_7_archive_discovered_lock_ticket_native": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "build_device_restart_request",
+          "get_connected_lock_pass_native",
+          "archive_connected_lock_pass_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3a",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution",
+          "alt_iot_device_status:get_status",
+          "alt_lock_archive_native_2to2:connected_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_3_resolve_connected_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "step_4_get_iot_device_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_connected_lock_pass_native": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "step_7_archive_connected_lock_pass_native": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "build_device_restart_request",
+          "get_discovered_lock_ticket_native",
+          "archive_discovered_lock_ticket_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3b",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution",
+          "alt_iot_device_status:get_light",
+          "alt_lock_archive_native_2to2:discovered_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_3_resolve_connected_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "step_4_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_discovered_lock_ticket_native": {
+              "lock_ticket_id": "disc_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "selected_first_smart_lock",
+              "source_label": "discovery_scan"
+            },
+            "step_7_archive_discovered_lock_ticket_native": {
+              "status": "archived",
+              "strategy": "discovered_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "disc_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "build_device_restart_request",
+          "get_connected_lock_pass_native",
+          "archive_connected_lock_pass_native",
+          "set_lock_state",
+          "send_instant_message",
+          "push_alert_contact_by_name",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3b",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution",
+          "alt_iot_device_status:get_light",
+          "alt_lock_archive_native_2to2:connected_lock_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects",
+              "extension": ".txt"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              }
+            },
+            "output": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "archive_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "title": "Maintenance lock audit",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "set_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_bob",
+              "message": "Area secured and maintenance workflow started."
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "IoT maintenance log",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_browse_storage": {
+              "found": true,
+              "folder": "/projects",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "step_2_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_3_resolve_connected_device_by_type": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "step_4_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_5_build_device_restart_request": {
+              "device_id": "light_living",
+              "restart_reason": "status_driven_recovery"
+            },
+            "step_6_get_connected_lock_pass_native": {
+              "lock_pass_ref": "conn_lock_main",
+              "lock_device_id": "lock_main",
+              "source_area": "living_room",
+              "selection_mode": "resolved_first_smart_lock",
+              "source_label": "connected_inventory"
+            },
+            "step_7_archive_connected_lock_pass_native": {
+              "status": "archived",
+              "strategy": "connected_lock_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Maintenance lock audit",
+              "lock_ref": "conn_lock_main"
+            },
+            "step_8_set_lock_state": {
+              "device_id": "lock_main",
+              "new_state": "locked"
+            },
+            "step_9_send_instant_message": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_bob",
+              "message_preview": "Area secured and maintenance workflow started."
+            },
+            "step_10_push_alert_contact_by_name": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Maintenance completed and the lock has been secured.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "step_11_create_document_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "IoT maintenance log",
+              "tags": [
+                "iot",
+                "maintenance",
+                "security"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_connected_lock_pass_native",
+      "archive_discovered_lock_ticket_native",
+      "discover_smart_devices",
+      "get_connected_lock_pass_native",
+      "get_discovered_lock_ticket_native",
+      "get_iot_device_status",
+      "get_light_status",
+      "query_connected_devices",
+      "resolve_connected_device_by_type",
+      "select_discovered_device_by_type"
+    ],
+    "domains": [
+      "Office",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T13:31:31.404618+00:00",
+  "end_time": "2026-10-24T13:32:19.745165+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['create_document_and_alert', 'push_alert_contact_by_name', 'select_discovered_device_by_type', 'send_instant_message']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 26502,
+    "output_tokens": 2198,
+    "total_tokens": 28700
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look in the /projects folder for any .txt files, then scan the living_room devices and find the smart_light with device_id light_living. Check its status and prepare a restart request for it. After that, find the discovered lock ticket for the living_room and archive it in the app as a high-priority Maintenance lock audit for u_alice. Then lock the main door lock lock_main by setting its state to lock using PIN 2026. Send u_bob the message “Area secured and maintenance workflow started.” Also alert alice in the app with the high-priority message “Maintenance completed and the lock has been secured.” Finally, create a document titled “IoT maintenance log” containing “Device status checked, restart request prepared, lock audit archived, and stakeholders notified.” Include the tags iot, maintenance, and security, and send it as a high-priority app alert to u_alice.",
+      "area": "living_room",
+      "channel": "app",
+      "contact_message": "Maintenance completed and the lock has been secured.",
+      "contact_name": "alice",
+      "device_id": "light_living",
+      "document_content": "Device status checked, restart request prepared, lock audit archived, and stakeholders notified.",
+      "document_title": "IoT maintenance log",
+      "extension": ".txt",
+      "folder_path": "/projects",
+      "im_message": "Area secured and maintenance workflow started.",
+      "im_recipient": "u_bob",
+      "lock_archive_title": "Maintenance lock audit",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "2026",
+      "priority": "high",
+      "tags": [
+        "iot",
+        "maintenance",
+        "security"
+      ],
+      "target_device_type": "smart_light",
+      "user_id": "u_alice"
+    },
+    "task_description": "Please check the living room devices by first looking through the /projects folder for any .txt files, then scan the living room devices, pick the smart light, check its status, and prepare a restart request for it. After that, get the discovered lock ticket for the living room and archive it as a high-priority “Maintenance lock audit” for u_alice in the app, then lock the main door lock with PIN 2026, send Bob a message that the area is secured and the maintenance workflow has started, alert Alice in the app that maintenance is completed and the lock has been secured, and finally create an “IoT maintenance log” document with those maintenance and security details and send it as a high-priority app alert to u_alice.",
+    "template_id": "C4_template_070",
+    "domains": [
+      "Office",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_browse_storage",
+      "tool_name": "browse_storage",
+      "arguments": {
+        "extension": ".txt",
+        "folder_path": "/projects"
+      },
+      "result_sample": {
+        "found": true,
+        "folder": "/projects",
+        "total_count": 2,
+        "matched_count": 0,
+        "files": []
+      },
+      "status": "success",
+      "duration_ms": 0.41089404840022326,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:31:43.242039+00:00"
+    },
+    {
+      "call_id": "tc_2_2_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "arguments": {
+        "location": "living_room"
+      },
+      "result_sample": {
+        "location": "living_room",
+        "device_count": 4,
+        "devices": [
+          {
+            "device_id": "lock_main",
+            "name": "Main Door Lock",
+            "type": "smart_lock"
+          },
+          {
+            "device_id": "light_living",
+            "name": "Living Room Main Light",
+            "type": "smart_light"
+          },
+          {
+            "device_id": "ac_living",
+            "name": "Living Room AC",
+            "type": "thermostat"
+          },
+          {
+            "device_id": "tv_living",
+            "name": "Living Room TV",
+            "type": "media_player"
+          }
+        ],
+        "message": "Scan complete successfully."
+      },
+      "status": "success",
+      "duration_ms": 0.35991996992379427,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:31:46.955745+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_light_status",
+      "tool_name": "get_light_status",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "device_id": "light_living",
+        "power_state": "off",
+        "brightness": 0,
+        "color": "white"
+      },
+      "status": "success",
+      "duration_ms": 0.3234980395063758,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:31:51.316139+00:00"
+    },
+    {
+      "call_id": "tc_4_4_build_device_restart_request",
+      "tool_name": "build_device_restart_request",
+      "arguments": {
+        "device_status": {
+          "device_id": "light_living"
+        }
+      },
+      "result_sample": {
+        "device_id": "light_living",
+        "restart_reason": "status_driven_recovery"
+      },
+      "status": "success",
+      "duration_ms": 0.30289602000266314,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:31:55.229593+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_discovered_lock_ticket_native",
+      "tool_name": "get_discovered_lock_ticket_native",
+      "arguments": {
+        "area": "living_room"
+      },
+      "result_sample": {
+        "lock_ticket_id": "disc_lock_main",
+        "lock_device_id": "lock_main",
+        "source_area": "living_room",
+        "selection_mode": "selected_first_smart_lock",
+        "source_label": "discovery_scan"
+      },
+      "status": "success",
+      "duration_ms": 0.3990059485659003,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:31:59.718242+00:00"
+    },
+    {
+      "call_id": "tc_6_6_archive_discovered_lock_ticket_native",
+      "tool_name": "archive_discovered_lock_ticket_native",
+      "arguments": {
+        "channel": "app",
+        "lock_ticket": {
+          "lock_device_id": "lock_main",
+          "lock_ticket_id": "disc_lock_main",
+          "source_area": "living_room",
+          "source_label": "discovery_scan"
+        },
+        "priority": "high",
+        "title": "Maintenance lock audit",
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "status": "archived",
+        "strategy": "discovered_lock_archive_native",
+        "notification_id": "NOTIFEE84C",
+        "note_id": "NOTE18E3D",
+        "title": "Maintenance lock audit",
+        "lock_ref": "disc_lock_main"
+      },
+      "status": "success",
+      "duration_ms": 0.3918850561603904,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:32:05.776333+00:00"
+    },
+    {
+      "call_id": "tc_7_7_set_lock_state",
+      "tool_name": "set_lock_state",
+      "arguments": {
+        "lock_id": "lock_main",
+        "pin_code": "2026",
+        "state": "lock"
+      },
+      "result_sample": {
+        "device_id": "lock_main",
+        "new_state": "locked"
+      },
+      "status": "success",
+      "duration_ms": 0.3193130251020193,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T13:32:11.677122+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_browse_storage",
+      "tool_name": "browse_storage",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "browse_storage",
+            "verified_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "browse_storage",
+            "checked_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "browse_storage",
+            "verified_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.041
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'browse_storage'",
+          "details": {
+            "arguments": [
+              "extension",
+              "folder_path"
+            ],
+            "output": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'browse_storage' output",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:31:43.242265+00:00"
+    },
+    {
+      "call_id": "tc_2_2_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "checked_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'discover_smart_devices'",
+          "details": {
+            "arguments": [
+              "location"
+            ],
+            "output": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'discover_smart_devices' output",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:31:46.956006+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_light_status",
+      "tool_name": "get_light_status",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_status",
+            "checked_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.037
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_status'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_status' output",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:31:51.316364+00:00"
+    },
+    {
+      "call_id": "tc_4_4_build_device_restart_request",
+      "tool_name": "build_device_restart_request",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "verified_fields": [
+              "device_id",
+              "restart_reason"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.01
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "checked_fields": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "verified_fields": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.008
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.026
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'build_device_restart_request'",
+          "details": {
+            "arguments": [
+              "device_status"
+            ],
+            "output": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_device_restart_request' output",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:31:55.229816+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_discovered_lock_ticket_native",
+      "tool_name": "get_discovered_lock_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native",
+            "verified_fields": [
+              "lock_ticket_id",
+              "lock_device_id",
+              "source_area",
+              "selection_mode",
+              "source_label"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native",
+            "checked_fields": [
+              "lock_ticket_id",
+              "lock_device_id",
+              "source_area",
+              "selection_mode",
+              "source_label"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native",
+            "verified_fields": [
+              "lock_ticket_id",
+              "lock_device_id",
+              "source_area",
+              "selection_mode",
+              "source_label"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.077
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_discovered_lock_ticket_native'",
+          "details": {
+            "arguments": [
+              "area"
+            ],
+            "output": [
+              "lock_ticket_id",
+              "lock_device_id",
+              "source_area",
+              "selection_mode",
+              "source_label"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.022
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_discovered_lock_ticket_native' output",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "get_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:31:59.718586+00:00"
+    },
+    {
+      "call_id": "tc_6_6_archive_discovered_lock_ticket_native",
+      "tool_name": "archive_discovered_lock_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "note_id",
+              "title",
+              "lock_ref"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "note_id",
+              "title",
+              "lock_ref"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "note_id",
+              "title",
+              "lock_ref"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'archive_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'archive_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'archive_discovered_lock_ticket_native'",
+          "details": {
+            "arguments": [
+              "channel",
+              "lock_ticket",
+              "priority",
+              "title",
+              "user_id"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "notification_id",
+              "note_id",
+              "title",
+              "lock_ref"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'archive_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'archive_discovered_lock_ticket_native' output",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'archive_discovered_lock_ticket_native'",
+          "details": {
+            "tool_name": "archive_discovered_lock_ticket_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:32:05.776584+00:00"
+    },
+    {
+      "call_id": "tc_7_7_set_lock_state",
+      "tool_name": "set_lock_state",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "set_lock_state",
+            "verified_fields": [
+              "device_id",
+              "new_state"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "set_lock_state",
+            "checked_fields": [
+              "device_id",
+              "new_state"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "set_lock_state",
+            "verified_fields": [
+              "device_id",
+              "new_state"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'set_lock_state'",
+          "details": {
+            "tool_name": "set_lock_state"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'set_lock_state'",
+          "details": {
+            "tool_name": "set_lock_state"
+          },
+          "latency_ms": 0.026
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'set_lock_state'",
+          "details": {
+            "arguments": [
+              "lock_id",
+              "pin_code",
+              "state"
+            ],
+            "output": [
+              "device_id",
+              "new_state"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'set_lock_state'",
+          "details": {
+            "tool_name": "set_lock_state"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'set_lock_state' output",
+          "details": {
+            "tool_name": "set_lock_state"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'set_lock_state'",
+          "details": {
+            "tool_name": "set_lock_state"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T13:32:11.677342+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['create_document_and_alert', 'push_alert_contact_by_name', 'select_discovered_device_by_type', 'send_instant_message']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "create_document_and_alert",
+        "push_alert_contact_by_name",
+        "select_discovered_device_by_type",
+        "send_instant_message"
+      ],
+      "insufficient_calls": {
+        "select_discovered_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "send_instant_message": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert_contact_by_name": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_iot_device_status",
+              "build_device_restart_request",
+              "get_discovered_lock_ticket_native",
+              "archive_discovered_lock_ticket_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_iot_device_status",
+              "build_device_restart_request",
+              "get_connected_lock_pass_native",
+              "archive_connected_lock_pass_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_light_status",
+              "build_device_restart_request",
+              "get_discovered_lock_ticket_native",
+              "archive_discovered_lock_ticket_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_light_status",
+              "build_device_restart_request",
+              "get_connected_lock_pass_native",
+              "archive_connected_lock_pass_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "build_device_restart_request",
+              "get_discovered_lock_ticket_native",
+              "archive_discovered_lock_ticket_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "build_device_restart_request",
+              "get_connected_lock_pass_native",
+              "archive_connected_lock_pass_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "build_device_restart_request",
+              "get_discovered_lock_ticket_native",
+              "archive_discovered_lock_ticket_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "build_device_restart_request",
+              "get_connected_lock_pass_native",
+              "archive_connected_lock_pass_native",
+              "set_lock_state",
+              "send_instant_message",
+              "push_alert_contact_by_name",
+              "create_document_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_connected_lock_pass_native",
+          "archive_discovered_lock_ticket_native",
+          "discover_smart_devices",
+          "get_connected_lock_pass_native",
+          "get_discovered_lock_ticket_native",
+          "get_iot_device_status",
+          "get_light_status",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "select_discovered_device_by_type"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "browse_storage",
+          "discover_smart_devices",
+          "get_light_status",
+          "build_device_restart_request",
+          "get_discovered_lock_ticket_native",
+          "archive_discovered_lock_ticket_native",
+          "set_lock_state"
+        ]
+      }
+    }
+  }
+}

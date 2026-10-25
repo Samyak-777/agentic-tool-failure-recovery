@@ -1,0 +1,1612 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c2_full",
+  "task_id": "C2_task_014",
+  "mode": "P0",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_014",
+    "template_id": "C2_template_014",
+    "complexity": "C2",
+    "task_description": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my Paris trip in Celsius, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and after that check the status of my checking account and send me a Trip Summary balance alert in USD through the app.",
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my trip to Paris using Celsius. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Once that’s done, check the status of my checking account for user_001 and send me a Trip Summary balance alert in USD through the app.",
+      "account_type": "checking",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Grand Hyatt",
+      "room_type": "standard",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info_flightaware",
+          "build_weather_brief_payload",
+          "book_hotel",
+          "get_account_balance",
+          "create_balance_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_account_balance_default_broker_api:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "Paris",
+              "to_unit": "celsius",
+              "title": "Trip Summary",
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "create_balance_report_and_alert",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_flight_info_flightaware": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "step_2_build_weather_brief_payload": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_account_balance": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "step_5_create_balance_report_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info_flightaware",
+          "build_weather_brief_payload",
+          "book_hotel",
+          "get_account_balance_broker_api",
+          "create_balance_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_account_balance_default_broker_api:broker_api"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "Paris",
+              "to_unit": "celsius",
+              "title": "Trip Summary",
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "create_balance_report_and_alert",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_flight_info_flightaware": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "step_2_build_weather_brief_payload": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_account_balance_broker_api": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "step_5_create_balance_report_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_account_balance",
+      "get_account_balance_broker_api"
+    ],
+    "domains": [
+      "Travel",
+      "Financial"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T13:30:42.245318+00:00",
+  "end_time": "2026-10-23T13:31:32.216165+00:00",
+  "status": "completed",
+  "passed": true,
+  "error": null,
+  "failure_reason": null,
+  "failed_tools": [
+    "create_balance_report_and_alert"
+  ],
+  "tokens": {
+    "input_tokens": 18819,
+    "output_tokens": 2983,
+    "total_tokens": 21802
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my trip to Paris using Celsius. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Once that’s done, check the status of my checking account for user_001 and send me a Trip Summary balance alert in USD through the app.",
+      "account_type": "checking",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Grand Hyatt",
+      "room_type": "standard",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my Paris trip in Celsius, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and after that check the status of my checking account and send me a Trip Summary balance alert in USD through the app.",
+    "template_id": "C2_template_014",
+    "domains": [
+      "Travel",
+      "Financial"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "flight_number": "CA1234",
+        "airline": "Air China",
+        "departure": "Beijing Capital Airport",
+        "arrival": "Shanghai Pudong Airport",
+        "departure_time": "08:30",
+        "arrival_time": "11:00",
+        "status": "On Time",
+        "gate": "A12"
+      },
+      "status": "success",
+      "duration_ms": 0.5894280038774014,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:30:59.384797+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_weather_brief_payload",
+      "tool_name": "build_weather_brief_payload",
+      "arguments": {
+        "city": "Paris",
+        "to_unit": "celsius",
+        "channel": "app",
+        "title": "Paris Weather Brief",
+        "priority": "medium"
+      },
+      "result_sample": {
+        "title": "Paris Weather Brief",
+        "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+        "tags": [
+          "weather",
+          "paris"
+        ],
+        "user_id": "default_user",
+        "priority": "medium",
+        "channel": "app",
+        "city": "Paris",
+        "converted_unit": "celsius"
+      },
+      "status": "success",
+      "duration_ms": 0.39876392111182213,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:31:04.721740+00:00"
+    },
+    {
+      "call_id": "tc_3_3_book_hotel",
+      "tool_name": "book_hotel",
+      "arguments": {
+        "check_in_date": "2025-07-01",
+        "check_out_date": "2025-07-05",
+        "guest_name": "John Doe",
+        "hotel_name": "Grand Hyatt",
+        "room_type": "standard"
+      },
+      "result_sample": {
+        "message": "Hotel booked successfully",
+        "booking_id": "HOTEL8D99FB",
+        "confirmation_code": "891392",
+        "hotel_name": "Grand Hyatt",
+        "guest_name": "John Doe",
+        "check_in_date": "2025-07-01",
+        "check_out_date": "2025-07-05",
+        "room_type": "standard",
+        "status": "confirmed"
+      },
+      "status": "success",
+      "duration_ms": 0.7279259152710438,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:31:10.056545+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_account_balance",
+      "tool_name": "get_account_balance",
+      "arguments": {
+        "account_type": "checking",
+        "user_id": "user_001"
+      },
+      "result_sample": {
+        "user_id": "user_001",
+        "account_type": "checking",
+        "balance": 28495,
+        "currency": "USD",
+        "status": "active"
+      },
+      "status": "success",
+      "duration_ms": 0.35457999911159277,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:31:14.900353+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_balance_report_and_alert",
+      "tool_name": "create_balance_report_and_alert",
+      "arguments": {
+        "channel": "app",
+        "target_currency": "USD",
+        "title": "Trip Summary Balance Alert",
+        "user_id": "user_001",
+        "account_type": "checking"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_balance_report_and_alert' is missing required schema field(s): document_timestamp; [required] Required field violation for 'create_balance_report_and_alert': missing: ['document_timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary Balance Alert",
+          "tags": [
+            "balance",
+            "usd"
+          ],
+          "account_type": "checking",
+          "target_currency": "USD",
+          "workflow": "balance_text_report"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.45322999358177185,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:31:18.277779+00:00"
+    },
+    {
+      "call_id": "tc_6_6_create_balance_report_and_alert",
+      "tool_name": "create_balance_report_and_alert",
+      "arguments": {
+        "account_type": "checking",
+        "channel": "app",
+        "document_timestamp": "2025-07-05T14:30:00Z",
+        "target_currency": "USD",
+        "title": "Trip Summary Balance Alert",
+        "user_id": "user_001"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_balance_report_and_alert' is missing required schema field(s): document_timestamp; [required] Required field violation for 'create_balance_report_and_alert': missing: ['document_timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary Balance Alert",
+          "tags": [
+            "balance",
+            "usd"
+          ],
+          "account_type": "checking",
+          "target_currency": "USD",
+          "workflow": "balance_text_report"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.6675060139968991,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:31:24.773596+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.258
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "CA1234",
+                "returned": "CA1234",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info_flightaware' output",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:30:59.385042+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_weather_brief_payload",
+      "tool_name": "build_weather_brief_payload",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "build_weather_brief_payload",
+            "verified_fields": [
+              "title",
+              "content",
+              "tags",
+              "user_id",
+              "priority",
+              "channel",
+              "city",
+              "converted_unit"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_weather_brief_payload",
+            "checked_fields": [
+              "title",
+              "content",
+              "tags",
+              "user_id",
+              "priority",
+              "channel",
+              "city",
+              "converted_unit"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "build_weather_brief_payload",
+            "verified_fields": [
+              "title",
+              "content",
+              "tags",
+              "user_id",
+              "priority",
+              "channel",
+              "city",
+              "converted_unit"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_weather_brief_payload'",
+          "details": {
+            "tool_name": "build_weather_brief_payload"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_weather_brief_payload'",
+          "details": {
+            "tool_name": "build_weather_brief_payload"
+          },
+          "latency_ms": 0.064
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "build_weather_brief_payload",
+            "compared_pairs": [
+              {
+                "arg_key": "city",
+                "res_key": "city",
+                "requested": "Paris",
+                "returned": "Paris",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_weather_brief_payload'",
+          "details": {
+            "tool_name": "build_weather_brief_payload"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_weather_brief_payload' output",
+          "details": {
+            "tool_name": "build_weather_brief_payload"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_weather_brief_payload'",
+          "details": {
+            "tool_name": "build_weather_brief_payload"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:31:04.721997+00:00"
+    },
+    {
+      "call_id": "tc_3_3_book_hotel",
+      "tool_name": "book_hotel",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (9 fields verified)",
+          "details": {
+            "tool_name": "book_hotel",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.018
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 9 checked output fields match expected types",
+          "details": {
+            "tool_name": "book_hotel",
+            "checked_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.02
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 9 required fields present and non-null",
+          "details": {
+            "tool_name": "book_hotel",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'book_hotel'",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.023
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "book_hotel",
+            "checked_fields": [
+              "check_in_date",
+              "check_out_date"
+            ]
+          },
+          "latency_ms": 0.263
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'book_hotel'",
+          "details": {
+            "arguments": [
+              "check_in_date",
+              "check_out_date",
+              "guest_name",
+              "hotel_name",
+              "room_type"
+            ],
+            "output": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'book_hotel'",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.012
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'book_hotel' output",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.019
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "VALID",
+          "reason": "Cross-tool consistency confirmed (1 rule(s) checked)",
+          "details": {
+            "tool_name": "book_hotel",
+            "applied_rules": [
+              "CTR-001"
+            ]
+          },
+          "latency_ms": 0.009
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:31:10.057008+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_account_balance",
+      "tool_name": "get_account_balance",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_account_balance",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_account_balance",
+            "checked_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_account_balance",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_account_balance'",
+          "details": {
+            "tool_name": "get_account_balance"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_account_balance'",
+          "details": {
+            "tool_name": "get_account_balance"
+          },
+          "latency_ms": 0.042
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_account_balance",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_account_balance'",
+          "details": {
+            "tool_name": "get_account_balance"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_account_balance' output",
+          "details": {
+            "tool_name": "get_account_balance"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_account_balance'",
+          "details": {
+            "tool_name": "get_account_balance"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:31:14.900578+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_balance_report_and_alert",
+      "tool_name": "create_balance_report_and_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_balance_report_and_alert' is missing required schema field(s): document_timestamp",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ],
+            "actual_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 11 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_balance_report_and_alert': missing: ['document_timestamp']",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.016
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.097
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_balance_report_and_alert' output",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.026
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T13:31:18.278064+00:00"
+    },
+    {
+      "call_id": "tc_6_6_create_balance_report_and_alert",
+      "tool_name": "create_balance_report_and_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_balance_report_and_alert' is missing required schema field(s): document_timestamp",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ],
+            "actual_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 11 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.024
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_balance_report_and_alert': missing: ['document_timestamp']",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.03
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.164
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "create_balance_report_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_balance_report_and_alert' output",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.022
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_balance_report_and_alert'",
+          "details": {
+            "tool_name": "create_balance_report_and_alert"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T13:31:24.774293+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": true,
+    "failure_reason": null,
+    "trace_check": {
+      "match": true,
+      "victim_tool": null,
+      "missing_tools": [],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info_flightaware",
+              "build_weather_brief_payload",
+              "book_hotel",
+              "get_account_balance",
+              "create_balance_report_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info_flightaware",
+              "build_weather_brief_payload",
+              "book_hotel",
+              "get_account_balance_broker_api",
+              "create_balance_report_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_account_balance",
+          "get_account_balance_broker_api"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info_flightaware",
+          "build_weather_brief_payload",
+          "book_hotel",
+          "get_account_balance",
+          "create_balance_report_and_alert",
+          "create_balance_report_and_alert"
+        ]
+      }
+    }
+  }
+}

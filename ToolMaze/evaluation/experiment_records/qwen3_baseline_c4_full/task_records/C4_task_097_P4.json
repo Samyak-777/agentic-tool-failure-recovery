@@ -1,0 +1,2406 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_097",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_097",
+    "template_id": "C4_template_097",
+    "complexity": "C4",
+    "task_description": "Could you first check the balance of my investment account for user_01 and check the NASDAQ market status? Then, look up the stock details for AAPL, resolve its direct quote profile, and place a buy order for $170.25. After that, please scan for smart devices in the living room, check the status of the 'light_living' device, and set its brightness to 80. Finally, check the exchange rate from USD to EUR, and create a document titled 'Trade Execution and Home Automation Log' with the order execution message.",
+    "user_input": {
+      "query": "Could you first check the balance of my investment account for user_01 and check the current NASDAQ market status? Then, please look up the stock details for AAPL, resolve its direct quote profile, and place a buy order for it at $170.25. \n\nOnce the trade is handled, please scan for smart devices in the living_room, check the status of the light_living device, and adjust its brightness to 80. \n\nFinally, check the current exchange rate from USD to EUR, and create a document titled 'Trade Execution and Home Automation Log' that contains the order execution message.",
+      "room_location": "living_room",
+      "target_device_id": "light_living",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_market_status_alpha",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_buy_order_with_risk_check",
+          "discover_smart_devices",
+          "get_iot_device_status",
+          "set_light_brightness",
+          "get_exchange_rate_currencyapi",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5",
+          "s6a",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_status"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": -170.25,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 170.25,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": null,
+              "power_state": "on",
+              "brightness": 100000,
+              "color": "black"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 80
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 80,
+              "actual_brightness": 80,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trade Execution and Home Automation Log",
+              "content": "Order executed successfully"
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution and Home Automation Log",
+              "content_length": 27,
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": -170.25,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": null,
+                "power_state": "on",
+                "brightness": 100000,
+                "color": "black"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 80
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 80,
+                "actual_brightness": 80,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trade Execution and Home Automation Log",
+                "content": "Order executed successfully"
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution and Home Automation Log",
+                "content_length": 27,
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_market_status_alpha",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_buy_order_with_risk_check",
+          "discover_smart_devices",
+          "get_light_status",
+          "set_light_brightness",
+          "get_exchange_rate_currencyapi",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5",
+          "s6b",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_light"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": -170.25,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 170.25,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_kitchen_null",
+              "power_state": "off",
+              "brightness": -100,
+              "color": "transparent"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 80
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 80,
+              "actual_brightness": 80,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trade Execution and Home Automation Log",
+              "content": "Order executed successfully"
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution and Home Automation Log",
+              "content_length": 27,
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": -170.25,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_kitchen_null",
+                "power_state": "off",
+                "brightness": -100,
+                "color": "transparent"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 80
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 80,
+                "actual_brightness": 80,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trade Execution and Home Automation Log",
+                "content": "Order executed successfully"
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution and Home Automation Log",
+                "content_length": 27,
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_market_status_alpha",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_buy_order_with_risk_check",
+          "discover_smart_devices",
+          "get_iot_device_status",
+          "set_light_brightness",
+          "get_exchange_rate_currencyapi",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6a",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_status"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 500.0,
+              "currency": "EUR",
+              "ticker": null,
+              "price_usd": 100000.0,
+              "rate": 0.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 170.25,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": null,
+              "power_state": "unplugged",
+              "brightness": 100000,
+              "color": "N/A"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 80
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 80,
+              "actual_brightness": 80,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trade Execution and Home Automation Log",
+              "content": "Order executed successfully"
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution and Home Automation Log",
+              "content_length": 27,
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 500.0,
+                "currency": "EUR",
+                "ticker": null,
+                "price_usd": 100000.0,
+                "rate": 0.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": null,
+                "power_state": "unplugged",
+                "brightness": 100000,
+                "color": "N/A"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 80
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 80,
+                "actual_brightness": 80,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trade Execution and Home Automation Log",
+                "content": "Order executed successfully"
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution and Home Automation Log",
+                "content_length": 27,
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_market_status_alpha",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_buy_order_with_risk_check",
+          "discover_smart_devices",
+          "get_light_status",
+          "set_light_brightness",
+          "get_exchange_rate_currencyapi",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6b",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_light"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 15000.0,
+              "currency": "USD",
+              "ticker": null,
+              "price_usd": 100.0,
+              "rate": -1.5
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 170.25,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": null,
+              "power_state": "on",
+              "brightness": -50,
+              "color": "none"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 80
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 80,
+              "actual_brightness": 80,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trade Execution and Home Automation Log",
+              "content": "Order executed successfully"
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution and Home Automation Log",
+              "content_length": 27,
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 15000.0,
+                "currency": "USD",
+                "ticker": null,
+                "price_usd": 100.0,
+                "rate": -1.5
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": null,
+                "power_state": "on",
+                "brightness": -50,
+                "color": "none"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 80
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 80,
+                "actual_brightness": 80,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trade Execution and Home Automation Log",
+                "content": "Order executed successfully"
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution and Home Automation Log",
+                "content_length": 27,
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_iot_device_status",
+      "get_light_status",
+      "get_stock_price_and_convert",
+      "get_stock_yahoo_finance",
+      "resolve_converted_quote_profile",
+      "resolve_direct_quote_profile"
+    ],
+    "domains": [
+      "Financial",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s3",
+        "s6"
+      ]
+    },
+    "corruption_type": "logic_violation"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T09:45:21.056461+00:00",
+  "end_time": "2026-10-24T09:46:02.540649+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_stock_yahoo_finance' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_stock_yahoo_finance"
+  ],
+  "tokens": {
+    "input_tokens": 11954,
+    "output_tokens": 2255,
+    "total_tokens": 14209
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you first check the balance of my investment account for user_01 and check the current NASDAQ market status? Then, please look up the stock details for AAPL, resolve its direct quote profile, and place a buy order for it at $170.25. \n\nOnce the trade is handled, please scan for smart devices in the living_room, check the status of the light_living device, and adjust its brightness to 80. \n\nFinally, check the current exchange rate from USD to EUR, and create a document titled 'Trade Execution and Home Automation Log' that contains the order execution message.",
+      "room_location": "living_room",
+      "target_device_id": "light_living",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "task_description": "Could you first check the balance of my investment account for user_01 and check the NASDAQ market status? Then, look up the stock details for AAPL, resolve its direct quote profile, and place a buy order for $170.25. After that, please scan for smart devices in the living room, check the status of the 'light_living' device, and set its brightness to 80. Finally, check the exchange rate from USD to EUR, and create a document titled 'Trade Execution and Home Automation Log' with the order execution message.",
+    "template_id": "C4_template_097",
+    "domains": [
+      "Financial",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_stock_yahoo_finance'], matching recorded execution failure in tools ['get_stock_yahoo_finance'] leading to task failure.",
+    "configured_count": 8,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_097_path_0_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_0_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": null,
+          "power_state": "on",
+          "brightness": 100000,
+          "color": "black"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_1_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_1_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen_null",
+          "power_state": "off",
+          "brightness": -100,
+          "color": "transparent"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_2_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price": 500.0,
+          "currency": "EUR",
+          "ticker": null,
+          "price_usd": 100000.0,
+          "rate": 0.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_2_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": null,
+          "power_state": "unplugged",
+          "brightness": 100000,
+          "color": "N/A"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_3_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price": 15000.0,
+          "currency": "USD",
+          "ticker": null,
+          "price_usd": 100.0,
+          "rate": -1.5
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_097_path_3_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": null,
+          "power_state": "on",
+          "brightness": -50,
+          "color": "none"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_iot_device_status:get_light"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_stock_yahoo_finance",
+        "tool_name": "get_stock_yahoo_finance",
+        "step": 3,
+        "timestamp": "2026-10-24T09:45:57.194404+00:00",
+        "config_id": "C4_task_097_path_0_get_stock_yahoo_finance",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "ticker": "AAPL"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [range] Value range violation: Range violation for 'price_usd': -170.25 <= min(0.0) (exclusive) [RR-001] | Rationale: Stock prices are positive real numbers by financial market definition. A value ≤ 0 indicates data corruption or an invalid API response.; [cross_field] Cross-field rule violation: [CFR-005] Field 'price_usd' requires currency='USD', got 'EUR'",
+          "validation_failed_checks": [
+            "range",
+            "cross_field"
+          ],
+          "untrusted_output": {
+            "price_usd": -170.25,
+            "currency": "EUR"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_account_balance_broker_api",
+      "tool_name": "get_account_balance_broker_api",
+      "arguments": {
+        "user_id": "user_01",
+        "account_type": "investment"
+      },
+      "result_sample": {
+        "user_id": "user_01",
+        "account_type": "investment",
+        "balance": 28785,
+        "currency": "USD",
+        "status": "active"
+      },
+      "status": "success",
+      "duration_ms": 0.4788050428032875,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:45:50.338938+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "arguments": {
+        "exchange": "NASDAQ"
+      },
+      "result_sample": {
+        "exchange": "NASDAQ",
+        "is_open": true,
+        "session": "regular",
+        "details": {
+          "is_open": true,
+          "session": "regular",
+          "next_close": "16:00 EST"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.395215000025928,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:45:52.165270+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_stock_yahoo_finance",
+      "tool_name": "get_stock_yahoo_finance",
+      "arguments": {
+        "ticker": "AAPL"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [range] Value range violation: Range violation for 'price_usd': -170.25 <= min(0.0) (exclusive) [RR-001] | Rationale: Stock prices are positive real numbers by financial market definition. A value ≤ 0 indicates data corruption or an invalid API response.; [cross_field] Cross-field rule violation: [CFR-005] Field 'price_usd' requires currency='USD', got 'EUR'",
+        "validation_failed_checks": [
+          "range",
+          "cross_field"
+        ],
+        "untrusted_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3205209504812956,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:45:57.194404+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_account_balance_broker_api",
+      "tool_name": "get_account_balance_broker_api",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_account_balance_broker_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_account_balance_broker_api",
+            "checked_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_account_balance_broker_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_account_balance_broker_api'",
+          "details": {
+            "tool_name": "get_account_balance_broker_api"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_account_balance_broker_api'",
+          "details": {
+            "tool_name": "get_account_balance_broker_api"
+          },
+          "latency_ms": 0.056
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_account_balance_broker_api",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_01",
+                "returned": "user_01",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.021
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_account_balance_broker_api'",
+          "details": {
+            "tool_name": "get_account_balance_broker_api"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_account_balance_broker_api' output",
+          "details": {
+            "tool_name": "get_account_balance_broker_api"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_account_balance_broker_api'",
+          "details": {
+            "tool_name": "get_account_balance_broker_api"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:45:50.339182+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "checked_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.039
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_market_status_alpha'",
+          "details": {
+            "arguments": [
+              "exchange"
+            ],
+            "output": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_market_status_alpha' output",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:45:52.165514+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_stock_yahoo_finance",
+      "tool_name": "get_stock_yahoo_finance",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance",
+            "verified_fields": [
+              "price_usd",
+              "currency"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance",
+            "checked_fields": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance",
+            "verified_fields": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "INVALID",
+          "reason": "Value range violation: Range violation for 'price_usd': -170.25 <= min(0.0) (exclusive) [RR-001] | Rationale: Stock prices are positive real numbers by financial market definition. A value ≤ 0 indicates data corruption or an invalid API response.",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance",
+            "violations": [
+              {
+                "rule_id": "RR-001",
+                "field_name": "price_usd",
+                "value": -170.25,
+                "min_val": 0.0,
+                "max_val": null,
+                "source": "UNIVERSAL_DOMAIN_CONSTRAINT",
+                "message": "Range violation for 'price_usd': -170.25 <= min(0.0) (exclusive) [RR-001] | Rationale: Stock prices are positive real numbers by financial market definition. A value ≤ 0 indicates data corruption or an invalid API response."
+              }
+            ],
+            "applied_rules": [
+              "RR-001"
+            ]
+          },
+          "latency_ms": 0.018
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_stock_yahoo_finance'",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance"
+          },
+          "latency_ms": 0.025
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_stock_yahoo_finance'",
+          "details": {
+            "arguments": [
+              "ticker"
+            ],
+            "output": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "INVALID",
+          "reason": "Cross-field rule violation: [CFR-005] Field 'price_usd' requires currency='USD', got 'EUR'",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance",
+            "violations": [
+              {
+                "rule_id": "CFR-005",
+                "fields_involved": [
+                  "price_usd",
+                  "currency"
+                ],
+                "description": "currency == 'USD' when price_usd is present",
+                "failure_reason": "Field 'price_usd' requires currency='USD', got 'EUR'",
+                "source": "SOURCE_TOOL_CONTRACT"
+              }
+            ],
+            "applied_rules": [
+              "CFR-005"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_stock_yahoo_finance' output",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_stock_yahoo_finance'",
+          "details": {
+            "tool_name": "get_stock_yahoo_finance"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "range",
+        "cross_field"
+      ],
+      "timestamp": "2026-10-24T09:45:57.194867+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_stock_yahoo_finance' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_stock_yahoo_finance",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "create_document",
+        "discover_smart_devices",
+        "get_exchange_rate_currencyapi",
+        "get_iot_device_status",
+        "place_buy_order_with_risk_check",
+        "resolve_direct_quote_profile",
+        "set_light_brightness"
+      ],
+      "insufficient_calls": {
+        "resolve_direct_quote_profile": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_buy_order_with_risk_check": {
+          "expected": 1,
+          "actual": 0
+        },
+        "discover_smart_devices": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_iot_device_status": {
+          "expected": 1,
+          "actual": 0
+        },
+        "set_light_brightness": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_exchange_rate_currencyapi": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_market_status_alpha",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_buy_order_with_risk_check",
+              "discover_smart_devices",
+              "get_iot_device_status",
+              "set_light_brightness",
+              "get_exchange_rate_currencyapi",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_market_status_alpha",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_buy_order_with_risk_check",
+              "discover_smart_devices",
+              "get_light_status",
+              "set_light_brightness",
+              "get_exchange_rate_currencyapi",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_market_status_alpha",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_buy_order_with_risk_check",
+              "discover_smart_devices",
+              "get_iot_device_status",
+              "set_light_brightness",
+              "get_exchange_rate_currencyapi",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_market_status_alpha",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_buy_order_with_risk_check",
+              "discover_smart_devices",
+              "get_light_status",
+              "set_light_brightness",
+              "get_exchange_rate_currencyapi",
+              "create_document"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_iot_device_status",
+          "get_light_status",
+          "get_stock_price_and_convert",
+          "get_stock_yahoo_finance",
+          "resolve_converted_quote_profile",
+          "resolve_direct_quote_profile"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s3",
+            "s6"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_account_balance_broker_api",
+          "get_market_status_alpha",
+          "get_stock_yahoo_finance"
+        ]
+      }
+    }
+  }
+}

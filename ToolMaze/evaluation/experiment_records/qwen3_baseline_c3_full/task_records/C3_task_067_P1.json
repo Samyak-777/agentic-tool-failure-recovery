@@ -1,0 +1,1138 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c3_full",
+  "task_id": "C3_task_067",
+  "mode": "P1",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_067",
+    "template_id": "C3_template_067",
+    "complexity": "C3",
+    "task_description": "Please check whether the NYSE is open, look up AAPL’s current price, and if it’s available use that quote to sell 10 shares of AAPL. Then get the current New York time, post the update to my US market board with high priority, and after that create a Trade Execution Report with the execution time and email me the notification.",
+    "user_input": {
+      "query": "Please check whether the NYSE is open, then look up the current price for AAPL. If a quote is available, use it to sell 10 shares of AAPL for trader_id user_99, and note the currency as EUR. After that, get the current New York time and post an update to my US market board, board_id poly_01, with high priority. Then create a Trade Execution Report that includes the execution time, and email me the notification as well.",
+      "board_config": {
+        "board_id": "poly_01",
+        "region": "US"
+      },
+      "currency": "EUR",
+      "sell_quantity": 10,
+      "stock_ticker": "AAPL",
+      "trader_id": "user_99"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status",
+          "get_stock_yahoo_finance",
+          "build_equity_sell_request",
+          "place_sell_order_from_quote",
+          "get_current_time",
+          "publish_polygon_market_board_native",
+          "create_document_and_alert_from_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s2a3",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quote_sell_vs_converted_sell:yahoo_quote_sell"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "error": "Internal Server Error"
+            },
+            "status": "error",
+            "error_message": "500 InternalServerError",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "build_equity_sell_request",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL",
+              "quantity": 10
+            },
+            "output": {
+              "ticker": "AAPL",
+              "quantity": 10.0,
+              "price": 170.25
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "place_sell_order_from_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10.0,
+              "price": 170.25
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10.0,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price": 170.25
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "publish_polygon_market_board_native",
+            "arguments": {
+              "market_board": {
+                "board_id": "poly_01",
+                "region": "US"
+              },
+              "user_id": "user_99",
+              "priority": "high"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "polygon_market_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_99",
+              "market_ref": "polygon_market",
+              "content": "NYSE band unknown, next mark N/A"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Report",
+              "data": "2026-02-22 10:04:54",
+              "user_id": "user_99",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_99",
+              "content": "2026-02-22 10:04:54",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Report",
+              "tags": [],
+              "source_type": "str",
+              "serialized_preview": "2026-02-22 10:04:54"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "error": "Internal Server Error"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_equity_sell_request",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL",
+                "quantity": 10
+              },
+              "output": {
+                "ticker": "AAPL",
+                "quantity": 10.0,
+                "price": 170.25
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10.0,
+                "price": 170.25
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10.0,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price": 170.25
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_polygon_market_board_native",
+              "arguments": {
+                "market_board": {
+                  "board_id": "poly_01",
+                  "region": "US"
+                },
+                "user_id": "user_99",
+                "priority": "high"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "polygon_market_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_99",
+                "market_ref": "polygon_market",
+                "content": "NYSE band unknown, next mark N/A"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Report",
+                "data": "2026-02-22 10:04:54",
+                "user_id": "user_99",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_99",
+                "content": "2026-02-22 10:04:54",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Report",
+                "tags": [],
+                "source_type": "str",
+                "serialized_preview": "2026-02-22 10:04:54"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status",
+          "get_stock_price_and_convert",
+          "build_converted_sell_request",
+          "place_sell_order_from_converted_quote",
+          "get_current_time",
+          "publish_polygon_market_board_native",
+          "create_document_and_alert_from_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s2b3",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_quote_sell_vs_converted_sell:converted_quote_sell"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "error": "Service Temporarily Unavailable"
+            },
+            "status": "error",
+            "error_message": "503 ServiceUnavailable",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 156.63,
+              "currency": "EUR",
+              "ticker": "AAPL",
+              "price_usd": 170.25,
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "build_converted_sell_request",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL",
+              "quantity": 10
+            },
+            "output": {
+              "ticker": "AAPL",
+              "quantity": 10.0,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10.0,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10.0,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "publish_polygon_market_board_native",
+            "arguments": {
+              "market_board": {
+                "board_id": "poly_01",
+                "region": "US"
+              },
+              "user_id": "user_99",
+              "priority": "high"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "polygon_market_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_99",
+              "market_ref": "polygon_market",
+              "content": "NYSE band unknown, next mark N/A"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Report",
+              "data": "2026-02-22 10:04:54",
+              "user_id": "user_99",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_99",
+              "content": "2026-02-22 10:04:54",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Report",
+              "tags": [],
+              "source_type": "str",
+              "serialized_preview": "2026-02-22 10:04:54"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "error": "Service Temporarily Unavailable"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_converted_sell_request",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL",
+                "quantity": 10
+              },
+              "output": {
+                "ticker": "AAPL",
+                "quantity": 10.0,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10.0,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10.0,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_polygon_market_board_native",
+              "arguments": {
+                "market_board": {
+                  "board_id": "poly_01",
+                  "region": "US"
+                },
+                "user_id": "user_99",
+                "priority": "high"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "polygon_market_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_99",
+                "market_ref": "polygon_market",
+                "content": "NYSE band unknown, next mark N/A"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Report",
+                "data": "2026-02-22 10:04:54",
+                "user_id": "user_99",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_99",
+                "content": "2026-02-22 10:04:54",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Report",
+                "tags": [],
+                "source_type": "str",
+                "serialized_preview": "2026-02-22 10:04:54"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "build_converted_sell_request",
+      "build_equity_sell_request",
+      "get_stock_price_and_convert",
+      "get_stock_yahoo_finance",
+      "place_sell_order_from_converted_quote",
+      "place_sell_order_from_quote"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 1
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T22:58:37.547282+00:00",
+  "end_time": "2026-10-23T22:59:23.714568+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no complete valid path executed successfully; 'get_stock_price_and_convert' neither led to a completed retried path nor a completed switched path",
+  "failed_tools": [
+    "get_stock_price_and_convert"
+  ],
+  "tokens": {
+    "input_tokens": 8548,
+    "output_tokens": 2607,
+    "total_tokens": 11155
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the NYSE is open, then look up the current price for AAPL. If a quote is available, use it to sell 10 shares of AAPL for trader_id user_99, and note the currency as EUR. After that, get the current New York time and post an update to my US market board, board_id poly_01, with high priority. Then create a Trade Execution Report that includes the execution time, and email me the notification as well.",
+      "board_config": {
+        "board_id": "poly_01",
+        "region": "US"
+      },
+      "currency": "EUR",
+      "sell_quantity": 10,
+      "stock_ticker": "AAPL",
+      "trader_id": "user_99"
+    },
+    "task_description": "Please check whether the NYSE is open, look up AAPL’s current price, and if it’s available use that quote to sell 10 shares of AAPL. Then get the current New York time, post the update to my US market board with high priority, and after that create a Trade Execution Report with the execution time and email me the notification.",
+    "template_id": "C3_template_067",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_stock_price_and_convert'], matching recorded execution failure in tools ['get_stock_price_and_convert'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_067_path_0_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Internal Server Error"
+        },
+        "error_message": "500 InternalServerError",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_sell_vs_converted_sell:yahoo_quote_sell"
+        ]
+      },
+      {
+        "config_id": "C3_task_067_path_1_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Temporarily Unavailable"
+        },
+        "error_message": "503 ServiceUnavailable",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_sell_vs_converted_sell:converted_quote_sell"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_stock_price_and_convert",
+        "tool_name": "get_stock_price_and_convert",
+        "step": 2,
+        "timestamp": "2026-10-23T22:59:13.959491+00:00",
+        "config_id": "C3_task_067_path_1_get_stock_price_and_convert",
+        "configured_mode": "P1",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "ticker": "AAPL",
+          "target_currency": "EUR"
+        },
+        "modified_output_sample": {
+          "error": "Service Temporarily Unavailable"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_market_status",
+      "tool_name": "get_market_status",
+      "arguments": {
+        "exchange": "NYSE"
+      },
+      "result_sample": {
+        "exchange": "NYSE",
+        "is_open": true,
+        "session": "regular",
+        "details": {
+          "is_open": true,
+          "session": "regular",
+          "next_close": "16:00 EST"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3735900390893221,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:59:05.384758+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_stock_price_and_convert",
+      "tool_name": "get_stock_price_and_convert",
+      "arguments": {
+        "ticker": "AAPL",
+        "target_currency": "EUR"
+      },
+      "result_sample": {
+        "error": "Service Temporarily Unavailable"
+      },
+      "status": "error",
+      "duration_ms": 0.2377399941906333,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:59:13.959491+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_market_status",
+      "tool_name": "get_market_status",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_market_status",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_market_status",
+            "checked_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_market_status",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_market_status'",
+          "details": {
+            "tool_name": "get_market_status"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_market_status'",
+          "details": {
+            "tool_name": "get_market_status"
+          },
+          "latency_ms": 0.058
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_market_status'",
+          "details": {
+            "arguments": [
+              "exchange"
+            ],
+            "output": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_market_status'",
+          "details": {
+            "tool_name": "get_market_status"
+          },
+          "latency_ms": 0.021
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_market_status' output",
+          "details": {
+            "tool_name": "get_market_status"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_market_status'",
+          "details": {
+            "tool_name": "get_market_status"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:59:05.384980+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_stock_price_and_convert",
+      "tool_name": "get_stock_price_and_convert",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.005
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.001
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Service Temporarily Unavailable"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:59:13.964958+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no complete valid path executed successfully; 'get_stock_price_and_convert' neither led to a completed retried path nor a completed switched path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_stock_price_and_convert",
+      "matched_paths": [],
+      "retry_completed_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_equity_sell_request",
+        "create_document_and_alert_from_data",
+        "get_current_time",
+        "get_stock_yahoo_finance",
+        "place_sell_order_from_quote",
+        "publish_polygon_market_board_native"
+      ],
+      "insufficient_calls": {
+        "get_stock_yahoo_finance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_equity_sell_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_sell_order_from_quote": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_current_time": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_polygon_market_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert_from_data": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status",
+              "get_stock_yahoo_finance",
+              "build_equity_sell_request",
+              "place_sell_order_from_quote",
+              "get_current_time",
+              "publish_polygon_market_board_native",
+              "create_document_and_alert_from_data"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status",
+              "get_stock_price_and_convert",
+              "build_converted_sell_request",
+              "place_sell_order_from_converted_quote",
+              "get_current_time",
+              "publish_polygon_market_board_native",
+              "create_document_and_alert_from_data"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "build_converted_sell_request",
+          "build_equity_sell_request",
+          "get_stock_price_and_convert",
+          "get_stock_yahoo_finance",
+          "place_sell_order_from_converted_quote",
+          "place_sell_order_from_quote"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_market_status",
+          "get_stock_price_and_convert"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,802 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c2_full",
+  "task_id": "C2_task_091",
+  "mode": "P3",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_091",
+    "template_id": "C2_template_091",
+    "complexity": "C2",
+    "task_description": "Please check whether flight CA1234 is on time, and if it is, book it for Alice Chen in economy class. Then get the USD-to-EUR exchange rate, prepare a medium-priority in-app balance report payload for user_01’s checking account, convert and format the balance details, and create a document titled “Balance Report” with that information.",
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, and if it is, book it for Alice Chen in economy class. Then get the USD to EUR exchange rate, prepare a medium-priority in-app balance report payload for user_01’s checking account, convert and format the balance details from USD to EUR, and create a document titled “Balance Report” with that information.",
+      "account_type": "checking",
+      "flight_number": "CA1234",
+      "from_currency": "USD",
+      "passenger_name": "Alice Chen",
+      "seat_class": "economy",
+      "title": "Balance Report",
+      "to_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info",
+          "book_flight_with_status_check",
+          "get_exchange_rate_fixer",
+          "build_balance_structured_payload",
+          "stringify_data",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight_with_status_check",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "Alice Chen",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "Alice Chen",
+              "seat_class": "economy",
+              "status": "confirmed",
+              "flight_status": "On Time"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": -1.5
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_balance_structured_payload",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "checking",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app",
+              "account_type": "checking",
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              }
+            },
+            "output": {
+              "serialized_text": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+              "source_type": "dict",
+              "preview": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"ta"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Balance Report",
+              "content": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Balance Report",
+              "content_length": 164,
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight_with_status_check",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "Alice Chen",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "Alice Chen",
+                "seat_class": "economy",
+                "status": "confirmed",
+                "flight_status": "On Time"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": -1.5
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_structured_payload",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "checking",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app",
+                "account_type": "checking",
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "checking",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                }
+              },
+              "output": {
+                "serialized_text": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+                "source_type": "dict",
+                "preview": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"ta"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Balance Report",
+                "content": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Balance Report",
+                "content_length": 164,
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info",
+          "book_flight_with_status_check",
+          "get_exchange_rate_currencyapi",
+          "build_balance_structured_payload",
+          "stringify_data",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight_with_status_check",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "Alice Chen",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "Alice Chen",
+              "seat_class": "economy",
+              "status": "confirmed",
+              "flight_status": "On Time"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": -0.92
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_balance_structured_payload",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "checking",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app",
+              "account_type": "checking",
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              }
+            },
+            "output": {
+              "serialized_text": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+              "source_type": "dict",
+              "preview": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"ta"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Balance Report",
+              "content": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Balance Report",
+              "content_length": 164,
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight_with_status_check",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "Alice Chen",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "Alice Chen",
+                "seat_class": "economy",
+                "status": "confirmed",
+                "flight_status": "On Time"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": -0.92
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_structured_payload",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "checking",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "checking",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app",
+                "account_type": "checking",
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "checking",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                }
+              },
+              "output": {
+                "serialized_text": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+                "source_type": "dict",
+                "preview": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"ta"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Balance Report",
+                "content": "{\"account_type\": \"checking\", \"balance\": 28785, \"converted_balance\": 26482.2, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_01\"}",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Balance Report",
+                "content_length": 164,
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_exchange_rate_currencyapi",
+      "get_exchange_rate_fixer"
+    ],
+    "domains": [
+      "Travel",
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P3",
+    "perturbation_point": 2,
+    "corruption_type": "fact_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T16:59:42.482835+00:00",
+  "end_time": "2026-10-24T17:04:45.376055+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P3 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, and if it is, book it for Alice Chen in economy class. Then get the USD to EUR exchange rate, prepare a medium-priority in-app balance report payload for user_01’s checking account, convert and format the balance details from USD to EUR, and create a document titled “Balance Report” with that information.",
+      "account_type": "checking",
+      "flight_number": "CA1234",
+      "from_currency": "USD",
+      "passenger_name": "Alice Chen",
+      "seat_class": "economy",
+      "title": "Balance Report",
+      "to_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, and if it is, book it for Alice Chen in economy class. Then get the USD-to-EUR exchange rate, prepare a medium-priority in-app balance report payload for user_01’s checking account, convert and format the balance details, and create a document titled “Balance Report” with that information.",
+    "template_id": "C2_template_091",
+    "domains": [
+      "Travel",
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P3 configured for tools ['get_exchange_rate_fixer', 'get_exchange_rate_currencyapi'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_091_path_0_get_exchange_rate_fixer",
+        "target_tool": "get_exchange_rate_fixer",
+        "step": 3,
+        "mode": "P3",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "rate": -1.5
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer"
+        ]
+      },
+      {
+        "config_id": "C2_task_091_path_1_get_exchange_rate_currencyapi",
+        "target_tool": "get_exchange_rate_currencyapi",
+        "step": 3,
+        "mode": "P3",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "rate": -0.92
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P3 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "book_flight_with_status_check",
+        "build_balance_structured_payload",
+        "create_document",
+        "get_exchange_rate_fixer",
+        "get_flight_info",
+        "stringify_data"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight_with_status_check",
+              "get_exchange_rate_fixer",
+              "build_balance_structured_payload",
+              "stringify_data",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight_with_status_check",
+              "get_exchange_rate_currencyapi",
+              "build_balance_structured_payload",
+              "stringify_data",
+              "create_document"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_exchange_rate_currencyapi",
+          "get_exchange_rate_fixer"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

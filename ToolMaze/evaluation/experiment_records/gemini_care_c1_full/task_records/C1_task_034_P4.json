@@ -1,0 +1,370 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c1_full",
+  "task_id": "C1_task_034",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_034",
+    "template_id": "C1_template_034",
+    "complexity": "C1",
+    "task_description": "Please check whether flight CA1234 is on time, then book it for John Doe in economy. After that, reserve 2 of the best available recommendation in electronics for user_001, build the checkout from that reservation, and then send me a high-priority app alert with the flight status, the booking confirmation code, and the note that a substitute item has been reserved and checkout is ready.",
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, and if it is, book it for John Doe in economy. Then, for user_001, reserve 2 of the best available recommendation in electronics—please note I’m looking at product_id p_sony_xm5_blk—then build the checkout from that reservation. After that, send me a high-priority app alert with the flight status, the booking confirmation code, and a note that a substitute item has been reserved and the checkout is ready.",
+      "category": "electronics",
+      "flight_number": "CA1234",
+      "passenger_name": "John Doe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "seat_class": "economy",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_flight_info_aviationstack",
+        "arguments": {
+          "flight_number": "CA1234"
+        },
+        "output": {
+          "flight_number": "CA1234",
+          "airline": "Air China",
+          "departure": "Beijing Capital Airport",
+          "arrival": "Shanghai Pudong Airport",
+          "departure_time": "08:30",
+          "arrival_time": "11:00",
+          "status": "On Time",
+          "gate": "A12"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "book_flight",
+        "arguments": {
+          "flight_number": "CA1234",
+          "passenger_name": "John Doe",
+          "seat_class": "economy"
+        },
+        "output": {
+          "message": "Flight booked successfully",
+          "booking_id": "FLIGHT5A3B2C",
+          "confirmation_code": "D4E6F7",
+          "flight_number": "CA1234",
+          "passenger_name": "John Doe",
+          "seat_class": "economy",
+          "status": "confirmed"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "hold_best_recommendation",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "user_id": "user_001",
+          "category": "electronics"
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0
+          },
+          "original_product_id": "p_sony_xm5_blk",
+          "recommended_product_id": "p_sony_xm5_slv",
+          "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+          "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+          "selected_relevance_score": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "build_checkout_from_hold",
+        "arguments": {
+          "hold_data": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+            "selected_relevance_score": 3
+          },
+          "quantity": 2
+        },
+        "output": {
+          "reservation_id": "DEBUG-RESV-0000 (internal leak: API endpoint: /internal/path, NullPointerException)",
+          "product_id": "p_internal_test_model_gpt-4o-mini",
+          "quantity": "SELECT * FROM users"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "push_alert",
+        "arguments": {
+          "message": "Flight CA1234 is currently On Time. Booking status: confirmed with confirmation D4E6F7. A substitute item has been reserved and checkout data prepared.",
+          "user_id": "user_001",
+          "priority": "high",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "Flight CA1234 is currently On Time. Booking status: confirmed with confirmation D4E6F7. A substitute item has been reserved and checkout data prepared.",
+          "priority": "high"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_flight_info_aviationstack",
+          "arguments": {
+            "flight_number": "CA1234"
+          },
+          "output": {
+            "flight_number": "CA1234",
+            "airline": "Air China",
+            "departure": "Beijing Capital Airport",
+            "arrival": "Shanghai Pudong Airport",
+            "departure_time": "08:30",
+            "arrival_time": "11:00",
+            "status": "On Time",
+            "gate": "A12"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "book_flight",
+          "arguments": {
+            "flight_number": "CA1234",
+            "passenger_name": "John Doe",
+            "seat_class": "economy"
+          },
+          "output": {
+            "message": "Flight booked successfully",
+            "booking_id": "FLIGHT5A3B2C",
+            "confirmation_code": "D4E6F7",
+            "flight_number": "CA1234",
+            "passenger_name": "John Doe",
+            "seat_class": "economy",
+            "status": "confirmed"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "hold_best_recommendation",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "user_id": "user_001",
+            "category": "electronics"
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+            "selected_relevance_score": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_checkout_from_hold",
+          "arguments": {
+            "hold_data": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+              "selected_relevance_score": 3
+            },
+            "quantity": 2
+          },
+          "output": {
+            "reservation_id": "DEBUG-RESV-0000 (internal leak: API endpoint: /internal/path, NullPointerException)",
+            "product_id": "p_internal_test_model_gpt-4o-mini",
+            "quantity": "SELECT * FROM users"
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "push_alert",
+          "arguments": {
+            "message": "Flight CA1234 is currently On Time. Booking status: confirmed with confirmation D4E6F7. A substitute item has been reserved and checkout data prepared.",
+            "user_id": "user_001",
+            "priority": "high",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "user_001",
+            "content": "Flight CA1234 is currently On Time. Booking status: confirmed with confirmation D4E6F7. A substitute item has been reserved and checkout data prepared.",
+            "priority": "high"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Travel",
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "tool_leakage"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T05:51:44.104421+00:00",
+  "end_time": "2026-10-24T05:55:11.184982+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: 'build_checkout_from_hold' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, and if it is, book it for John Doe in economy. Then, for user_001, reserve 2 of the best available recommendation in electronics—please note I’m looking at product_id p_sony_xm5_blk—then build the checkout from that reservation. After that, send me a high-priority app alert with the flight status, the booking confirmation code, and a note that a substitute item has been reserved and the checkout is ready.",
+      "category": "electronics",
+      "flight_number": "CA1234",
+      "passenger_name": "John Doe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "seat_class": "economy",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, then book it for John Doe in economy. After that, reserve 2 of the best available recommendation in electronics for user_001, build the checkout from that reservation, and then send me a high-priority app alert with the flight status, the booking confirmation code, and the note that a substitute item has been reserved and checkout is ready.",
+    "template_id": "C1_template_034",
+    "domains": [
+      "Travel",
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['build_checkout_from_hold'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_034_step_4_build_checkout_from_hold",
+        "target_tool": "build_checkout_from_hold",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "reservation_id": "DEBUG-RESV-0000 (internal leak: API endpoint: /internal/path, NullPointerException)",
+          "product_id": "p_internal_test_model_gpt-4o-mini",
+          "quantity": "SELECT * FROM users"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: 'build_checkout_from_hold' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "build_checkout_from_hold",
+      "missing_tools": [
+        "hold_best_recommendation",
+        "book_flight",
+        "build_checkout_from_hold",
+        "get_flight_info_aviationstack"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_flight_info_aviationstack",
+          "book_flight",
+          "hold_best_recommendation",
+          "build_checkout_from_hold",
+          "push_alert"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

@@ -1,0 +1,5426 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_075",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_075",
+    "template_id": "C4_template_075",
+    "complexity": "C4",
+    "task_description": "Please check which smart light is in the living room, identify it, see its current status and the current New York time, then turn that living room light on to 70% brightness and make sure the brightness is applied. After that, find the living room smart lock and lock it with PIN 2468, then look up Alice’s contact info, prepare a high-priority app alert saying “Living room light and lock routine completed successfully.”, and finally take a snapshot of the `/ops/iot-routines` workspace and send the notification to Alice through the app.",
+    "user_input": {
+      "query": "Please check which smart light is in the living_room, identify it, confirm its current status, and also check the current time in America/New_York. Then set that living room light to on with brightness 70 and make sure the brightness change is actually applied. After that, find the living room smart lock, set its state to lock using PIN 2468, and then look up the contact info for alice. Prepare a high priority app alert with the exact message “Living room light and lock routine completed successfully.” Finally, take a snapshot of the /ops/iot-routines workspace named living-room-routine-snapshot and send the notification to alice through the app channel.",
+      "alert_message": "Living room light and lock routine completed successfully.",
+      "area": "living_room",
+      "backup_name": "living-room-routine-snapshot",
+      "brightness": 70,
+      "channel": "app",
+      "contact_name": "alice",
+      "light_state": "on",
+      "lock_state": "lock",
+      "pin_code": "2468",
+      "priority": "high",
+      "timezone": "America/New_York",
+      "workspace_path": "/ops/iot-routines"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "get_current_time",
+          "set_light_state",
+          "apply_light_brightness",
+          "get_discovered_lock_ticket_native",
+          "apply_discovered_lock_ticket_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5a",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living_2025",
+              "power_state": "on",
+              "brightness": -10,
+              "color": "infrared"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 70,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_guest",
+              "lock_device_id": "lock_side",
+              "source_area": "garage",
+              "selection_mode": "selected_last_smart_lock",
+              "source_label": "manual_override",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "discovered_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "disc_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living_2025",
+                "power_state": "on",
+                "brightness": -10,
+                "color": "infrared"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_discovered_lock_ticket_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_ticket_id": "disc_lock_guest",
+                "lock_device_id": "lock_side",
+                "source_area": "garage",
+                "selection_mode": "selected_last_smart_lock",
+                "source_label": "manual_override",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_discovered_lock_ticket_native",
+              "arguments": {
+                "lock_ticket": {
+                  "lock_ticket_id": "disc_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "selected_first_smart_lock",
+                  "source_label": "discovery_scan"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "discovered_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "disc_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "get_current_time",
+          "set_light_state",
+          "apply_light_brightness",
+          "get_connected_lock_pass_native",
+          "apply_connected_lock_pass_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5a",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living_v2",
+              "power_state": "on",
+              "brightness": -5,
+              "color": "infrared"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_light_change",
+              "changes": {
+                "power_state": "on",
+                "brightness": 70,
+                "color": "white",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_side",
+              "lock_device_id": "lock_back",
+              "source_area": "garage",
+              "selection_mode": "manual_override_stale_cache",
+              "source_label": "disconnected_inventory",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "connected_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "conn_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living_v2",
+                "power_state": "on",
+                "brightness": -5,
+                "color": "infrared"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_connected_lock_pass_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_pass_ref": "conn_lock_side",
+                "lock_device_id": "lock_back",
+                "source_area": "garage",
+                "selection_mode": "manual_override_stale_cache",
+                "source_label": "disconnected_inventory",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_connected_lock_pass_native",
+              "arguments": {
+                "lock_pass": {
+                  "lock_pass_ref": "conn_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "resolved_first_smart_lock",
+                  "source_label": "connected_inventory"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "connected_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "conn_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "get_current_time",
+          "set_power_state",
+          "update_device_config",
+          "apply_light_brightness",
+          "get_discovered_lock_ticket_native",
+          "apply_discovered_lock_ticket_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living_v2",
+              "power_state": "off_on",
+              "brightness": -5,
+              "color": "transparent",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_power_change",
+              "changes": {
+                "power_state": "off",
+                "created_at": "2024-03-15T09:00:00Z",
+                "updated_at": "2024-03-10T08:00:00Z",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_backdated",
+              "lock_device_id": "lock_aux_02",
+              "source_area": "garage",
+              "selection_mode": "selected_last_smart_lock",
+              "source_label": "manual_override_2024-03-15_to_2024-03-10"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "discovered_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "disc_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living_v2",
+                "power_state": "off_on",
+                "brightness": -5,
+                "color": "transparent",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_discovered_lock_ticket_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_ticket_id": "disc_lock_backdated",
+                "lock_device_id": "lock_aux_02",
+                "source_area": "garage",
+                "selection_mode": "selected_last_smart_lock",
+                "source_label": "manual_override_2024-03-15_to_2024-03-10"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_discovered_lock_ticket_native",
+              "arguments": {
+                "lock_ticket": {
+                  "lock_ticket_id": "disc_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "selected_first_smart_lock",
+                  "source_label": "discovery_scan"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "discovered_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "disc_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "get_current_time",
+          "set_power_state",
+          "update_device_config",
+          "apply_light_brightness",
+          "get_connected_lock_pass_native",
+          "apply_connected_lock_pass_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "power_state": "on",
+              "brightness": -10,
+              "color": "black"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_device_power",
+              "changes": {
+                "power_state": "off",
+                "start_date": "2024-03-15",
+                "end_date": "2024-03-10"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_side",
+              "lock_device_id": "lock_guest",
+              "source_area": "garage",
+              "selection_mode": "manual_fallback_previous_choice",
+              "source_label": "stale_cache",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-12"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "connected_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "conn_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "power_state": "on",
+                "brightness": -10,
+                "color": "black"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_connected_lock_pass_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_pass_ref": "conn_lock_side",
+                "lock_device_id": "lock_guest",
+                "source_area": "garage",
+                "selection_mode": "manual_fallback_previous_choice",
+                "source_label": "stale_cache",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-12"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_connected_lock_pass_native",
+              "arguments": {
+                "lock_pass": {
+                  "lock_pass_ref": "conn_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "resolved_first_smart_lock",
+                  "source_label": "connected_inventory"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "connected_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "conn_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "get_current_time",
+          "set_light_state",
+          "apply_light_brightness",
+          "get_discovered_lock_ticket_native",
+          "apply_discovered_lock_ticket_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5a",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "power_state": "on",
+              "brightness": -5,
+              "color": "transparent"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 20,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_livingroom_old",
+              "lock_device_id": "lock_side_door",
+              "source_area": "garage",
+              "selection_mode": "manually_overridden_after_auto_select_before_scan",
+              "source_label": "stale_cached_discovery"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "discovered_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "disc_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_kitchen",
+                "power_state": "on",
+                "brightness": -5,
+                "color": "transparent"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_discovered_lock_ticket_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_ticket_id": "disc_lock_livingroom_old",
+                "lock_device_id": "lock_side_door",
+                "source_area": "garage",
+                "selection_mode": "manually_overridden_after_auto_select_before_scan",
+                "source_label": "stale_cached_discovery"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_discovered_lock_ticket_native",
+              "arguments": {
+                "lock_ticket": {
+                  "lock_ticket_id": "disc_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "selected_first_smart_lock",
+                  "source_label": "discovery_scan"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "discovered_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "disc_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "get_current_time",
+          "set_light_state",
+          "apply_light_brightness",
+          "get_connected_lock_pass_native",
+          "apply_connected_lock_pass_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5a",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "power_state": "dimmed",
+              "brightness": -5,
+              "color": "transparent"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 70,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-04-20",
+                "end_date": "2024-04-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_backdoor",
+              "lock_device_id": "lock_garage",
+              "source_area": "kitchen",
+              "selection_mode": "manual_override_after_failure",
+              "source_label": "stale_cache"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "connected_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "conn_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "power_state": "dimmed",
+                "brightness": -5,
+                "color": "transparent"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_connected_lock_pass_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_pass_ref": "conn_lock_backdoor",
+                "lock_device_id": "lock_garage",
+                "source_area": "kitchen",
+                "selection_mode": "manual_override_after_failure",
+                "source_label": "stale_cache"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_connected_lock_pass_native",
+              "arguments": {
+                "lock_pass": {
+                  "lock_pass_ref": "conn_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "resolved_first_smart_lock",
+                  "source_label": "connected_inventory"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "connected_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "conn_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "get_current_time",
+          "set_power_state",
+          "update_device_config",
+          "apply_light_brightness",
+          "get_discovered_lock_ticket_native",
+          "apply_discovered_lock_ticket_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living_v2",
+              "power_state": "on",
+              "brightness": -5,
+              "color": "infrared"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_device_power",
+              "changes": {
+                "start_date": "2024-03-15",
+                "end_date": "2024-03-10",
+                "power_state": "off"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_discovered_lock_ticket_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_ticket_id": "disc_lock_guest",
+              "lock_device_id": "lock_side_door",
+              "source_area": "kitchen",
+              "selection_mode": "manually_overridden_after_auto_select",
+              "source_label": "stale_cached_scan",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_discovered_lock_ticket_native",
+            "arguments": {
+              "lock_ticket": {
+                "lock_ticket_id": "disc_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "selected_first_smart_lock",
+                "source_label": "discovery_scan"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "discovered_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "disc_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living_v2",
+                "power_state": "on",
+                "brightness": -5,
+                "color": "infrared"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_discovered_lock_ticket_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_ticket_id": "disc_lock_guest",
+                "lock_device_id": "lock_side_door",
+                "source_area": "kitchen",
+                "selection_mode": "manually_overridden_after_auto_select",
+                "source_label": "stale_cached_scan",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_discovered_lock_ticket_native",
+              "arguments": {
+                "lock_ticket": {
+                  "lock_ticket_id": "disc_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "selected_first_smart_lock",
+                  "source_label": "discovery_scan"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "discovered_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "disc_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "get_current_time",
+          "set_power_state",
+          "update_device_config",
+          "apply_light_brightness",
+          "get_connected_lock_pass_native",
+          "apply_connected_lock_pass_native",
+          "get_contact_info_directory",
+          "build_contact_alert_payload",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_light"
+            },
+            "output": {
+              "device_id": "light_living",
+              "device_type": "smart_light",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_light"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "power_state": "on",
+              "brightness": -15,
+              "color": "infrared"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_device_power_change",
+              "changes": {
+                "power_state": "off",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "status": "executed",
+              "brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_connected_lock_pass_native",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "lock_pass_ref": "conn_lock_backdoor",
+              "lock_device_id": "lock_garage",
+              "source_area": "kitchen",
+              "selection_mode": "manual_override_stale_cache",
+              "source_label": "disconnected_inventory",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_connected_lock_pass_native",
+            "arguments": {
+              "lock_pass": {
+                "lock_pass_ref": "conn_lock_main",
+                "lock_device_id": "lock_main",
+                "source_area": "living_room",
+                "selection_mode": "resolved_first_smart_lock",
+                "source_label": "connected_inventory"
+              },
+              "state": "lock",
+              "pin_code": "2468"
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "connected_lock_control_native",
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "control_ref": "conn_lock_main"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Living room light and lock routine completed successfully.",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot-routines",
+              "backup_name": "living-room-routine-snapshot",
+              "size_mb": 270,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_light"
+              },
+              "output": {
+                "device_id": "light_living",
+                "device_type": "smart_light",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_light"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "power_state": "on",
+                "brightness": -15,
+                "color": "infrared"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_connected_lock_pass_native",
+              "arguments": {
+                "area": "living_room"
+              },
+              "output": {
+                "lock_pass_ref": "conn_lock_backdoor",
+                "lock_device_id": "lock_garage",
+                "source_area": "kitchen",
+                "selection_mode": "manual_override_stale_cache",
+                "source_label": "disconnected_inventory",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_connected_lock_pass_native",
+              "arguments": {
+                "lock_pass": {
+                  "lock_pass_ref": "conn_lock_main",
+                  "lock_device_id": "lock_main",
+                  "source_area": "living_room",
+                  "selection_mode": "resolved_first_smart_lock",
+                  "source_label": "connected_inventory"
+                },
+                "state": "lock",
+                "pin_code": "2468"
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "connected_lock_control_native",
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "control_ref": "conn_lock_main"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Living room light and lock routine completed successfully.",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot-routines",
+                "backup_name": "living-room-routine-snapshot",
+                "size_mb": 270,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "apply_connected_lock_pass_native",
+      "apply_discovered_lock_ticket_native",
+      "get_connected_lock_pass_native",
+      "get_discovered_lock_ticket_native",
+      "get_iot_device_status",
+      "get_light_status",
+      "set_light_state",
+      "set_power_state",
+      "update_device_config"
+    ],
+    "domains": [
+      "IoT",
+      "General",
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s3",
+        "s5",
+        "s7"
+      ]
+    },
+    "corruption_type": "temporal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T08:19:29.830166+00:00",
+  "end_time": "2026-10-24T08:20:37.785497+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_light_status' failed permanently but agent did not complete another valid path",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 19816,
+    "output_tokens": 3636,
+    "total_tokens": 23452
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check which smart light is in the living_room, identify it, confirm its current status, and also check the current time in America/New_York. Then set that living room light to on with brightness 70 and make sure the brightness change is actually applied. After that, find the living room smart lock, set its state to lock using PIN 2468, and then look up the contact info for alice. Prepare a high priority app alert with the exact message “Living room light and lock routine completed successfully.” Finally, take a snapshot of the /ops/iot-routines workspace named living-room-routine-snapshot and send the notification to alice through the app channel.",
+      "alert_message": "Living room light and lock routine completed successfully.",
+      "area": "living_room",
+      "backup_name": "living-room-routine-snapshot",
+      "brightness": 70,
+      "channel": "app",
+      "contact_name": "alice",
+      "light_state": "on",
+      "lock_state": "lock",
+      "pin_code": "2468",
+      "priority": "high",
+      "timezone": "America/New_York",
+      "workspace_path": "/ops/iot-routines"
+    },
+    "task_description": "Please check which smart light is in the living room, identify it, see its current status and the current New York time, then turn that living room light on to 70% brightness and make sure the brightness is applied. After that, find the living room smart lock and lock it with PIN 2468, then look up Alice’s contact info, prepare a high-priority app alert saying “Living room light and lock routine completed successfully.”, and finally take a snapshot of the `/ops/iot-routines` workspace and send the notification to Alice through the app.",
+    "template_id": "C4_template_075",
+    "domains": [
+      "IoT",
+      "General",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_failure_attribution_uncertain",
+    "confidence": "LOW",
+    "evidence": "Perturbation was injected and task failed, but causal chain lacks definitive link.",
+    "configured_count": 24,
+    "activated_count": 3,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_075_path_0_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_2025",
+          "power_state": "on",
+          "brightness": -10,
+          "color": "infrared"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_0_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_0_get_discovered_lock_ticket_native",
+        "target_tool": "get_discovered_lock_ticket_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_ticket_id": "disc_lock_guest",
+          "lock_device_id": "lock_side",
+          "source_area": "garage",
+          "selection_mode": "selected_last_smart_lock",
+          "source_label": "manual_override",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_1_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_v2",
+          "power_state": "on",
+          "brightness": -5,
+          "color": "infrared"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_1_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_light_change",
+          "changes": {
+            "power_state": "on",
+            "brightness": 70,
+            "color": "white",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_1_get_connected_lock_pass_native",
+        "target_tool": "get_connected_lock_pass_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_pass_ref": "conn_lock_side",
+          "lock_device_id": "lock_back",
+          "source_area": "garage",
+          "selection_mode": "manual_override_stale_cache",
+          "source_label": "disconnected_inventory",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_2_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_v2",
+          "power_state": "off_on",
+          "brightness": -5,
+          "color": "transparent",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_2_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_power_change",
+          "changes": {
+            "power_state": "off",
+            "created_at": "2024-03-15T09:00:00Z",
+            "updated_at": "2024-03-10T08:00:00Z",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_2_get_discovered_lock_ticket_native",
+        "target_tool": "get_discovered_lock_ticket_native",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_ticket_id": "disc_lock_backdated",
+          "lock_device_id": "lock_aux_02",
+          "source_area": "garage",
+          "selection_mode": "selected_last_smart_lock",
+          "source_label": "manual_override_2024-03-15_to_2024-03-10"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_3_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "power_state": "on",
+          "brightness": -10,
+          "color": "black"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_3_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_device_power",
+          "changes": {
+            "power_state": "off",
+            "start_date": "2024-03-15",
+            "end_date": "2024-03-10"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_3_get_connected_lock_pass_native",
+        "target_tool": "get_connected_lock_pass_native",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_pass_ref": "conn_lock_side",
+          "lock_device_id": "lock_guest",
+          "source_area": "garage",
+          "selection_mode": "manual_fallback_previous_choice",
+          "source_label": "stale_cache",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-12"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_iot_device_status:get_status",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_4_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "power_state": "on",
+          "brightness": -5,
+          "color": "transparent"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_4_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 20,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_4_get_discovered_lock_ticket_native",
+        "target_tool": "get_discovered_lock_ticket_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_ticket_id": "disc_lock_livingroom_old",
+          "lock_device_id": "lock_side_door",
+          "source_area": "garage",
+          "selection_mode": "manually_overridden_after_auto_select_before_scan",
+          "source_label": "stale_cached_discovery"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_5_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "power_state": "dimmed",
+          "brightness": -5,
+          "color": "transparent"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_5_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-04-20",
+            "end_date": "2024-04-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_5_get_connected_lock_pass_native",
+        "target_tool": "get_connected_lock_pass_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_pass_ref": "conn_lock_backdoor",
+          "lock_device_id": "lock_garage",
+          "source_area": "kitchen",
+          "selection_mode": "manual_override_after_failure",
+          "source_label": "stale_cache"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:integrated",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_6_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_v2",
+          "power_state": "on",
+          "brightness": -5,
+          "color": "infrared"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_6_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_device_power",
+          "changes": {
+            "start_date": "2024-03-15",
+            "end_date": "2024-03-10",
+            "power_state": "off"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_6_get_discovered_lock_ticket_native",
+        "target_tool": "get_discovered_lock_ticket_native",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_ticket_id": "disc_lock_guest",
+          "lock_device_id": "lock_side_door",
+          "source_area": "kitchen",
+          "selection_mode": "manually_overridden_after_auto_select",
+          "source_label": "stale_cached_scan",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:discovered_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_7_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "power_state": "on",
+          "brightness": -15,
+          "color": "infrared"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_7_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_device_power_change",
+          "changes": {
+            "power_state": "off",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_075_path_7_get_connected_lock_pass_native",
+        "target_tool": "get_connected_lock_pass_native",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "lock_pass_ref": "conn_lock_backdoor",
+          "lock_device_id": "lock_garage",
+          "source_area": "kitchen",
+          "selection_mode": "manual_override_stale_cache",
+          "source_label": "disconnected_inventory",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_iot_device_status:get_light",
+          "alt_smart_light_full_control:toggle_then_adjust",
+          "alt_lock_control_native_2to2:connected_lock_control_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_light_status",
+        "tool_name": "get_light_status",
+        "step": 2,
+        "timestamp": "2026-10-24T08:19:58.196101+00:00",
+        "config_id": "C4_task_075_path_4_get_light_status",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "light_id": "light_living"
+        },
+        "modified_output_sample": {
+          "device_id": "light_kitchen",
+          "power_state": "on",
+          "brightness": -5,
+          "color": "transparent"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_set_light_state",
+        "tool_name": "set_light_state",
+        "step": 4,
+        "timestamp": "2026-10-24T08:20:19.017386+00:00",
+        "config_id": "C4_task_075_path_0_set_light_state",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "brightness": 70,
+          "device_id": "light_living",
+          "state": "on"
+        },
+        "modified_output_sample": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_3_get_light_status",
+        "tool_name": "get_light_status",
+        "step": 5,
+        "timestamp": "2026-10-24T08:20:27.242628+00:00",
+        "config_id": "C4_task_075_path_4_get_light_status",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "light_id": "light_living"
+        },
+        "modified_output_sample": {
+          "device_id": "light_kitchen",
+          "power_state": "on",
+          "brightness": -5,
+          "color": "transparent"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "arguments": {
+        "area": "living_room",
+        "device_type": "light"
+      },
+      "result_sample": {
+        "found": true,
+        "area_name": "living_room",
+        "total_items": 4,
+        "items": [
+          "lock_main",
+          "light_living",
+          "ac_living",
+          "tv_living"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.34547399263828993,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T08:19:41.230349+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_light_status",
+      "tool_name": "get_light_status",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "device_id": "light_kitchen",
+        "power_state": "on",
+        "brightness": -5,
+        "color": "transparent"
+      },
+      "status": "success",
+      "duration_ms": 0.3133289283141494,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T08:19:58.196101+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_current_time",
+      "tool_name": "get_current_time",
+      "arguments": {
+        "timezone": "America/New_York"
+      },
+      "result_sample": {
+        "datetime": "2026-02-22 10:04:54",
+        "date": "2026-02-22",
+        "time": "10:04:54",
+        "timestamp": 1771772694,
+        "timezone": "America/New_York",
+        "weekday": "Sunday",
+        "iso_format": "2026-02-22T10:04:54.104554-05:00"
+      },
+      "status": "success",
+      "duration_ms": 0.46782102435827255,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T08:20:09.460828+00:00"
+    },
+    {
+      "call_id": "tc_4_4_set_light_state",
+      "tool_name": "set_light_state",
+      "arguments": {
+        "brightness": 70,
+        "device_id": "light_living",
+        "state": "on"
+      },
+      "result_sample": {
+        "device_id": "light_bedroom",
+        "operation": "schedule_smart_light",
+        "changes": {
+          "power_state": "off",
+          "brightness": 70,
+          "color": "white",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "status": "pending"
+      },
+      "status": "success",
+      "duration_ms": 0.320559018291533,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T08:20:19.017386+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_light_status",
+      "tool_name": "get_light_status",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "device_id": "light_kitchen",
+        "power_state": "on",
+        "brightness": -5,
+        "color": "transparent"
+      },
+      "status": "success",
+      "duration_ms": 0.4479809431359172,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T08:20:27.242628+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "checked_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.035
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_connected_devices'",
+          "details": {
+            "arguments": [
+              "area",
+              "device_type"
+            ],
+            "output": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_connected_devices' output",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T08:19:41.230575+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_light_status",
+      "tool_name": "get_light_status",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_status",
+            "checked_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.036
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_status'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_status' output",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T08:19:58.196501+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_current_time",
+      "tool_name": "get_current_time",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "get_current_time",
+            "verified_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_current_time",
+            "checked_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "get_current_time",
+            "verified_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 4 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_current_time",
+            "checked_fields": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.151
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_current_time'",
+          "details": {
+            "arguments": [
+              "timezone"
+            ],
+            "output": [
+              "datetime",
+              "date",
+              "time",
+              "timestamp",
+              "timezone",
+              "weekday",
+              "iso_format"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_current_time' output",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_current_time'",
+          "details": {
+            "tool_name": "get_current_time"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T08:20:09.461061+00:00"
+    },
+    {
+      "call_id": "tc_4_4_set_light_state",
+      "tool_name": "set_light_state",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "set_light_state",
+            "verified_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "set_light_state",
+            "checked_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "set_light_state",
+            "verified_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'set_light_state'",
+          "details": {
+            "tool_name": "set_light_state"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'set_light_state'",
+          "details": {
+            "tool_name": "set_light_state"
+          },
+          "latency_ms": 0.036
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'set_light_state'",
+          "details": {
+            "arguments": [
+              "brightness",
+              "device_id",
+              "state"
+            ],
+            "output": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'set_light_state'",
+          "details": {
+            "tool_name": "set_light_state"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'set_light_state' output",
+          "details": {
+            "tool_name": "set_light_state"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'set_light_state'",
+          "details": {
+            "tool_name": "set_light_state"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T08:20:19.017838+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_light_status",
+      "tool_name": "get_light_status",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_status",
+            "checked_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.017
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.06
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_status'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_status' output",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T08:20:27.243234+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_light_status' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_light_status",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "apply_discovered_lock_ticket_native",
+        "apply_light_brightness",
+        "build_contact_alert_payload",
+        "get_contact_info_directory",
+        "get_discovered_lock_ticket_native",
+        "resolve_connected_device_by_type",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "resolve_connected_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "apply_light_brightness": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_discovered_lock_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "apply_discovered_lock_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_contact_info_directory": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_contact_alert_payload": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "get_current_time",
+              "set_light_state",
+              "apply_light_brightness",
+              "get_discovered_lock_ticket_native",
+              "apply_discovered_lock_ticket_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "get_current_time",
+              "set_light_state",
+              "apply_light_brightness",
+              "get_connected_lock_pass_native",
+              "apply_connected_lock_pass_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "get_current_time",
+              "set_power_state",
+              "update_device_config",
+              "apply_light_brightness",
+              "get_discovered_lock_ticket_native",
+              "apply_discovered_lock_ticket_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "get_current_time",
+              "set_power_state",
+              "update_device_config",
+              "apply_light_brightness",
+              "get_connected_lock_pass_native",
+              "apply_connected_lock_pass_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "get_current_time",
+              "set_light_state",
+              "apply_light_brightness",
+              "get_discovered_lock_ticket_native",
+              "apply_discovered_lock_ticket_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "get_current_time",
+              "set_light_state",
+              "apply_light_brightness",
+              "get_connected_lock_pass_native",
+              "apply_connected_lock_pass_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "get_current_time",
+              "set_power_state",
+              "update_device_config",
+              "apply_light_brightness",
+              "get_discovered_lock_ticket_native",
+              "apply_discovered_lock_ticket_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "get_current_time",
+              "set_power_state",
+              "update_device_config",
+              "apply_light_brightness",
+              "get_connected_lock_pass_native",
+              "apply_connected_lock_pass_native",
+              "get_contact_info_directory",
+              "build_contact_alert_payload",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "apply_connected_lock_pass_native",
+          "apply_discovered_lock_ticket_native",
+          "get_connected_lock_pass_native",
+          "get_discovered_lock_ticket_native",
+          "get_iot_device_status",
+          "get_light_status",
+          "set_light_state",
+          "set_power_state",
+          "update_device_config"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s3",
+            "s5",
+            "s7"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "query_connected_devices",
+          "get_light_status",
+          "get_current_time",
+          "set_light_state",
+          "get_light_status"
+        ]
+      }
+    }
+  }
+}

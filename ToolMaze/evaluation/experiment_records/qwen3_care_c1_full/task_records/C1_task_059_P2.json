@@ -1,0 +1,1154 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c1_full",
+  "task_id": "C1_task_059",
+  "mode": "P2",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_059",
+    "template_id": "C1_template_059",
+    "complexity": "C1",
+    "task_description": "Please hold 2 black Sony XM5 headphones for me, then use that hold to build and generate an invoice for 2 units totaling $798 to user@example.com with Stripe. After that, format the invoice details and create a document titled “Trip Summary” with those details, tagged finance and travel, and send me an in-app alert.",
+    "user_input": {
+      "query": "Please place a hold for me on 2 black Sony XM5 headphones using product ID p_sony_xm5_blk. Then use that hold to create and send an invoice for 2 units totaling $798 to user@example.com, using stripe as the payment gateway. After that, format the invoice details and create a document titled Trip Summary with those details, and tag it with finance and travel. Finally, send me an in-app alert for user_id user_001 once everything is done.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "hold_inventory",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "user_id": "user_001",
+          "quantity": 2
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "build_invoice_from_hold",
+        "arguments": {
+          "hold_data": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "quantity": 2,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "output": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "reservation_id": "RESV-14729548",
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "generate_invoice_from_hold",
+        "arguments": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe",
+          "reservation_id": "RESV-14729548"
+        },
+        "output": {
+          "error": "Account Quota Exhausted"
+        },
+        "status": "error",
+        "error_message": "402 QuotaExhausted",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "stringify_data",
+        "arguments": {
+          "data": {
+            "invoice_id": "INV-F685ABC9",
+            "status": "generated",
+            "total_due": 798.0,
+            "currency": "USD",
+            "billing_email": "user@example.com",
+            "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+            "message": "Invoice generated. Please complete payment via the link.",
+            "reservation_id": "RESV-14729548",
+            "invoice_strategy": "held_recommendation"
+          }
+        },
+        "output": {
+          "serialized_text": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "source_type": "dict",
+          "preview": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recomme"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "create_document_and_alert",
+        "arguments": {
+          "title": "Trip Summary",
+          "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "user_id": "user_001",
+          "priority": "medium",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "hold_inventory",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "user_id": "user_001",
+            "quantity": 2
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_invoice_from_hold",
+          "arguments": {
+            "hold_data": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "total_price": 798.0
+              }
+            },
+            "quantity": 2,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "output": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "reservation_id": "RESV-14729548",
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "generate_invoice_from_hold",
+          "arguments": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe",
+            "reservation_id": "RESV-14729548"
+          },
+          "output": {
+            "error": "Account Quota Exhausted"
+          },
+          "status": "error",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "stringify_data",
+          "arguments": {
+            "data": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 798.0,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "reservation_id": "RESV-14729548",
+              "invoice_strategy": "held_recommendation"
+            }
+          },
+          "output": {
+            "serialized_text": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "source_type": "dict",
+            "preview": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recomme"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document_and_alert",
+          "arguments": {
+            "title": "Trip Summary",
+            "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "user_id": "user_001",
+            "priority": "medium",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "user_001",
+            "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "priority": "medium",
+            "note_id": "NOTE18E3D",
+            "title": "Trip Summary",
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "document_timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 2
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T11:44:24.847232+00:00",
+  "end_time": "2026-10-23T11:45:02.688663+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: missing required pre-victim tools: ['build_invoice_from_hold']",
+  "failed_tools": [
+    "generate_invoice_from_hold"
+  ],
+  "tokens": {
+    "input_tokens": 7171,
+    "output_tokens": 2296,
+    "total_tokens": 9467
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please place a hold for me on 2 black Sony XM5 headphones using product ID p_sony_xm5_blk. Then use that hold to create and send an invoice for 2 units totaling $798 to user@example.com, using stripe as the payment gateway. After that, format the invoice details and create a document titled Trip Summary with those details, and tag it with finance and travel. Finally, send me an in-app alert for user_id user_001 once everything is done.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please hold 2 black Sony XM5 headphones for me, then use that hold to build and generate an invoice for 2 units totaling $798 to user@example.com with Stripe. After that, format the invoice details and create a document titled “Trip Summary” with those details, tagged finance and travel, and send me an in-app alert.",
+    "template_id": "C1_template_059",
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['generate_invoice_from_hold'], matching recorded execution failure in tools ['generate_invoice_from_hold', 'generate_invoice_from_hold'] leading to task failure.",
+    "configured_count": 1,
+    "activated_count": 2,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_059_step_3_generate_invoice_from_hold",
+        "target_tool": "generate_invoice_from_hold",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "all_calls",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_generate_invoice_from_hold",
+        "tool_name": "generate_invoice_from_hold",
+        "step": 2,
+        "timestamp": "2026-10-23T11:44:58.716037+00:00",
+        "config_id": "C1_task_059_step_3_generate_invoice_from_hold",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe",
+          "reservation_id": "RESV-14729548",
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "unit_price": 399
+            },
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "unit_price": 399
+            }
+          ],
+          "payment_amount": 798
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_generate_invoice_from_hold",
+        "tool_name": "generate_invoice_from_hold",
+        "step": 3,
+        "timestamp": "2026-10-23T11:45:02.686128+00:00",
+        "config_id": "C1_task_059_step_3_generate_invoice_from_hold",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "reservation_id": "RESV-14729548",
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "unit_price": 399
+            },
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "unit_price": 399
+            }
+          ],
+          "payment_amount": 798,
+          "payment_gateway": "stripe"
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "arguments": {
+        "quantity": 2,
+        "user_id": "user_001",
+        "product_id": "p_sony_xm5_blk"
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2,
+        "total_price": 798.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3799760015681386,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:48.755498+00:00"
+    },
+    {
+      "call_id": "tc_2_2_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "arguments": {
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "payment_gateway": "stripe",
+        "reservation_id": "RESV-14729548",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1,
+            "unit_price": 399
+          },
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1,
+            "unit_price": 399
+          }
+        ],
+        "payment_amount": 798
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.2919730031862855,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:58.716037+00:00"
+    },
+    {
+      "call_id": "tc_3_3_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "arguments": {
+        "reservation_id": "RESV-14729548",
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1,
+            "unit_price": 399
+          },
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1,
+            "unit_price": 399
+          }
+        ],
+        "payment_amount": 798,
+        "payment_gateway": "stripe"
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.45978801790624857,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:45:02.686128+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.06
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_inventory'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "user_id",
+              "product_id"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_inventory' output",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T11:44:48.755753+00:00"
+    },
+    {
+      "call_id": "tc_2_2_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T11:44:58.716444+00:00"
+    },
+    {
+      "call_id": "tc_3_3_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T11:45:02.686814+00:00"
+    }
+  ],
+  "diagnoses": [
+    {
+      "tool_name": "generate_invoice_from_hold",
+      "category": "external_service_error",
+      "persistence": "transient",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "retry",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "generate_invoice_from_hold",
+          "execution_id": "741dc74e-44a1-43c5-ac41-d542f3847a3c",
+          "task_id": "task_0",
+          "step": 2,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.03,
+          "timestamp": "2026-10-23T11:44:58.716742+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-23T11:44:58.716877+00:00"
+    },
+    {
+      "tool_name": "generate_invoice_from_hold",
+      "category": "external_service_error",
+      "persistence": "permanent",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "reroute",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "generate_invoice_from_hold",
+          "execution_id": "741dc74e-44a1-43c5-ac41-d542f3847a3c",
+          "task_id": "task_0",
+          "step": 3,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.028,
+          "timestamp": "2026-10-23T11:45:02.687096+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-23T11:45:02.687225+00:00"
+    }
+  ],
+  "recovery_events": [
+    {
+      "failed_tool": "generate_invoice_from_hold",
+      "action": "retry",
+      "suggested_tool": "generate_invoice_from_hold",
+      "remaining_budget": 5,
+      "loop_warning": null,
+      "rationale": "Transient failure detected on 'generate_invoice_from_hold'. Budget allows retry.",
+      "timestamp": "2026-10-23T11:44:58.717268+00:00"
+    },
+    {
+      "failed_tool": "generate_invoice_from_hold",
+      "action": "abort",
+      "suggested_tool": null,
+      "remaining_budget": 4,
+      "loop_warning": "Immediate loop detected: Tool 'generate_invoice_from_hold' called 2 times consecutively without progress. Tool marked for rerouting.",
+      "rationale": "Tool 'generate_invoice_from_hold' is blacklisted and no healthy alternatives exist in DAG.",
+      "timestamp": "2026-10-23T11:45:02.687609+00:00"
+    }
+  ],
+  "dag_decisions": [
+    {
+      "failed_tool": "generate_invoice_from_hold",
+      "candidate_tools": [
+        "generate_invoice_from_hold"
+      ],
+      "selected_tool": "generate_invoice_from_hold",
+      "is_viable": true,
+      "reason": "Transient failure detected on 'generate_invoice_from_hold'. Budget allows retry.",
+      "target_path": null,
+      "timestamp": "2026-10-23T11:44:58.717376+00:00"
+    }
+  ],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: missing required pre-victim tools: ['build_invoice_from_hold']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "generate_invoice_from_hold",
+      "missing_tools": [
+        "build_invoice_from_hold"
+      ],
+      "forbidden_tools_called": [],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "hold_inventory",
+          "build_invoice_from_hold",
+          "generate_invoice_from_hold",
+          "stringify_data",
+          "create_document_and_alert"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "hold_inventory",
+          "generate_invoice_from_hold",
+          "generate_invoice_from_hold"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): []"
+    }
+  }
+}

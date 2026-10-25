@@ -1,0 +1,935 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_037",
+  "mode": "P1",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_037",
+    "template_id": "C3_template_037",
+    "complexity": "C3",
+    "task_description": "Please look up Alice's contact information and check her calendar availability for October 24, 2024. Then, retrieve the balance sheet for her checking account and archive it as a high-priority \"Q3 Balance Archive\" via email. Finally, check the current time in the America/New_York timezone, get the status for flight AA100, and book a room at the Hilton Tokyo for Alice starting February 22, 2026.",
+    "user_input": {
+      "query": "Could you please look up the contact information for alice and check her calendar availability for 2024-10-24? Once you have that, retrieve the balance sheet for her checking account and archive it via email. Make sure to mark it as high priority and use the title Q3 Balance Archive. Next, please check the current time in the America/New_York timezone and get the status for flight AA100. Finally, book a room at the Hilton Tokyo for alice starting on February 22, 2026.",
+      "account_type": "checking",
+      "archive_title": "Q3 Balance Archive",
+      "channel": "email",
+      "contact_name": "alice",
+      "flight_number": "AA100",
+      "hotel_name": "Hilton Tokyo",
+      "priority": "high",
+      "query_date": "2024-10-24",
+      "timezone": "America/New_York"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_caldav",
+          "get_bank_balance_sheet_native",
+          "archive_bank_balance_sheet_native",
+          "get_local_time_capsule_native",
+          "get_flight_info_flightaware",
+          "book_available_hotel"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_balance_archive_native_2to2:bank_balance_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_caldav",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "checking"
+            },
+            "output": {
+              "error": "Maximum Concurrent Connections Reached"
+            },
+            "status": "error",
+            "error_message": "409 ConcurrentLimit",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "checking"
+            },
+            "output": {
+              "sheet_id": "bank_u_alice_checking",
+              "owner_id": "u_alice",
+              "balance_amount": 17826,
+              "denomination": "USD",
+              "bucket_name": "checking"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_u_alice_checking",
+                "owner_id": "u_alice",
+                "balance_amount": 17826,
+                "denomination": "USD",
+                "bucket_name": "checking"
+              },
+              "title": "Q3 Balance Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "bank_balance_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 Balance Archive",
+              "account_ref": "bank_u_alice_checking"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "10:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/New_York",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "book_available_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-02-22",
+              "guest_name": "Alice"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice",
+              "check_in_date": "2026-02-22",
+              "check_out_date": "2026-01-03",
+              "room_type": "standard",
+              "status": "confirmed",
+              "availability": "Available"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_caldav",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-10-24"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-10-24",
+                "free_slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ],
+                "total_slots": 4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "checking"
+              },
+              "output": {
+                "error": "Maximum Concurrent Connections Reached"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "checking"
+              },
+              "output": {
+                "sheet_id": "bank_u_alice_checking",
+                "owner_id": "u_alice",
+                "balance_amount": 17826,
+                "denomination": "USD",
+                "bucket_name": "checking"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_u_alice_checking",
+                  "owner_id": "u_alice",
+                  "balance_amount": 17826,
+                  "denomination": "USD",
+                  "bucket_name": "checking"
+                },
+                "title": "Q3 Balance Archive",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "bank_balance_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 Balance Archive",
+                "account_ref": "bank_u_alice_checking"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "10:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/New_York",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_flightaware",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_available_hotel",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo",
+                "check_in_date": "2026-02-22",
+                "guest_name": "Alice"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Hilton Tokyo",
+                "guest_name": "Alice",
+                "check_in_date": "2026-02-22",
+                "check_out_date": "2026-01-03",
+                "room_type": "standard",
+                "status": "confirmed",
+                "availability": "Available"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_caldav",
+          "get_broker_balance_ledger_native",
+          "archive_broker_balance_ledger_native",
+          "get_local_time_capsule_native",
+          "get_flight_info_flightaware",
+          "book_available_hotel"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_balance_archive_native_2to2:broker_balance_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_caldav",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "checking"
+            },
+            "output": {
+              "error": "Too Many Requests"
+            },
+            "status": "error",
+            "error_message": "429 RateLimitExceeded",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "checking"
+            },
+            "output": {
+              "ledger_ref": "broker_u_alice_checking",
+              "principal_id": "u_alice",
+              "equity_value": 17826,
+              "currency_code": "USD",
+              "account_bucket": "checking"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_u_alice_checking",
+                "principal_id": "u_alice",
+                "equity_value": 17826,
+                "currency_code": "USD",
+                "account_bucket": "checking"
+              },
+              "title": "Q3 Balance Archive",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "broker_balance_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 Balance Archive",
+              "account_ref": "broker_u_alice_checking"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "10:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/New_York",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "book_available_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-02-22",
+              "guest_name": "Alice"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alice",
+              "check_in_date": "2026-02-22",
+              "check_out_date": "2026-01-03",
+              "room_type": "standard",
+              "status": "confirmed",
+              "availability": "Available"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_directory",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_caldav",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-10-24"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-10-24",
+                "free_slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ],
+                "total_slots": 4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "checking"
+              },
+              "output": {
+                "error": "Too Many Requests"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "checking"
+              },
+              "output": {
+                "ledger_ref": "broker_u_alice_checking",
+                "principal_id": "u_alice",
+                "equity_value": 17826,
+                "currency_code": "USD",
+                "account_bucket": "checking"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_u_alice_checking",
+                  "principal_id": "u_alice",
+                  "equity_value": 17826,
+                  "currency_code": "USD",
+                  "account_bucket": "checking"
+                },
+                "title": "Q3 Balance Archive",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "broker_balance_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 Balance Archive",
+                "account_ref": "broker_u_alice_checking"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "10:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/New_York",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_flightaware",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_available_hotel",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo",
+                "check_in_date": "2026-02-22",
+                "guest_name": "Alice"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Hilton Tokyo",
+                "guest_name": "Alice",
+                "check_in_date": "2026-02-22",
+                "check_out_date": "2026-01-03",
+                "room_type": "standard",
+                "status": "confirmed",
+                "availability": "Available"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_bank_balance_sheet_native",
+      "archive_broker_balance_ledger_native",
+      "get_bank_balance_sheet_native",
+      "get_broker_balance_ledger_native"
+    ],
+    "domains": [
+      "Office",
+      "Financial",
+      "General",
+      "Travel"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 2
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T03:36:13.744823+00:00",
+  "end_time": "2026-10-25T03:37:53.910717+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please look up the contact information for alice and check her calendar availability for 2024-10-24? Once you have that, retrieve the balance sheet for her checking account and archive it via email. Make sure to mark it as high priority and use the title Q3 Balance Archive. Next, please check the current time in the America/New_York timezone and get the status for flight AA100. Finally, book a room at the Hilton Tokyo for alice starting on February 22, 2026.",
+      "account_type": "checking",
+      "archive_title": "Q3 Balance Archive",
+      "channel": "email",
+      "contact_name": "alice",
+      "flight_number": "AA100",
+      "hotel_name": "Hilton Tokyo",
+      "priority": "high",
+      "query_date": "2024-10-24",
+      "timezone": "America/New_York"
+    },
+    "task_description": "Please look up Alice's contact information and check her calendar availability for October 24, 2024. Then, retrieve the balance sheet for her checking account and archive it as a high-priority \"Q3 Balance Archive\" via email. Finally, check the current time in the America/New_York timezone, get the status for flight AA100, and book a room at the Hilton Tokyo for Alice starting February 22, 2026.",
+    "template_id": "C3_template_037",
+    "domains": [
+      "Office",
+      "Financial",
+      "General",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['get_bank_balance_sheet_native', 'get_broker_balance_ledger_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_037_path_0_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 3,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Maximum Concurrent Connections Reached"
+        },
+        "error_message": "409 ConcurrentLimit",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_balance_archive_native_2to2:bank_balance_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_037_path_1_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 3,
+        "mode": "P1",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Too Many Requests"
+        },
+        "error_message": "429 RateLimitExceeded",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_balance_archive_native_2to2:broker_balance_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_bank_balance_sheet_native",
+        "book_available_hotel",
+        "get_bank_balance_sheet_native",
+        "get_contact_info_directory",
+        "get_flight_info_flightaware",
+        "get_local_time_capsule_native",
+        "query_availability_caldav"
+      ],
+      "insufficient_calls": {
+        "get_contact_info_directory": {
+          "expected": 1,
+          "actual": 0
+        },
+        "query_availability_caldav": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_local_time_capsule_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_flight_info_flightaware": {
+          "expected": 1,
+          "actual": 0
+        },
+        "book_available_hotel": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_caldav",
+              "get_bank_balance_sheet_native",
+              "archive_bank_balance_sheet_native",
+              "get_local_time_capsule_native",
+              "get_flight_info_flightaware",
+              "book_available_hotel"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_caldav",
+              "get_broker_balance_ledger_native",
+              "archive_broker_balance_ledger_native",
+              "get_local_time_capsule_native",
+              "get_flight_info_flightaware",
+              "book_available_hotel"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_bank_balance_sheet_native",
+          "archive_broker_balance_ledger_native",
+          "get_bank_balance_sheet_native",
+          "get_broker_balance_ledger_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

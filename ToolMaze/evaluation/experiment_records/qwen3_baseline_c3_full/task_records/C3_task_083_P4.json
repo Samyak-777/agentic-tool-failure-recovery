@@ -1,0 +1,1149 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c3_full",
+  "task_id": "C3_task_083",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_083",
+    "template_id": "C3_template_083",
+    "complexity": "C3",
+    "task_description": "Please check the living room main light status, get the current local time in Los Angeles, then scan the living room devices and pick the thermostat. After that, set the living room AC to cool at 22°C, and then tell me what 22°C is in Fahrenheit.",
+    "user_input": {
+      "query": "Please check whether the main light in the living_room is on or off, specifically the light with ID light_living. Then get the current local time in Los Angeles using the timezone America/Los_Angeles. After that, scan the devices in the living_room and find the thermostat, with target_device_type thermostat and thermostat_device_id ac_living. Once you’ve got it, set the living room AC to hvac_mode cool at 22°C, using target_temperature_c 22. Finally, tell me what 22°C is in Fahrenheit.",
+      "area": "living_room",
+      "hvac_mode": "cool",
+      "light_id": "light_living",
+      "target_device_type": "thermostat",
+      "target_temperature_c": 22,
+      "thermostat_device_id": "ac_living",
+      "timezone": "America/Los_Angeles"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_light_mesh_snapshot_native",
+          "get_local_time_capsule_native",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "adjust_temperature",
+          "temperature_converter"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/Los_Angeles"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "07:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/Los_Angeles",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "kitchen",
+              "device_count": 0,
+              "devices": [],
+              "message": "Scan complete successfully. No devices found in living_room."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "thermostat"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "device_type": "thermostat",
+              "device_name": "Living Room AC",
+              "location": "living_room",
+              "selection_reason": "selected_first_thermostat"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/Los_Angeles"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "07:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/Los_Angeles",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "kitchen",
+                "device_count": 0,
+                "devices": [],
+                "message": "Scan complete successfully. No devices found in living_room."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "thermostat"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "device_type": "thermostat",
+                "device_name": "Living Room AC",
+                "location": "living_room",
+                "selection_reason": "selected_first_thermostat"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 22,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_light_mesh_snapshot_native",
+          "get_local_time_capsule_native",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "adjust_temperature",
+          "temperature_converter"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_local_time_capsule_native",
+            "arguments": {
+              "timezone": "America/Los_Angeles"
+            },
+            "output": {
+              "capsule_ref": "capsule_1771772694",
+              "local_clock": "07:04:54",
+              "calendar_day": "2026-02-22",
+              "timezone_key": "America/Los_Angeles",
+              "weekday_title": "Sunday"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "thermostat"
+            },
+            "output": {
+              "found": -1,
+              "area_name": "kitchen",
+              "total_items": 4,
+              "items": []
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "thermostat"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "device_type": "thermostat",
+              "area": "living_room",
+              "selection_reason": "resolved_first_thermostat"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_local_time_capsule_native",
+              "arguments": {
+                "timezone": "America/Los_Angeles"
+              },
+              "output": {
+                "capsule_ref": "capsule_1771772694",
+                "local_clock": "07:04:54",
+                "calendar_day": "2026-02-22",
+                "timezone_key": "America/Los_Angeles",
+                "weekday_title": "Sunday"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "thermostat"
+              },
+              "output": {
+                "found": -1,
+                "area_name": "kitchen",
+                "total_items": 4,
+                "items": []
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "thermostat"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "device_type": "thermostat",
+                "area": "living_room",
+                "selection_reason": "resolved_first_thermostat"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 22,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "discover_smart_devices",
+      "query_connected_devices",
+      "resolve_connected_device_by_type",
+      "select_discovered_device_by_type"
+    ],
+    "domains": [
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T23:32:46.218660+00:00",
+  "end_time": "2026-10-23T23:33:20.245158+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 9511,
+    "output_tokens": 2160,
+    "total_tokens": 11671
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the main light in the living_room is on or off, specifically the light with ID light_living. Then get the current local time in Los Angeles using the timezone America/Los_Angeles. After that, scan the devices in the living_room and find the thermostat, with target_device_type thermostat and thermostat_device_id ac_living. Once you’ve got it, set the living room AC to hvac_mode cool at 22°C, using target_temperature_c 22. Finally, tell me what 22°C is in Fahrenheit.",
+      "area": "living_room",
+      "hvac_mode": "cool",
+      "light_id": "light_living",
+      "target_device_type": "thermostat",
+      "target_temperature_c": 22,
+      "thermostat_device_id": "ac_living",
+      "timezone": "America/Los_Angeles"
+    },
+    "task_description": "Please check the living room main light status, get the current local time in Los Angeles, then scan the living room devices and pick the thermostat. After that, set the living room AC to cool at 22°C, and then tell me what 22°C is in Fahrenheit.",
+    "template_id": "C3_template_083",
+    "domains": [
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_failure_attribution_uncertain",
+    "confidence": "LOW",
+    "evidence": "Perturbation was injected and task failed, but causal chain lacks definitive link.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_083_path_0_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": "kitchen",
+          "device_count": 0,
+          "devices": [],
+          "message": "Scan complete successfully. No devices found in living_room."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:discovered_network_resolution"
+        ]
+      },
+      {
+        "config_id": "C3_task_083_path_1_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": -1,
+          "area_name": "kitchen",
+          "total_items": 4,
+          "items": []
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_iot_device_resolution_2to2:connected_cloud_resolution"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_discover_smart_devices",
+        "tool_name": "discover_smart_devices",
+        "step": 3,
+        "timestamp": "2026-10-23T23:33:13.644072+00:00",
+        "config_id": "C3_task_083_path_0_discover_smart_devices",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "location": "living_room"
+        },
+        "modified_output_sample": {
+          "location": "kitchen",
+          "device_count": 0,
+          "devices": [],
+          "message": "Scan complete successfully. No devices found in living_room."
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "mesh_node": "light_living",
+        "lamp_state": "off",
+        "level_pct": 0,
+        "hue_name": "white"
+      },
+      "status": "success",
+      "duration_ms": 5.460957996547222,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T23:33:03.409792+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_local_time_capsule_native",
+      "tool_name": "get_local_time_capsule_native",
+      "arguments": {
+        "timezone": "America/Los_Angeles"
+      },
+      "result_sample": {
+        "capsule_ref": "capsule_1771772694",
+        "local_clock": "07:04:54",
+        "calendar_day": "2026-02-22",
+        "timezone_key": "America/Los_Angeles",
+        "weekday_title": "Sunday"
+      },
+      "status": "success",
+      "duration_ms": 0.5297320894896984,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T23:33:09.996720+00:00"
+    },
+    {
+      "call_id": "tc_3_3_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "arguments": {
+        "location": "living_room"
+      },
+      "result_sample": {
+        "location": "kitchen",
+        "device_count": 0,
+        "devices": [],
+        "message": "Scan complete successfully. No devices found in living_room."
+      },
+      "status": "success",
+      "duration_ms": 0.30299497302621603,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T23:33:13.644072+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "checked_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_mesh_snapshot_native' output",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T23:33:03.410022+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_local_time_capsule_native",
+      "tool_name": "get_local_time_capsule_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_local_time_capsule_native",
+            "verified_fields": [
+              "capsule_ref",
+              "local_clock",
+              "calendar_day",
+              "timezone_key",
+              "weekday_title"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_local_time_capsule_native",
+            "checked_fields": [
+              "capsule_ref",
+              "local_clock",
+              "calendar_day",
+              "timezone_key",
+              "weekday_title"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_local_time_capsule_native",
+            "verified_fields": [
+              "capsule_ref",
+              "local_clock",
+              "calendar_day",
+              "timezone_key",
+              "weekday_title"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_local_time_capsule_native'",
+          "details": {
+            "tool_name": "get_local_time_capsule_native"
+          },
+          "latency_ms": 0.017
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_local_time_capsule_native'",
+          "details": {
+            "tool_name": "get_local_time_capsule_native"
+          },
+          "latency_ms": 0.087
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_local_time_capsule_native'",
+          "details": {
+            "arguments": [
+              "timezone"
+            ],
+            "output": [
+              "capsule_ref",
+              "local_clock",
+              "calendar_day",
+              "timezone_key",
+              "weekday_title"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_local_time_capsule_native'",
+          "details": {
+            "tool_name": "get_local_time_capsule_native"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_local_time_capsule_native' output",
+          "details": {
+            "tool_name": "get_local_time_capsule_native"
+          },
+          "latency_ms": 0.034
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_local_time_capsule_native'",
+          "details": {
+            "tool_name": "get_local_time_capsule_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T23:33:09.996940+00:00"
+    },
+    {
+      "call_id": "tc_3_3_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "checked_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.037
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'discover_smart_devices'",
+          "details": {
+            "arguments": [
+              "location"
+            ],
+            "output": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'discover_smart_devices' output",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T23:33:13.644429+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "discover_smart_devices",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "adjust_temperature",
+        "select_discovered_device_by_type",
+        "temperature_converter"
+      ],
+      "insufficient_calls": {
+        "select_discovered_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "adjust_temperature": {
+          "expected": 1,
+          "actual": 0
+        },
+        "temperature_converter": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_light_mesh_snapshot_native",
+              "get_local_time_capsule_native",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "adjust_temperature",
+              "temperature_converter"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_light_mesh_snapshot_native",
+              "get_local_time_capsule_native",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "adjust_temperature",
+              "temperature_converter"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "discover_smart_devices",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "select_discovered_device_by_type"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_light_mesh_snapshot_native",
+          "get_local_time_capsule_native",
+          "discover_smart_devices"
+        ]
+      }
+    }
+  }
+}

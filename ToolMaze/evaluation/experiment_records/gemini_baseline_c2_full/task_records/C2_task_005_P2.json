@@ -1,0 +1,556 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c2_full",
+  "task_id": "C2_task_005",
+  "mode": "P2",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_005",
+    "template_id": "C2_template_005",
+    "complexity": "C2",
+    "task_description": "Please check whether flight CA1234 is on time, then look up the current NASDAQ market status, check the latest BTC price, and get the USD to EUR exchange rate. After that, create a document titled \"Trip Summary\" with the content \"Summary of today's events.\" and tag it with finance and travel.",
+    "user_input": {
+      "query": "Could you please check whether flight CA1234 is on time, then look up the current NASDAQ market status, check the latest BTC price, and get the USD to EUR exchange rate? After that, create a document titled \"Trip Summary\" with the content \"Summary of today's events.\" and tag it with finance and travel.",
+      "content": "Summary of today's events.",
+      "exchange": "NASDAQ",
+      "flight_number": "CA1234",
+      "from_currency": "USD",
+      "symbol": "BTC",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "to_currency": "EUR"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info",
+          "get_market_status_alpha",
+          "get_crypto_price_coinmarketcap",
+          "get_exchange_rate_fixer",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_market_status_provider_pair:alpha"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "error": "Account Quota Exhausted"
+            },
+            "status": "error",
+            "error_message": "402 QuotaExhausted",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trip Summary",
+              "content": "Summary of today's events.",
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "error": "Account Quota Exhausted"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trip Summary",
+                "content": "Summary of today's events.",
+                "tags": [
+                  "finance",
+                  "travel"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "content_length": 26,
+                "tags": [
+                  "finance",
+                  "travel"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info",
+          "get_market_status_polygon",
+          "get_crypto_price_coinmarketcap",
+          "get_exchange_rate_fixer",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_market_status_provider_pair:polygon"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "error": "Account Quota Exhausted"
+            },
+            "status": "error",
+            "error_message": "402 QuotaExhausted",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trip Summary",
+              "content": "Summary of today's events.",
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "error": "Account Quota Exhausted"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Trip Summary",
+                "content": "Summary of today's events.",
+                "tags": [
+                  "finance",
+                  "travel"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "content_length": 26,
+                "tags": [
+                  "finance",
+                  "travel"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_market_status_alpha",
+      "get_market_status_polygon"
+    ],
+    "domains": [
+      "Travel",
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 1
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T10:55:23.742052+00:00",
+  "end_time": "2026-10-24T10:57:04.163941+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check whether flight CA1234 is on time, then look up the current NASDAQ market status, check the latest BTC price, and get the USD to EUR exchange rate? After that, create a document titled \"Trip Summary\" with the content \"Summary of today's events.\" and tag it with finance and travel.",
+      "content": "Summary of today's events.",
+      "exchange": "NASDAQ",
+      "flight_number": "CA1234",
+      "from_currency": "USD",
+      "symbol": "BTC",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "to_currency": "EUR"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, then look up the current NASDAQ market status, check the latest BTC price, and get the USD to EUR exchange rate. After that, create a document titled \"Trip Summary\" with the content \"Summary of today's events.\" and tag it with finance and travel.",
+    "template_id": "C2_template_005",
+    "domains": [
+      "Travel",
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['get_market_status_alpha', 'get_market_status_polygon'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_005_path_0_get_market_status_alpha",
+        "target_tool": "get_market_status_alpha",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_market_status_provider_pair:alpha"
+        ]
+      },
+      {
+        "config_id": "C2_task_005_path_1_get_market_status_polygon",
+        "target_tool": "get_market_status_polygon",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_market_status_provider_pair:polygon"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "create_document",
+        "get_crypto_price_coinmarketcap",
+        "get_exchange_rate_fixer",
+        "get_flight_info",
+        "get_market_status_alpha"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info",
+              "get_market_status_alpha",
+              "get_crypto_price_coinmarketcap",
+              "get_exchange_rate_fixer",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info",
+              "get_market_status_polygon",
+              "get_crypto_price_coinmarketcap",
+              "get_exchange_rate_fixer",
+              "create_document"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_market_status_alpha",
+          "get_market_status_polygon"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

@@ -1,0 +1,1291 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c1_full",
+  "task_id": "C1_task_024",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_024",
+    "template_id": "C1_template_024",
+    "complexity": "C1",
+    "task_description": "Please reserve 2 black Sony XM5 headphones for me, then create an invoice from that hold using my email user@example.com and Stripe, and generate the payment invoice link. After that, confirm the held order, and then save a short Trip Summary note saying the reservation was invoiced for 798.0 and confirmed.",
+    "user_input": {
+      "query": "Please reserve 2 black Sony XM5 headphones for me using product ID p_sony_xm5_blk. Then create an invoice from that hold using my email user@example.com and Stripe, and generate the payment invoice link. After that, confirm the held order. Finally, save a short note for user_001 titled Trip Summary with the tags finance and travel, saying the reservation was invoiced for 798.0 and confirmed.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "hold_inventory",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "user_id": "user_001",
+          "quantity": 2
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "build_invoice_from_hold",
+        "arguments": {
+          "hold_data": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "quantity": 2,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "output": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "reservation_id": "RESV-14729548",
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "generate_payment_invoice",
+        "arguments": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "output": {
+          "invoice_id": "INV-F685ABC8",
+          "status": "paid",
+          "total_due": -399.0,
+          "currency": "EUR",
+          "billing_email": "billing@wrong-example.com",
+          "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+          "message": "Invoice generated for 2 items totaling 798.0 USD. Please complete payment via the link."
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "confirm_held_recommendation_order",
+        "arguments": {
+          "reservation_id": "RESV-14729548",
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2
+        },
+        "output": {
+          "order_id": "ORD-5C8E2A1B",
+          "reservation_id": "RESV-14729548",
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "status": "confirmed",
+          "estimated_delivery": "3-5 business days",
+          "confirmation_strategy": "held_recommendation"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "create_document",
+        "arguments": {
+          "title": "Trip Summary",
+          "content": "Reservation RESV-14729548 for product p_sony_xm5_blk in quantity 2 was invoiced for 798.0 and then confirmed.",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "output": {
+          "message": "Note saved successfully",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "content_length": 109,
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "hold_inventory",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "user_id": "user_001",
+            "quantity": 2
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_invoice_from_hold",
+          "arguments": {
+            "hold_data": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "total_price": 798.0
+              }
+            },
+            "quantity": 2,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "output": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "reservation_id": "RESV-14729548",
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "generate_payment_invoice",
+          "arguments": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "output": {
+            "invoice_id": "INV-F685ABC8",
+            "status": "paid",
+            "total_due": -399.0,
+            "currency": "EUR",
+            "billing_email": "billing@wrong-example.com",
+            "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+            "message": "Invoice generated for 2 items totaling 798.0 USD. Please complete payment via the link."
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "confirm_held_recommendation_order",
+          "arguments": {
+            "reservation_id": "RESV-14729548",
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2
+          },
+          "output": {
+            "order_id": "ORD-5C8E2A1B",
+            "reservation_id": "RESV-14729548",
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "status": "confirmed",
+            "estimated_delivery": "3-5 business days",
+            "confirmation_strategy": "held_recommendation"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document",
+          "arguments": {
+            "title": "Trip Summary",
+            "content": "Reservation RESV-14729548 for product p_sony_xm5_blk in quantity 2 was invoiced for 798.0 and then confirmed.",
+            "tags": [
+              "finance",
+              "travel"
+            ]
+          },
+          "output": {
+            "message": "Note saved successfully",
+            "note_id": "NOTE18E3D",
+            "title": "Trip Summary",
+            "content_length": 109,
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "statistical_inconsistency"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T07:41:21.644462+00:00",
+  "end_time": "2026-10-23T07:42:12.346629+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: agent should have stopped but called other tools after victim: ['confirm_held_recommendation_order', 'create_document']",
+  "failed_tools": [
+    "create_document"
+  ],
+  "tokens": {
+    "input_tokens": 16384,
+    "output_tokens": 3014,
+    "total_tokens": 19398
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please reserve 2 black Sony XM5 headphones for me using product ID p_sony_xm5_blk. Then create an invoice from that hold using my email user@example.com and Stripe, and generate the payment invoice link. After that, confirm the held order. Finally, save a short note for user_001 titled Trip Summary with the tags finance and travel, saying the reservation was invoiced for 798.0 and confirmed.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please reserve 2 black Sony XM5 headphones for me, then create an invoice from that hold using my email user@example.com and Stripe, and generate the payment invoice link. After that, confirm the held order, and then save a short Trip Summary note saying the reservation was invoiced for 798.0 and confirmed.",
+    "template_id": "C1_template_024",
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_unrelated_to_observed_perturbation",
+    "confidence": "MEDIUM",
+    "evidence": "Perturbation affected ['generate_payment_invoice'], but failures occurred on unrelated tools: ['create_document'].",
+    "configured_count": 1,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_024_step_3_generate_payment_invoice",
+        "target_tool": "generate_payment_invoice",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "invoice_id": "INV-F685ABC8",
+          "status": "paid",
+          "total_due": -399.0,
+          "currency": "EUR",
+          "billing_email": "billing@wrong-example.com",
+          "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+          "message": "Invoice generated for 2 items totaling 798.0 USD. Please complete payment via the link."
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_generate_payment_invoice",
+        "tool_name": "generate_payment_invoice",
+        "step": 3,
+        "timestamp": "2026-10-23T07:41:53.778578+00:00",
+        "config_id": "C1_task_024_step_3_generate_payment_invoice",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798,
+          "payment_gateway": "stripe"
+        },
+        "modified_output_sample": {
+          "invoice_id": "INV-F685ABC8",
+          "status": "paid",
+          "total_due": -399.0,
+          "currency": "EUR",
+          "billing_email": "billing@wrong-example.com",
+          "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+          "message": "Invoice generated for 2 items totaling 798.0 USD. Please complete payment via the link."
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "arguments": {
+        "user_id": "user_001",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2,
+        "total_price": 798.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.4006139934062958,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:41:38.744601+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_invoice_from_hold",
+      "tool_name": "build_invoice_from_hold",
+      "arguments": {
+        "hold_data": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "reservation_id": "RESV-14729548",
+          "total_price": 798
+        },
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "payment_gateway": "stripe",
+        "quantity": 2
+      },
+      "result_sample": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2
+          }
+        ],
+        "payment_amount": 798.0,
+        "reservation_id": "RESV-14729548",
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "payment_gateway": "stripe"
+      },
+      "status": "success",
+      "duration_ms": 0.3781879786401987,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:41:46.872567+00:00"
+    },
+    {
+      "call_id": "tc_3_3_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2
+          }
+        ],
+        "payment_amount": 798,
+        "payment_gateway": "stripe"
+      },
+      "result_sample": {
+        "invoice_id": "INV-F685ABC8",
+        "status": "paid",
+        "total_due": -399.0,
+        "currency": "EUR",
+        "billing_email": "billing@wrong-example.com",
+        "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+        "message": "Invoice generated for 2 items totaling 798.0 USD. Please complete payment via the link."
+      },
+      "status": "success",
+      "duration_ms": 0.6179879419505596,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:41:53.778578+00:00"
+    },
+    {
+      "call_id": "tc_4_4_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "arguments": {
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2,
+        "reservation_id": "RESV-14729548"
+      },
+      "result_sample": {
+        "order_id": "ORD-5C8E2A1B",
+        "reservation_id": "RESV-14729548",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2,
+        "status": "confirmed",
+        "estimated_delivery": "3-5 business days",
+        "confirmation_strategy": "held_recommendation"
+      },
+      "status": "success",
+      "duration_ms": 14.325944939628243,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:41:58.668139+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_document",
+      "tool_name": "create_document",
+      "arguments": {
+        "content": "The reservation for 2 black Sony XM5 headphones (p_sony_xm5_blk) was invoiced for 798.0 and confirmed. Order ID: ORD-5C8E2A1B.",
+        "tags": [
+          "finance",
+          "travel"
+        ],
+        "title": "Trip Summary"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_document' is missing required schema field(s): timestamp; [required] Required field violation for 'create_document': missing: ['timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Note saved successfully",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "content_length": 126,
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.35634299274533987,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:42:04.452249+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.063
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_inventory'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "product_id",
+              "quantity"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_inventory' output",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:41:38.744861+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_invoice_from_hold",
+      "tool_name": "build_invoice_from_hold",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "build_invoice_from_hold",
+            "verified_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_invoice_from_hold",
+            "checked_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "build_invoice_from_hold",
+            "verified_fields": [
+              "items",
+              "payment_amount",
+              "reservation_id",
+              "user_id",
+              "email",
+              "payment_gateway"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_invoice_from_hold'",
+          "details": {
+            "tool_name": "build_invoice_from_hold"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_invoice_from_hold'",
+          "details": {
+            "tool_name": "build_invoice_from_hold"
+          },
+          "latency_ms": 0.048
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (2 entity field(s) matched)",
+          "details": {
+            "tool_name": "build_invoice_from_hold",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              },
+              {
+                "arg_key": "email",
+                "res_key": "email",
+                "requested": "user@example.com",
+                "returned": "user@example.com",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_invoice_from_hold'",
+          "details": {
+            "tool_name": "build_invoice_from_hold"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_invoice_from_hold' output",
+          "details": {
+            "tool_name": "build_invoice_from_hold"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_invoice_from_hold'",
+          "details": {
+            "tool_name": "build_invoice_from_hold"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:41:46.872839+00:00"
+    },
+    {
+      "call_id": "tc_3_3_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.019
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.018
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.026
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.139
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_payment_invoice'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "email",
+              "items",
+              "payment_amount",
+              "payment_gateway"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_payment_invoice' output",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.018
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:41:53.779553+00:00"
+    },
+    {
+      "call_id": "tc_4_4_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "checked_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.058
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "arguments": [
+              "product_id",
+              "quantity",
+              "reservation_id"
+            ],
+            "output": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'confirm_held_recommendation_order' output",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:41:58.668388+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_document",
+      "tool_name": "create_document",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_document' is missing required schema field(s): timestamp",
+          "details": {
+            "tool_name": "create_document",
+            "missing_fields": [
+              "timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags",
+              "timestamp"
+            ],
+            "actual_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_document",
+            "checked_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_document': missing: ['timestamp']",
+          "details": {
+            "tool_name": "create_document",
+            "missing_fields": [
+              "timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'create_document'",
+          "details": {
+            "arguments": [
+              "content",
+              "tags",
+              "title"
+            ],
+            "output": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_document' output",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T07:42:04.452516+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: agent should have stopped but called other tools after victim: ['confirm_held_recommendation_order', 'create_document']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "generate_payment_invoice",
+      "missing_tools": [],
+      "forbidden_tools_called": [
+        "confirm_held_recommendation_order",
+        "create_document"
+      ],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "hold_inventory",
+          "build_invoice_from_hold",
+          "generate_payment_invoice",
+          "confirm_held_recommendation_order",
+          "create_document"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "hold_inventory",
+          "build_invoice_from_hold",
+          "generate_payment_invoice",
+          "confirm_held_recommendation_order",
+          "create_document"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): ['confirm_held_recommendation_order', 'create_document']"
+    }
+  }
+}

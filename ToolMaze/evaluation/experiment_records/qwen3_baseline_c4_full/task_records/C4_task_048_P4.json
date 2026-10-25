@@ -1,0 +1,5136 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_048",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_048",
+    "template_id": "C4_template_048",
+    "complexity": "C4",
+    "task_description": "Please check Alice’s availability for November 5, 2024, then find a meeting room for at least 8 people at 10:00 that day and send the room notice to Bob in the app. After that, check the weather in London, get the weather alert card, and publish that alert to Bob as a high-priority app notification; then scan the living room devices, prepare a brightness setting for the living room light, and turn that light on to 70% brightness. Finally, create a document titled “Meeting Readiness Summary” saying that the room notice was sent, the weather notice was published, and the lighting was configured for the upcoming meeting, and send the notification to Bob in the app.",
+    "user_input": {
+      "query": "Please check Alice’s availability for 2024-11-05, then find a meeting room for 8 attendees at 10:00 that day and send the room notice to Bob in the app using channel app and notify_user_id u_bob; the organizer is organizer_user_id u_alice. After that, check the weather in London, get the weather alert card, and publish that alert to Bob as a high-priority app notification with priority high. Then scan the living_room devices, prepare a brightness setting of 70 for the living room light using device_ref device_id light_living, and turn that light_state on to 70% brightness. Finally, create a document titled Meeting Readiness Summary with the content: “Room notice sent, weather notice published, and lighting configured for the upcoming meeting.” Include the tags meeting, office, and readiness, and send the notification to Bob in the app.",
+      "attendees": 8,
+      "brightness": 70,
+      "channel": "app",
+      "city": "London",
+      "device_location": "living_room",
+      "device_ref": {
+        "device_id": "light_living"
+      },
+      "document_content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+      "document_title": "Meeting Readiness Summary",
+      "light_state": "on",
+      "meeting_date": "2024-11-05",
+      "notify_user_id": "u_bob",
+      "organizer_user_id": "u_alice",
+      "priority": "high",
+      "start_time": "10:00",
+      "tags": [
+        "meeting",
+        "office",
+        "readiness"
+      ]
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "get_weather_visualcrossing",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_light_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_0",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 0,
+              "booking_day": "2024-11-06",
+              "slot_start": "18:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2024-11-05",
+                "slot_start": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "wapi_london_past",
+              "city_label": "Lnodon",
+              "celsius_now": -3,
+              "sky_text": "Sunny night rain",
+              "advice_level": "expired"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "wapi_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_smart_light",
+              "changes": {
+                "power_state": "on",
+                "brightness": 70,
+                "color": "white",
+                "start_date": "2024-03-15",
+                "end_date": "2024-03-10"
+              },
+              "status": "pending_before_creation"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_office365_room_ticket_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_ticket_id": "o365_meeting_room_0",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 0,
+                "booking_day": "2024-11-06",
+                "slot_start": "18:00",
+                "room_name": "Meeting Room 0"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2024-11-05",
+                  "slot_start": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "office365_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "o365_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "wapi_london_past",
+                "city_label": "Lnodon",
+                "celsius_now": -3,
+                "sky_text": "Sunny night rain",
+                "advice_level": "expired"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_london",
+                  "city_label": "London",
+                  "celsius_now": 12,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "wapi_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "device_id": "light_kitchen",
+                "operation": "schedule_smart_light",
+                "changes": {
+                  "power_state": "on",
+                  "brightness": 70,
+                  "color": "white",
+                  "start_date": "2024-03-15",
+                  "end_date": "2024-03-10"
+                },
+                "status": "pending_before_creation"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "get_weather_visualcrossing",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_power_state",
+          "update_device_config",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_0",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 600,
+              "booking_day": "2024-11-06",
+              "slot_start": "18:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2024-11-05",
+                "slot_start": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "wapi_london_prev_2025",
+              "city_label": "London Yesterday",
+              "celsius_now": 0,
+              "sky_text": "Clear night",
+              "advice_level": "expired",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-16",
+              "end_date": "2024-03-14"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "wapi_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_living_previous",
+              "operation": "schedule_device_power",
+              "changes": {
+                "power_state": "on",
+                "start_date": "2024-03-16",
+                "end_date": "2024-03-14",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10"
+              },
+              "status": "pending_completed"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_office365_room_ticket_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_ticket_id": "o365_meeting_room_0",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 600,
+                "booking_day": "2024-11-06",
+                "slot_start": "18:00",
+                "room_name": "Meeting Room 0"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2024-11-05",
+                  "slot_start": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "office365_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "o365_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "wapi_london_prev_2025",
+                "city_label": "London Yesterday",
+                "celsius_now": 0,
+                "sky_text": "Clear night",
+                "advice_level": "expired",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-16",
+                "end_date": "2024-03-14"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_london",
+                  "city_label": "London",
+                  "celsius_now": 12,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "wapi_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "light_living_previous",
+                "operation": "schedule_device_power",
+                "changes": {
+                  "power_state": "on",
+                  "start_date": "2024-03-16",
+                  "end_date": "2024-03-14",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10"
+                },
+                "status": "pending_completed"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 70
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "get_weather_visualcrossing",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_light_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_0",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 0,
+              "booking_day": "2024-11-07",
+              "slot_start": "18:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2024-11-05",
+                "slot_start": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+              "locality": "Paris",
+              "metric_temp": -273,
+              "conditions_brief": "Sunny with heavy snow",
+              "advice_level": "evacuate",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "vc_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "UNKNOWN-ERR-517",
+              "operation": "rollback_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 70,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "scheduled"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_office365_room_ticket_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_ticket_id": "o365_meeting_room_0",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 0,
+                "booking_day": "2024-11-07",
+                "slot_start": "18:00",
+                "room_name": "Meeting Room 0"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2024-11-05",
+                  "slot_start": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "office365_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "o365_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+                "locality": "Paris",
+                "metric_temp": -273,
+                "conditions_brief": "Sunny with heavy snow",
+                "advice_level": "evacuate",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_london",
+                  "locality": "London",
+                  "metric_temp": 12,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "vc_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "device_id": "UNKNOWN-ERR-517",
+                "operation": "rollback_smart_light",
+                "changes": {
+                  "power_state": "off",
+                  "brightness": 70,
+                  "color": "white",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10",
+                  "start_date": "2024-03-20",
+                  "end_date": "2024-03-18"
+                },
+                "status": "scheduled"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "get_weather_visualcrossing",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_power_state",
+          "update_device_config",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_0",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": -6,
+              "booking_day": "2024-11-06",
+              "slot_start": "09:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2024-11-05",
+                "slot_start": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london_archived_future",
+              "locality": "London Yesterday",
+              "metric_temp": -273,
+              "conditions_brief": "Sunny night with continuous darkness",
+              "advice_level": "expired tomorrow"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "vc_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_power_change",
+              "changes": {
+                "power_state": "off",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_office365_room_ticket_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_ticket_id": "o365_meeting_room_0",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": -6,
+                "booking_day": "2024-11-06",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 0"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2024-11-05",
+                  "slot_start": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "office365_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "o365_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london_archived_future",
+                "locality": "London Yesterday",
+                "metric_temp": -273,
+                "conditions_brief": "Sunny night with continuous darkness",
+                "advice_level": "expired tomorrow"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_london",
+                  "locality": "London",
+                  "metric_temp": 12,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "vc_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "light_kitchen",
+                "operation": "schedule_power_change",
+                "changes": {
+                  "power_state": "off",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10",
+                  "start_date": "2024-03-20",
+                  "end_date": "2024-03-18"
+                },
+                "status": "pending"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 70
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "get_weather_visualcrossing",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_light_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_0_past",
+              "resource_label": "Meeting Room 1 - Ends Before It Starts",
+              "max_people": -6,
+              "reserve_date": "2024-11-10/2024-11-05",
+              "slot_begin": "18:00-09:00",
+              "room_name": "Meeting Room 1 (updated before created)"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2024-11-05",
+                "slot_begin": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "wapi_london_rev_before_create",
+              "city_label": "London Yesterday Tomorrow",
+              "celsius_now": -3,
+              "sky_text": "Sunny at midnight before sunrise",
+              "advice_level": "expired",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "wapi_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "rollback_light_change",
+              "changes": {
+                "power_state": "off",
+                "brightness": 70,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "scheduled_before_creation"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_0_past",
+                "resource_label": "Meeting Room 1 - Ends Before It Starts",
+                "max_people": -6,
+                "reserve_date": "2024-11-10/2024-11-05",
+                "slot_begin": "18:00-09:00",
+                "room_name": "Meeting Room 1 (updated before created)"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2024-11-05",
+                  "slot_begin": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "workplace_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "wp_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "wapi_london_rev_before_create",
+                "city_label": "London Yesterday Tomorrow",
+                "celsius_now": -3,
+                "sky_text": "Sunny at midnight before sunrise",
+                "advice_level": "expired",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_london",
+                  "city_label": "London",
+                  "celsius_now": 12,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "wapi_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "operation": "rollback_light_change",
+                "changes": {
+                  "power_state": "off",
+                  "brightness": 70,
+                  "color": "white",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10",
+                  "start_date": "2024-03-20",
+                  "end_date": "2024-03-18"
+                },
+                "status": "scheduled_before_creation"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "get_weather_visualcrossing",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_power_state",
+          "update_device_config",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_0_past",
+              "resource_label": "Meeting Room 1 (ends before it starts)",
+              "max_people": 0,
+              "reserve_date": "2024-11-07",
+              "slot_begin": "18:00",
+              "room_name": "Meeting Room 1 - Yesterday Slot"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2024-11-05",
+                "slot_begin": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "alert_card_id": "wapi_london_pastfuture",
+              "city_label": "London Yesterday",
+              "celsius_now": 0,
+              "sky_text": "Sunny at midnight with no sun",
+              "advice_level": "expired",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-20",
+              "end_date": "2024-03-18"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_london",
+                "city_label": "London",
+                "celsius_now": 12,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "wapi_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "schedule_device_power",
+              "changes": {
+                "power_state": "on",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_0_past",
+                "resource_label": "Meeting Room 1 (ends before it starts)",
+                "max_people": 0,
+                "reserve_date": "2024-11-07",
+                "slot_begin": "18:00",
+                "room_name": "Meeting Room 1 - Yesterday Slot"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2024-11-05",
+                  "slot_begin": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "workplace_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "wp_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "alert_card_id": "wapi_london_pastfuture",
+                "city_label": "London Yesterday",
+                "celsius_now": 0,
+                "sky_text": "Sunny at midnight with no sun",
+                "advice_level": "expired",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_london",
+                  "city_label": "London",
+                  "celsius_now": 12,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "wapi_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "operation": "schedule_device_power",
+                "changes": {
+                  "power_state": "on",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10",
+                  "start_date": "2024-03-20",
+                  "end_date": "2024-03-18"
+                },
+                "status": "pending"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 70
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "get_weather_visualcrossing",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_light_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_0",
+              "resource_label": "Meeting Room 0",
+              "max_people": 6000,
+              "reserve_date": "2024-11-04",
+              "slot_begin": "25:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2024-11-05",
+                "slot_begin": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london_retro",
+              "locality": "Paris",
+              "metric_temp": -3,
+              "conditions_brief": "Sunny snow showers",
+              "advice_level": "evacuate",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2024-03-16",
+              "end_date": "2024-03-12"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "vc_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_kitchen",
+              "operation": "schedule_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 70,
+                "color": "white",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-20",
+                "end_date": "2024-03-18"
+              },
+              "status": "pending_execution"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_0",
+                "resource_label": "Meeting Room 0",
+                "max_people": 6000,
+                "reserve_date": "2024-11-04",
+                "slot_begin": "25:00",
+                "room_name": "Meeting Room 0"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2024-11-05",
+                  "slot_begin": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "workplace_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "wp_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london_retro",
+                "locality": "Paris",
+                "metric_temp": -3,
+                "conditions_brief": "Sunny snow showers",
+                "advice_level": "evacuate",
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2024-03-16",
+                "end_date": "2024-03-12"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_london",
+                  "locality": "London",
+                  "metric_temp": 12,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "vc_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "device_id": "light_kitchen",
+                "operation": "schedule_smart_light",
+                "changes": {
+                  "power_state": "off",
+                  "brightness": 70,
+                  "color": "white",
+                  "created_at": "2024-03-15",
+                  "updated_at": "2024-03-10",
+                  "start_date": "2024-03-20",
+                  "end_date": "2024-03-18"
+                },
+                "status": "pending_execution"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "get_weather_visualcrossing",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "discover_smart_devices",
+          "build_device_config_request",
+          "set_power_state",
+          "update_device_config",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2024-11-05",
+              "item_id": "u_alice",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-11-05",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 8,
+              "date": "2024-11-05",
+              "start_time": "10:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_0",
+              "resource_label": "Meeting Room 1 - booking ends before it starts",
+              "max_people": 6000,
+              "reserve_date": "2024-11-06",
+              "slot_begin": "18:00",
+              "room_name": "Meeting Room 1 (updated 2024-11-04 before created 2024-11-06)"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2024-11-05",
+                "slot_begin": "10:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "temperature_celsius": 12,
+              "condition": "Rain"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "London"
+            },
+            "output": {
+              "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+              "locality": "Paris",
+              "metric_temp": -273,
+              "conditions_brief": "Sunny with heavy snow",
+              "advice_level": "evacuate"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_london",
+                "locality": "London",
+                "metric_temp": 12,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_bob",
+              "weather_ref": "vc_london",
+              "content": "London: Rain, 12C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_living_previous",
+              "operation": "schedule_power_revert",
+              "changes": {
+                "power_state": "on from 2024-03-15 until 2024-03-10"
+              },
+              "status": "completed before execution"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Meeting Readiness Summary",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ],
+              "user_id": "u_bob",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_bob",
+              "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Meeting Readiness Summary",
+              "tags": [
+                "meeting",
+                "office",
+                "readiness"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2024-11-05",
+                "item_id": "u_alice",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-11-05",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 8,
+                "date": "2024-11-05",
+                "start_time": "10:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_0",
+                "resource_label": "Meeting Room 1 - booking ends before it starts",
+                "max_people": 6000,
+                "reserve_date": "2024-11-06",
+                "slot_begin": "18:00",
+                "room_name": "Meeting Room 1 (updated 2024-11-04 before created 2024-11-06)"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2024-11-05",
+                  "slot_begin": "10:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "workplace_room_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "room_ref": "wp_meeting_room_1",
+                "content": "Room Meeting Room 1 available on 2024-11-05 at 10:00 for 20 seats"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "temperature_celsius": 12,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "London"
+              },
+              "output": {
+                "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+                "locality": "Paris",
+                "metric_temp": -273,
+                "conditions_brief": "Sunny with heavy snow",
+                "advice_level": "evacuate"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_london",
+                  "locality": "London",
+                  "metric_temp": 12,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_bob",
+                "weather_ref": "vc_london",
+                "content": "London: Rain, 12C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "light_living_previous",
+                "operation": "schedule_power_revert",
+                "changes": {
+                  "power_state": "on from 2024-03-15 until 2024-03-10"
+                },
+                "status": "completed before execution"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 70
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Meeting Readiness Summary",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ],
+                "user_id": "u_bob",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_bob",
+                "content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Meeting Readiness Summary",
+                "tags": [
+                  "meeting",
+                  "office",
+                  "readiness"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_office365_room_ticket_native",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native",
+      "get_workplace_room_pass_native",
+      "publish_office365_room_ticket_native",
+      "publish_visualcrossing_forecast_chip_native",
+      "publish_weatherapi_alert_card_native",
+      "publish_workplace_room_pass_native",
+      "set_light_state",
+      "set_power_state",
+      "update_device_config"
+    ],
+    "domains": [
+      "Office",
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s2",
+        "s4",
+        "s7"
+      ]
+    },
+    "corruption_type": "temporal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T06:37:48.409265+00:00",
+  "end_time": "2026-10-24T06:38:40.968210+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C4 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 4538,
+    "output_tokens": 3012,
+    "total_tokens": 7550
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check Alice’s availability for 2024-11-05, then find a meeting room for 8 attendees at 10:00 that day and send the room notice to Bob in the app using channel app and notify_user_id u_bob; the organizer is organizer_user_id u_alice. After that, check the weather in London, get the weather alert card, and publish that alert to Bob as a high-priority app notification with priority high. Then scan the living_room devices, prepare a brightness setting of 70 for the living room light using device_ref device_id light_living, and turn that light_state on to 70% brightness. Finally, create a document titled Meeting Readiness Summary with the content: “Room notice sent, weather notice published, and lighting configured for the upcoming meeting.” Include the tags meeting, office, and readiness, and send the notification to Bob in the app.",
+      "attendees": 8,
+      "brightness": 70,
+      "channel": "app",
+      "city": "London",
+      "device_location": "living_room",
+      "device_ref": {
+        "device_id": "light_living"
+      },
+      "document_content": "Room notice sent, weather notice published, and lighting configured for the upcoming meeting.",
+      "document_title": "Meeting Readiness Summary",
+      "light_state": "on",
+      "meeting_date": "2024-11-05",
+      "notify_user_id": "u_bob",
+      "organizer_user_id": "u_alice",
+      "priority": "high",
+      "start_time": "10:00",
+      "tags": [
+        "meeting",
+        "office",
+        "readiness"
+      ]
+    },
+    "task_description": "Please check Alice’s availability for November 5, 2024, then find a meeting room for at least 8 people at 10:00 that day and send the room notice to Bob in the app. After that, check the weather in London, get the weather alert card, and publish that alert to Bob as a high-priority app notification; then scan the living room devices, prepare a brightness setting for the living room light, and turn that light on to 70% brightness. Finally, create a document titled “Meeting Readiness Summary” saying that the room notice was sent, the weather notice was published, and the lighting was configured for the upcoming meeting, and send the notification to Bob in the app.",
+    "template_id": "C4_template_048",
+    "domains": [
+      "Office",
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_office365_room_ticket_native', 'get_weatherapi_alert_card_native', 'set_light_state', 'get_office365_room_ticket_native', 'get_weatherapi_alert_card_native', 'set_power_state', 'get_office365_room_ticket_native', 'get_visualcrossing_forecast_chip_native', 'set_light_state', 'get_office365_room_ticket_native', 'get_visualcrossing_forecast_chip_native', 'set_power_state', 'get_workplace_room_pass_native', 'get_weatherapi_alert_card_native', 'set_light_state', 'get_workplace_room_pass_native', 'get_weatherapi_alert_card_native', 'set_power_state', 'get_workplace_room_pass_native', 'get_visualcrossing_forecast_chip_native', 'set_light_state', 'get_workplace_room_pass_native', 'get_visualcrossing_forecast_chip_native', 'set_power_state'], but agent never invoked victim tool.",
+    "configured_count": 24,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_048_path_0_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_meeting_room_0",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 0,
+          "booking_day": "2024-11-06",
+          "slot_start": "18:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_0_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alert_card_id": "wapi_london_past",
+          "city_label": "Lnodon",
+          "celsius_now": -3,
+          "sky_text": "Sunny night rain",
+          "advice_level": "expired"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_0_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "on",
+            "brightness": 70,
+            "color": "white",
+            "start_date": "2024-03-15",
+            "end_date": "2024-03-10"
+          },
+          "status": "pending_before_creation"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_1_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_meeting_room_0",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 600,
+          "booking_day": "2024-11-06",
+          "slot_start": "18:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_1_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alert_card_id": "wapi_london_prev_2025",
+          "city_label": "London Yesterday",
+          "celsius_now": 0,
+          "sky_text": "Clear night",
+          "advice_level": "expired",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-16",
+          "end_date": "2024-03-14"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_1_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_previous",
+          "operation": "schedule_device_power",
+          "changes": {
+            "power_state": "on",
+            "start_date": "2024-03-16",
+            "end_date": "2024-03-14",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10"
+          },
+          "status": "pending_completed"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_2_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_meeting_room_0",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 0,
+          "booking_day": "2024-11-07",
+          "slot_start": "18:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_2_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+          "locality": "Paris",
+          "metric_temp": -273,
+          "conditions_brief": "Sunny with heavy snow",
+          "advice_level": "evacuate",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_2_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "UNKNOWN-ERR-517",
+          "operation": "rollback_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "scheduled"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_3_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_meeting_room_0",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": -6,
+          "booking_day": "2024-11-06",
+          "slot_start": "09:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_3_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "forecast_chip_ref": "vc_london_archived_future",
+          "locality": "London Yesterday",
+          "metric_temp": -273,
+          "conditions_brief": "Sunny night with continuous darkness",
+          "advice_level": "expired tomorrow"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_3_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_power_change",
+          "changes": {
+            "power_state": "off",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_room_notice_native_2to2:office365_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_4_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "wp_meeting_room_0_past",
+          "resource_label": "Meeting Room 1 - Ends Before It Starts",
+          "max_people": -6,
+          "reserve_date": "2024-11-10/2024-11-05",
+          "slot_begin": "18:00-09:00",
+          "room_name": "Meeting Room 1 (updated before created)"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_4_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alert_card_id": "wapi_london_rev_before_create",
+          "city_label": "London Yesterday Tomorrow",
+          "celsius_now": -3,
+          "sky_text": "Sunny at midnight before sunrise",
+          "advice_level": "expired",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_4_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "rollback_light_change",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "scheduled_before_creation"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_5_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "wp_meeting_room_0_past",
+          "resource_label": "Meeting Room 1 (ends before it starts)",
+          "max_people": 0,
+          "reserve_date": "2024-11-07",
+          "slot_begin": "18:00",
+          "room_name": "Meeting Room 1 - Yesterday Slot"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_5_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alert_card_id": "wapi_london_pastfuture",
+          "city_label": "London Yesterday",
+          "celsius_now": 0,
+          "sky_text": "Sunny at midnight with no sun",
+          "advice_level": "expired",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-20",
+          "end_date": "2024-03-18"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_5_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "schedule_device_power",
+          "changes": {
+            "power_state": "on",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_6_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "wp_meeting_room_0",
+          "resource_label": "Meeting Room 0",
+          "max_people": 6000,
+          "reserve_date": "2024-11-04",
+          "slot_begin": "25:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_6_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "forecast_chip_ref": "vc_london_retro",
+          "locality": "Paris",
+          "metric_temp": -3,
+          "conditions_brief": "Sunny snow showers",
+          "advice_level": "evacuate",
+          "created_at": "2024-03-15",
+          "updated_at": "2024-03-10",
+          "start_date": "2024-03-16",
+          "end_date": "2024-03-12"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_6_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_kitchen",
+          "operation": "schedule_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 70,
+            "color": "white",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2024-03-20",
+            "end_date": "2024-03-18"
+          },
+          "status": "pending_execution"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_7_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "wp_meeting_room_0",
+          "resource_label": "Meeting Room 1 - booking ends before it starts",
+          "max_people": 6000,
+          "reserve_date": "2024-11-06",
+          "slot_begin": "18:00",
+          "room_name": "Meeting Room 1 (updated 2024-11-04 before created 2024-11-06)"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_7_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "forecast_chip_ref": "vc_london_yesterday_tomorrow",
+          "locality": "Paris",
+          "metric_temp": -273,
+          "conditions_brief": "Sunny with heavy snow",
+          "advice_level": "evacuate"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      },
+      {
+        "config_id": "C4_task_048_path_7_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_previous",
+          "operation": "schedule_power_revert",
+          "changes": {
+            "power_state": "on from 2024-03-15 until 2024-03-10"
+          },
+          "status": "completed before execution"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_room_notice_native_2to2:workplace_room_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "arguments": {
+        "item_id": "u_alice",
+        "quantity": 1,
+        "start_date": "2024-11-05"
+      },
+      "result_sample": {
+        "user_id": "u_alice",
+        "query_date": "2024-11-05",
+        "free_slots": [],
+        "total_slots": 0
+      },
+      "status": "success",
+      "duration_ms": 0.43680297676473856,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:38:34.219000+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.069
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_google_calendar'",
+          "details": {
+            "arguments": [
+              "item_id",
+              "quantity",
+              "start_date"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_google_calendar' output",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:38:34.219235+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C4 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "build_device_config_request",
+        "create_document_and_alert",
+        "discover_smart_devices",
+        "get_office365_room_ticket_native",
+        "get_weather_visualcrossing",
+        "get_weatherapi_alert_card_native",
+        "publish_office365_room_ticket_native",
+        "publish_weatherapi_alert_card_native",
+        "set_light_state"
+      ],
+      "insufficient_calls": {
+        "get_office365_room_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_office365_room_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weather_visualcrossing": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "discover_smart_devices": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_device_config_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "set_light_state": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "get_weather_visualcrossing",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_light_state",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "get_weather_visualcrossing",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_power_state",
+              "update_device_config",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "get_weather_visualcrossing",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_light_state",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "get_weather_visualcrossing",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_power_state",
+              "update_device_config",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "get_weather_visualcrossing",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_light_state",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "get_weather_visualcrossing",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_power_state",
+              "update_device_config",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "get_weather_visualcrossing",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_light_state",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "get_weather_visualcrossing",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "discover_smart_devices",
+              "build_device_config_request",
+              "set_power_state",
+              "update_device_config",
+              "create_document_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_office365_room_ticket_native",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native",
+          "get_workplace_room_pass_native",
+          "publish_office365_room_ticket_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "publish_weatherapi_alert_card_native",
+          "publish_workplace_room_pass_native",
+          "set_light_state",
+          "set_power_state",
+          "update_device_config"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s2",
+            "s4",
+            "s7"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "query_availability_google_calendar"
+        ]
+      }
+    }
+  }
+}

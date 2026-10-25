@@ -1,0 +1,3737 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c4_full",
+  "task_id": "C4_task_100",
+  "mode": "P0",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_100",
+    "template_id": "C4_template_100",
+    "complexity": "C4",
+    "task_description": "Please look up Alice in the directory, check her availability for 2026-01-16, then find meeting rooms for 6 people starting at 09:00 that day. After that, shortlist the best option, prepare the reservation details, book that room for 09:00–10:00, then get a room ticket and email it to Alice with high priority, and finally back up `/projects/q1-planning` as `q1-planning-pre-meeting-backup`, alert her about it by email, and send that notification directly to Alice as well.",
+    "user_input": {
+      "query": "Please look up alice in the directory and check her availability for 2026-01-16. Then find meeting rooms for 6 attendees starting at 09:00 that day, shortlist the best option, prepare the reservation details, and book the room for 09:00–10:00 on 2026-01-16. After booking, get the room ticket and email it to alice with high priority. Also, please back up /projects/q1-planning as q1-planning-pre-meeting-backup, alert her about the backup by email, and send that notification directly to alice as well.",
+      "attendees": 6,
+      "backup_name": "q1-planning-pre-meeting-backup",
+      "contact_name": "alice",
+      "meeting_date": "2026-01-16",
+      "meeting_end_time": "10:00",
+      "meeting_start_time": "09:00",
+      "notice_channel": "email",
+      "notice_priority": "high",
+      "workspace_path": "/projects/q1-planning"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_google_calendar",
+          "get_meeting_rooms_office365",
+          "shortlist_meeting_rooms",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "snapshot_workspace_and_alert",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_notice_native_2to2:office365_room_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "shortlist_meeting_rooms",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ],
+                "selection_reason": "Most equipped room that still fits 6 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_1",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 20,
+              "booking_day": "2026-01-16",
+              "slot_start": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Notification sent successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_contact_info_directory": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_2_query_availability_google_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "step_3_get_meeting_rooms_office365": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "step_4_shortlist_meeting_rooms": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "step_5_build_shortlist_reservation_request": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "step_6_reserve_shortlisted_room": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "step_7_get_office365_room_ticket_native": {
+              "room_ticket_id": "o365_meeting_room_1",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 20,
+              "booking_day": "2026-01-16",
+              "slot_start": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "step_8_publish_office365_room_ticket_native": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "step_9_snapshot_workspace_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "step_10_push_alert_to_contact": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_google_calendar",
+          "get_meeting_rooms_office365",
+          "shortlist_meeting_rooms",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "snapshot_workspace_and_alert",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_notice_native_2to2:workplace_room_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "shortlist_meeting_rooms",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ],
+                "selection_reason": "Most equipped room that still fits 6 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Notification sent successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_contact_info_directory": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_2_query_availability_google_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "step_3_get_meeting_rooms_office365": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "step_4_shortlist_meeting_rooms": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "step_5_build_shortlist_reservation_request": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "step_6_reserve_shortlisted_room": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "step_7_get_workplace_room_pass_native": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "step_8_publish_workplace_room_pass_native": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "step_9_snapshot_workspace_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "step_10_push_alert_to_contact": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_outlook_calendar",
+          "get_meeting_rooms_office365",
+          "shortlist_meeting_rooms",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "snapshot_workspace_and_alert",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7a1",
+          "s7a2",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_notice_native_2to2:office365_room_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "shortlist_meeting_rooms",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ],
+                "selection_reason": "Most equipped room that still fits 6 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_1",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 20,
+              "booking_day": "2026-01-16",
+              "slot_start": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "publish_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Notification sent successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_contact_info_directory": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_2_query_availability_outlook_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "step_3_get_meeting_rooms_office365": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "step_4_shortlist_meeting_rooms": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "step_5_build_shortlist_reservation_request": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "step_6_reserve_shortlisted_room": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "step_7_get_office365_room_ticket_native": {
+              "room_ticket_id": "o365_meeting_room_1",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 20,
+              "booking_day": "2026-01-16",
+              "slot_start": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "step_8_publish_office365_room_ticket_native": {
+              "status": "published",
+              "strategy": "office365_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "o365_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "step_9_snapshot_workspace_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "step_10_push_alert_to_contact": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_contact_info_directory",
+          "query_availability_outlook_calendar",
+          "get_meeting_rooms_office365",
+          "shortlist_meeting_rooms",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "get_workplace_room_pass_native",
+          "publish_workplace_room_pass_native",
+          "snapshot_workspace_and_alert",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5",
+          "s6",
+          "s7b1",
+          "s7b2",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_notice_native_2to2:workplace_room_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_directory",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_meeting_rooms_office365",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "shortlist_meeting_rooms",
+            "arguments": {
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_shortlist_reservation_request",
+            "arguments": {
+              "shortlist_data": {
+                "room_name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ],
+                "selection_reason": "Most equipped room that still fits 6 attendees"
+              },
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "output": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_shortlisted_room",
+            "arguments": {
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "publish_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Notification sent successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_contact_info_directory": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_2_query_availability_outlook_calendar": {
+              "user_id": "u_alice",
+              "query_date": "2026-01-16",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "step_3_get_meeting_rooms_office365": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "step_4_shortlist_meeting_rooms": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees"
+            },
+            "step_5_build_shortlist_reservation_request": {
+              "room_name": "Conference Room A",
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6
+            },
+            "step_6_reserve_shortlisted_room": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Conference Room A",
+              "date": "2026-01-16",
+              "start_time": "09:00",
+              "end_time": "10:00",
+              "attendees": 6,
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 6 attendees",
+              "reservation_strategy": "shortlist_then_reserve"
+            },
+            "step_7_get_workplace_room_pass_native": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "step_8_publish_workplace_room_pass_native": {
+              "status": "published",
+              "strategy": "workplace_room_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "room_ref": "wp_meeting_room_1",
+              "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+            },
+            "step_9_snapshot_workspace_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/q1-planning",
+              "backup_name": "q1-planning-pre-meeting-backup",
+              "size_mb": 310,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "step_10_push_alert_to_contact": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Notification sent successfully",
+              "priority": "high",
+              "recipient_name": "Alice",
+              "status": "sent"
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_office365_room_ticket_native",
+      "get_workplace_room_pass_native",
+      "publish_office365_room_ticket_native",
+      "publish_workplace_room_pass_native",
+      "query_availability_google_calendar",
+      "query_availability_outlook_calendar"
+    ],
+    "domains": [
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T15:08:02.938367+00:00",
+  "end_time": "2026-10-24T15:09:38.375983+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['push_alert_to_contact']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 38666,
+    "output_tokens": 4893,
+    "total_tokens": 43559
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up alice in the directory and check her availability for 2026-01-16. Then find meeting rooms for 6 attendees starting at 09:00 that day, shortlist the best option, prepare the reservation details, and book the room for 09:00–10:00 on 2026-01-16. After booking, get the room ticket and email it to alice with high priority. Also, please back up /projects/q1-planning as q1-planning-pre-meeting-backup, alert her about the backup by email, and send that notification directly to alice as well.",
+      "attendees": 6,
+      "backup_name": "q1-planning-pre-meeting-backup",
+      "contact_name": "alice",
+      "meeting_date": "2026-01-16",
+      "meeting_end_time": "10:00",
+      "meeting_start_time": "09:00",
+      "notice_channel": "email",
+      "notice_priority": "high",
+      "workspace_path": "/projects/q1-planning"
+    },
+    "task_description": "Please look up Alice in the directory, check her availability for 2026-01-16, then find meeting rooms for 6 people starting at 09:00 that day. After that, shortlist the best option, prepare the reservation details, book that room for 09:00–10:00, then get a room ticket and email it to Alice with high priority, and finally back up `/projects/q1-planning` as `q1-planning-pre-meeting-backup`, alert her about it by email, and send that notification directly to Alice as well.",
+    "template_id": "C4_template_100",
+    "domains": [
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_contact_info_directory",
+      "tool_name": "get_contact_info_directory",
+      "arguments": {
+        "name": "alice"
+      },
+      "result_sample": {
+        "found": true,
+        "name": "Alice",
+        "email": "alice@company.com",
+        "phone": "+1-555-0101",
+        "department": "Engineering",
+        "user_id": "u_alice"
+      },
+      "status": "success",
+      "duration_ms": 0.41489198338240385,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:08:18.705731+00:00"
+    },
+    {
+      "call_id": "tc_2_2_query_availability_outlook_calendar",
+      "tool_name": "query_availability_outlook_calendar",
+      "arguments": {
+        "item_id": "u_alice",
+        "quantity": 1,
+        "start_date": "2026-01-16"
+      },
+      "result_sample": {
+        "user_id": "u_alice",
+        "query_date": "2026-01-16",
+        "free_slots": [],
+        "total_slots": 0
+      },
+      "status": "success",
+      "duration_ms": 0.4991659661754966,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:08:26.364142+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_meeting_rooms_office365",
+      "tool_name": "get_meeting_rooms_office365",
+      "arguments": {
+        "min_capacity": 6,
+        "start_time": "09:00",
+        "date": "2026-01-16"
+      },
+      "result_sample": {
+        "count": 4,
+        "rooms": [
+          {
+            "name": "Meeting Room 1",
+            "capacity": 20,
+            "equipment": [
+              "Whiteboard"
+            ]
+          },
+          {
+            "name": "Meeting Room 2",
+            "capacity": 30,
+            "equipment": [
+              "Projector"
+            ]
+          },
+          {
+            "name": "Conference Room A",
+            "capacity": 50,
+            "equipment": [
+              "Projector",
+              "Whiteboard"
+            ]
+          },
+          {
+            "name": "Conference Room B",
+            "capacity": 100,
+            "equipment": [
+              "TV Screen",
+              "Video Conference"
+            ]
+          }
+        ],
+        "filters_applied": {
+          "min_capacity": 6,
+          "date": "2026-01-16",
+          "start_time": "09:00"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.476449029520154,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:08:31.643501+00:00"
+    },
+    {
+      "call_id": "tc_4_4_shortlist_meeting_rooms",
+      "tool_name": "shortlist_meeting_rooms",
+      "arguments": {
+        "rooms": [
+          {
+            "capacity": 20,
+            "equipment": [
+              "Whiteboard"
+            ],
+            "name": "Meeting Room 1"
+          },
+          {
+            "capacity": 30,
+            "equipment": [
+              "Projector"
+            ],
+            "name": "Meeting Room 2"
+          },
+          {
+            "capacity": 50,
+            "equipment": [
+              "Projector",
+              "Whiteboard"
+            ],
+            "name": "Conference Room A"
+          },
+          {
+            "capacity": 100,
+            "equipment": [
+              "TV Screen",
+              "Video Conference"
+            ],
+            "name": "Conference Room B"
+          }
+        ],
+        "attendees": 6
+      },
+      "result_sample": {
+        "room_name": "Conference Room A",
+        "capacity": 50,
+        "equipment": [
+          "Projector",
+          "Whiteboard"
+        ],
+        "selection_reason": "Most equipped room that still fits 6 attendees"
+      },
+      "status": "success",
+      "duration_ms": 0.4426449304446578,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:08:39.719063+00:00"
+    },
+    {
+      "call_id": "tc_5_5_build_shortlist_reservation_request",
+      "tool_name": "build_shortlist_reservation_request",
+      "arguments": {
+        "date": "2026-01-16",
+        "end_time": "10:00",
+        "shortlist_data": {
+          "capacity": 50,
+          "equipment": [
+            "Projector",
+            "Whiteboard"
+          ],
+          "name": "Conference Room A",
+          "selection_reason": "Most equipped room that still fits 6 attendees"
+        },
+        "start_time": "09:00",
+        "attendees": 6
+      },
+      "result_sample": {
+        "error": "shortlist_data.room_name is required"
+      },
+      "status": "success",
+      "duration_ms": 0.2997650299221277,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:08:50.662306+00:00"
+    },
+    {
+      "call_id": "tc_6_6_build_shortlist_reservation_request",
+      "tool_name": "build_shortlist_reservation_request",
+      "arguments": {
+        "shortlist_data": {
+          "capacity": 50,
+          "equipment": [
+            "Projector",
+            "Whiteboard"
+          ],
+          "room_name": "Conference Room A",
+          "selection_reason": "Most equipped room that still fits 6 attendees"
+        },
+        "start_time": "09:00",
+        "attendees": 6,
+        "date": "2026-01-16",
+        "end_time": "10:00"
+      },
+      "result_sample": {
+        "room_name": "Conference Room A",
+        "selection_reason": "Most equipped room that still fits 6 attendees",
+        "date": "2026-01-16",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "attendees": 6
+      },
+      "status": "success",
+      "duration_ms": 0.5947329336777329,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:09:03.909963+00:00"
+    },
+    {
+      "call_id": "tc_7_7_reserve_shortlisted_room",
+      "tool_name": "reserve_shortlisted_room",
+      "arguments": {
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "attendees": 6,
+        "selection_reason": "Most equipped room that still fits 6 attendees",
+        "room_name": "Conference Room A",
+        "date": "2026-01-16"
+      },
+      "result_sample": {
+        "message": "Meeting room booked successfully",
+        "booking_id": "BK168D3",
+        "room_name": "Conference Room A",
+        "date": "2026-01-16",
+        "start_time": "09:00",
+        "end_time": "10:00",
+        "attendees": 6,
+        "capacity": 50,
+        "equipment": [
+          "Projector",
+          "Whiteboard"
+        ],
+        "selection_reason": "Most equipped room that still fits 6 attendees",
+        "reservation_strategy": "shortlist_then_reserve"
+      },
+      "status": "success",
+      "duration_ms": 0.54145697504282,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:09:15.305346+00:00"
+    },
+    {
+      "call_id": "tc_8_8_get_office365_room_ticket_native",
+      "tool_name": "get_office365_room_ticket_native",
+      "arguments": {
+        "date": "2026-01-16",
+        "min_capacity": 6,
+        "start_time": "09:00"
+      },
+      "result_sample": {
+        "room_ticket_id": "o365_meeting_room_1",
+        "room_name_token": "[REDACTED]",
+        "seat_limit": 20,
+        "booking_day": "2026-01-16",
+        "slot_start": "09:00",
+        "room_name": "Meeting Room 1"
+      },
+      "status": "success",
+      "duration_ms": 0.37963700015097857,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:09:22.956395+00:00"
+    },
+    {
+      "call_id": "tc_9_9_publish_office365_room_ticket_native",
+      "tool_name": "publish_office365_room_ticket_native",
+      "arguments": {
+        "message": "Your meeting room booking has been confirmed for 2026-01-16 at 09:00.",
+        "room_ticket": {
+          "booking_day": "2026-01-16",
+          "room_name": "Meeting Room 1",
+          "room_name_token": "[REDACTED]",
+          "room_ticket_id": "o365_meeting_room_1",
+          "seat_limit": 20,
+          "slot_start": "09:00"
+        },
+        "user_id": "alice",
+        "channel": "email",
+        "priority": "high"
+      },
+      "result_sample": {
+        "status": "published",
+        "strategy": "office365_room_notice_native",
+        "notification_id": "NOTIFEE84C",
+        "target_user": "alice",
+        "room_ref": "o365_meeting_room_1",
+        "content": "Room Meeting Room 1 available on 2026-01-16 at 09:00 for 20 seats"
+      },
+      "status": "success",
+      "duration_ms": 0.39816100616008043,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:09:30.769922+00:00"
+    },
+    {
+      "call_id": "tc_10_10_snapshot_workspace_and_alert",
+      "tool_name": "snapshot_workspace_and_alert",
+      "arguments": {
+        "user_id": "alice",
+        "workspace_path": "/user/alice/workspace",
+        "backup_name": "meeting_room_backup_20260116",
+        "channel": "email",
+        "priority": "high"
+      },
+      "result_sample": {
+        "message": "Notification sent successfully",
+        "notification_id": "NOTIFEE84C",
+        "user_id": "alice",
+        "content": "BACKUPA3B2C",
+        "priority": "high",
+        "backup_id": "BACKUPA3B2C",
+        "workspace_path": "/user/alice/workspace",
+        "backup_name": "meeting_room_backup_20260116",
+        "size_mb": 310,
+        "backup_status": "completed",
+        "backup_timestamp": "2024-12-08 12:00:00"
+      },
+      "status": "success",
+      "duration_ms": 0.716181006282568,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T15:09:35.273434+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_contact_info_directory",
+      "tool_name": "get_contact_info_directory",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "checked_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.048
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "compared_pairs": [
+              {
+                "arg_key": "name",
+                "res_key": "name",
+                "requested": "alice",
+                "returned": "Alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "VALID",
+          "reason": "State consistency preserved across 2 entity binding(s)",
+          "details": {
+            "tool_name": "get_contact_info_directory",
+            "checked_bindings": [
+              "user_id:alice",
+              "email:alice"
+            ]
+          },
+          "latency_ms": 0.039
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_contact_info_directory'",
+          "details": {
+            "tool_name": "get_contact_info_directory"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:08:18.705971+00:00"
+    },
+    {
+      "call_id": "tc_2_2_query_availability_outlook_calendar",
+      "tool_name": "query_availability_outlook_calendar",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_outlook_calendar'",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.111
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_outlook_calendar'",
+          "details": {
+            "arguments": [
+              "item_id",
+              "quantity",
+              "start_date"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.026
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_outlook_calendar' output",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_outlook_calendar'",
+          "details": {
+            "tool_name": "query_availability_outlook_calendar"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:08:26.364383+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_meeting_rooms_office365",
+      "tool_name": "get_meeting_rooms_office365",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365",
+            "verified_fields": [
+              "count",
+              "rooms",
+              "filters_applied"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.017
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365",
+            "checked_fields": [
+              "count",
+              "rooms",
+              "filters_applied"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365",
+            "verified_fields": [
+              "count",
+              "rooms",
+              "filters_applied"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_meeting_rooms_office365'",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_meeting_rooms_office365'",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365"
+          },
+          "latency_ms": 0.047
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_meeting_rooms_office365'",
+          "details": {
+            "arguments": [
+              "min_capacity",
+              "start_time",
+              "date"
+            ],
+            "output": [
+              "count",
+              "rooms",
+              "filters_applied"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_meeting_rooms_office365'",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365"
+          },
+          "latency_ms": 0.013
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_meeting_rooms_office365' output",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_meeting_rooms_office365'",
+          "details": {
+            "tool_name": "get_meeting_rooms_office365"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:08:31.643952+00:00"
+    },
+    {
+      "call_id": "tc_4_4_shortlist_meeting_rooms",
+      "tool_name": "shortlist_meeting_rooms",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms",
+            "verified_fields": [
+              "room_name",
+              "capacity",
+              "equipment",
+              "selection_reason"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms",
+            "checked_fields": [
+              "room_name",
+              "capacity",
+              "equipment",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms",
+            "verified_fields": [
+              "room_name",
+              "capacity",
+              "equipment",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'shortlist_meeting_rooms'",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'shortlist_meeting_rooms'",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'shortlist_meeting_rooms'",
+          "details": {
+            "arguments": [
+              "rooms",
+              "attendees"
+            ],
+            "output": [
+              "room_name",
+              "capacity",
+              "equipment",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'shortlist_meeting_rooms'",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'shortlist_meeting_rooms' output",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'shortlist_meeting_rooms'",
+          "details": {
+            "tool_name": "shortlist_meeting_rooms"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:08:39.719338+00:00"
+    },
+    {
+      "call_id": "tc_5_5_build_shortlist_reservation_request",
+      "tool_name": "build_shortlist_reservation_request",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.003
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.001
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "shortlist_data.room_name is required"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:08:50.662535+00:00"
+    },
+    {
+      "call_id": "tc_6_6_build_shortlist_reservation_request",
+      "tool_name": "build_shortlist_reservation_request",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request",
+            "verified_fields": [
+              "room_name",
+              "selection_reason",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request",
+            "checked_fields": [
+              "room_name",
+              "selection_reason",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request",
+            "verified_fields": [
+              "room_name",
+              "selection_reason",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_shortlist_reservation_request'",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 3 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request",
+            "checked_fields": [
+              "date",
+              "start_time",
+              "end_time"
+            ]
+          },
+          "latency_ms": 0.249
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'build_shortlist_reservation_request'",
+          "details": {
+            "arguments": [
+              "shortlist_data",
+              "start_time",
+              "attendees",
+              "date",
+              "end_time"
+            ],
+            "output": [
+              "room_name",
+              "selection_reason",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request",
+            "applied_rules": [
+              "CFR-002"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_shortlist_reservation_request' output",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_shortlist_reservation_request'",
+          "details": {
+            "tool_name": "build_shortlist_reservation_request"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:09:03.910218+00:00"
+    },
+    {
+      "call_id": "tc_7_7_reserve_shortlisted_room",
+      "tool_name": "reserve_shortlisted_room",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (11 fields verified)",
+          "details": {
+            "tool_name": "reserve_shortlisted_room",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "room_name",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees",
+              "capacity",
+              "equipment",
+              "selection_reason",
+              "reservation_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 11 checked output fields match expected types",
+          "details": {
+            "tool_name": "reserve_shortlisted_room",
+            "checked_fields": [
+              "message",
+              "booking_id",
+              "room_name",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees",
+              "capacity",
+              "equipment",
+              "selection_reason",
+              "reservation_strategy"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 11 required fields present and non-null",
+          "details": {
+            "tool_name": "reserve_shortlisted_room",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "room_name",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees",
+              "capacity",
+              "equipment",
+              "selection_reason",
+              "reservation_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'reserve_shortlisted_room'",
+          "details": {
+            "tool_name": "reserve_shortlisted_room"
+          },
+          "latency_ms": 0.016
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 3 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "reserve_shortlisted_room",
+            "checked_fields": [
+              "date",
+              "start_time",
+              "end_time"
+            ]
+          },
+          "latency_ms": 0.21
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'reserve_shortlisted_room'",
+          "details": {
+            "arguments": [
+              "start_time",
+              "end_time",
+              "attendees",
+              "selection_reason",
+              "room_name",
+              "date"
+            ],
+            "output": [
+              "message",
+              "booking_id",
+              "room_name",
+              "date",
+              "start_time",
+              "end_time",
+              "attendees",
+              "capacity",
+              "equipment",
+              "selection_reason",
+              "reservation_strategy"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "reserve_shortlisted_room",
+            "applied_rules": [
+              "CFR-002"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'reserve_shortlisted_room' output",
+          "details": {
+            "tool_name": "reserve_shortlisted_room"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'reserve_shortlisted_room'",
+          "details": {
+            "tool_name": "reserve_shortlisted_room"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:09:15.305624+00:00"
+    },
+    {
+      "call_id": "tc_8_8_get_office365_room_ticket_native",
+      "tool_name": "get_office365_room_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native",
+            "verified_fields": [
+              "room_ticket_id",
+              "room_name_token",
+              "seat_limit",
+              "booking_day",
+              "slot_start",
+              "room_name"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native",
+            "checked_fields": [
+              "room_ticket_id",
+              "room_name_token",
+              "seat_limit",
+              "booking_day",
+              "slot_start",
+              "room_name"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native",
+            "verified_fields": [
+              "room_ticket_id",
+              "room_name_token",
+              "seat_limit",
+              "booking_day",
+              "slot_start",
+              "room_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_office365_room_ticket_native'",
+          "details": {
+            "arguments": [
+              "date",
+              "min_capacity",
+              "start_time"
+            ],
+            "output": [
+              "room_ticket_id",
+              "room_name_token",
+              "seat_limit",
+              "booking_day",
+              "slot_start",
+              "room_name"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_office365_room_ticket_native' output",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "get_office365_room_ticket_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:09:22.956623+00:00"
+    },
+    {
+      "call_id": "tc_9_9_publish_office365_room_ticket_native",
+      "tool_name": "publish_office365_room_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "room_ref",
+              "content"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "room_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "room_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'publish_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'publish_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'publish_office365_room_ticket_native'",
+          "details": {
+            "arguments": [
+              "message",
+              "room_ticket",
+              "user_id",
+              "channel",
+              "priority"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "room_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'publish_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'publish_office365_room_ticket_native' output",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'publish_office365_room_ticket_native'",
+          "details": {
+            "tool_name": "publish_office365_room_ticket_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:09:30.770182+00:00"
+    },
+    {
+      "call_id": "tc_10_10_snapshot_workspace_and_alert",
+      "tool_name": "snapshot_workspace_and_alert",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (11 fields verified)",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.018
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 11 checked output fields match expected types",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.019
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 11 required fields present and non-null",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.026
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "checked_fields": [
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.247
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "alice",
+                "returned": "alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'snapshot_workspace_and_alert' output",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.019
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T15:09:35.273905+00:00"
+    }
+  ],
+  "diagnoses": [
+    {
+      "tool_name": "build_shortlist_reservation_request",
+      "category": "external_service_error",
+      "persistence": "transient",
+      "root_cause": "Tool runtime exception: shortlist_data.room_name is required",
+      "severity": "HIGH",
+      "recommended_action": "retry",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "build_shortlist_reservation_request",
+          "execution_id": "39b2f5e3-dea7-47f0-be38-e9e9e54fe3c4",
+          "task_id": "task_0",
+          "step": 5,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.002
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "shortlist_data.room_name is required"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.03,
+          "timestamp": "2026-10-24T15:08:50.662847+00:00"
+        },
+        "raw_error": {
+          "error": "shortlist_data.room_name is required"
+        }
+      },
+      "timestamp": "2026-10-24T15:08:50.662981+00:00"
+    }
+  ],
+  "recovery_events": [
+    {
+      "failed_tool": "build_shortlist_reservation_request",
+      "action": "retry",
+      "suggested_tool": "build_shortlist_reservation_request",
+      "remaining_budget": 5,
+      "loop_warning": null,
+      "rationale": "Transient failure detected on 'build_shortlist_reservation_request'. Budget allows retry.",
+      "timestamp": "2026-10-24T15:08:50.663366+00:00"
+    }
+  ],
+  "dag_decisions": [
+    {
+      "failed_tool": "build_shortlist_reservation_request",
+      "candidate_tools": [
+        "build_shortlist_reservation_request"
+      ],
+      "selected_tool": "build_shortlist_reservation_request",
+      "is_viable": true,
+      "reason": "Transient failure detected on 'build_shortlist_reservation_request'. Budget allows retry.",
+      "target_path": null,
+      "timestamp": "2026-10-24T15:08:50.663469+00:00"
+    }
+  ],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['push_alert_to_contact']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "push_alert_to_contact"
+      ],
+      "insufficient_calls": {
+        "push_alert_to_contact": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_google_calendar",
+              "get_meeting_rooms_office365",
+              "shortlist_meeting_rooms",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "snapshot_workspace_and_alert",
+              "push_alert_to_contact"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_google_calendar",
+              "get_meeting_rooms_office365",
+              "shortlist_meeting_rooms",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "snapshot_workspace_and_alert",
+              "push_alert_to_contact"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_outlook_calendar",
+              "get_meeting_rooms_office365",
+              "shortlist_meeting_rooms",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "get_office365_room_ticket_native",
+              "publish_office365_room_ticket_native",
+              "snapshot_workspace_and_alert",
+              "push_alert_to_contact"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_contact_info_directory",
+              "query_availability_outlook_calendar",
+              "get_meeting_rooms_office365",
+              "shortlist_meeting_rooms",
+              "build_shortlist_reservation_request",
+              "reserve_shortlisted_room",
+              "get_workplace_room_pass_native",
+              "publish_workplace_room_pass_native",
+              "snapshot_workspace_and_alert",
+              "push_alert_to_contact"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_office365_room_ticket_native",
+          "get_workplace_room_pass_native",
+          "publish_office365_room_ticket_native",
+          "publish_workplace_room_pass_native",
+          "query_availability_google_calendar",
+          "query_availability_outlook_calendar"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_contact_info_directory",
+          "query_availability_outlook_calendar",
+          "get_meeting_rooms_office365",
+          "shortlist_meeting_rooms",
+          "build_shortlist_reservation_request",
+          "build_shortlist_reservation_request",
+          "reserve_shortlisted_room",
+          "get_office365_room_ticket_native",
+          "publish_office365_room_ticket_native",
+          "snapshot_workspace_and_alert"
+        ]
+      }
+    }
+  }
+}

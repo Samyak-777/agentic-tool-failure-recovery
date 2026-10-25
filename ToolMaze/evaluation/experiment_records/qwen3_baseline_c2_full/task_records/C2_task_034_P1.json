@@ -1,0 +1,922 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c2_full",
+  "task_id": "C2_task_034",
+  "mode": "P1",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_034",
+    "template_id": "C2_template_034",
+    "complexity": "C2",
+    "task_description": "Please check whether Alice is available starting on 2025-07-01, then look up the status of flight CA1234 and book John Doe on that flight in economy. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and then send Alice an instant message saying the hotel was booked successfully.",
+    "user_input": {
+      "query": "Please check whether Alice is available starting on 2025-07-01 using calendar user ID u_alice. Then look up the status of flight CA1234 for travel_date 2025-07-01 and book John Doe on that flight in economy, with quantity 2. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, with room_type standard and quantity 2. Once the hotel booking is confirmed, send Alice an instant message letting her know the hotel was booked successfully.",
+      "calendar_user_id": "u_alice",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "flight_number": "CA1234",
+      "hotel_name": "Grand Hyatt",
+      "passenger_name": "John Doe",
+      "quantity": 2,
+      "room_type": "standard",
+      "seat_class": "economy",
+      "travel_date": "2025-07-01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_flight_info_aviationstack",
+          "book_flight",
+          "book_hotel",
+          "send_instant_message"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_info_provider_pair:aviationstack"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2025-07-01",
+              "item_id": "u_alice",
+              "quantity": 2
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2025-07-01",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info_aviationstack",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Service Temporarily Unavailable"
+            },
+            "status": "error",
+            "error_message": "503 ServiceUnavailable",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info_aviationstack",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_alice",
+              "message": "Hotel booked successfully"
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_alice",
+              "message_preview": "Hotel booked successfully"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2025-07-01",
+                "item_id": "u_alice",
+                "quantity": 2
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2025-07-01",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_aviationstack",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Service Temporarily Unavailable"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_flight_info_aviationstack",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Grand Hyatt",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "guest_name": "John Doe",
+                "room_type": "standard"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Grand Hyatt",
+                "guest_name": "John Doe",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "room_type": "standard",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "send_instant_message",
+              "arguments": {
+                "user_id": "u_alice",
+                "message": "Hotel booked successfully"
+              },
+              "output": {
+                "status": "sent",
+                "channel": "IM (Teams/Slack)",
+                "recipient_id": "u_alice",
+                "message_preview": "Hotel booked successfully"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_availability_google_calendar",
+          "get_flight_info_flightaware",
+          "book_flight",
+          "book_hotel",
+          "send_instant_message"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_info_provider_pair:flightaware"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "start_date": "2025-07-01",
+              "item_id": "u_alice",
+              "quantity": 2
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2025-07-01",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Bad Gateway"
+            },
+            "status": "error",
+            "error_message": "502 BadGateway",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "send_instant_message",
+            "arguments": {
+              "user_id": "u_alice",
+              "message": "Hotel booked successfully"
+            },
+            "output": {
+              "status": "sent",
+              "channel": "IM (Teams/Slack)",
+              "recipient_id": "u_alice",
+              "message_preview": "Hotel booked successfully"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "start_date": "2025-07-01",
+                "item_id": "u_alice",
+                "quantity": 2
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2025-07-01",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_flightaware",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Bad Gateway"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_flight_info_flightaware",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Grand Hyatt",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "guest_name": "John Doe",
+                "room_type": "standard"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Grand Hyatt",
+                "guest_name": "John Doe",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "room_type": "standard",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "send_instant_message",
+              "arguments": {
+                "user_id": "u_alice",
+                "message": "Hotel booked successfully"
+              },
+              "output": {
+                "status": "sent",
+                "channel": "IM (Teams/Slack)",
+                "recipient_id": "u_alice",
+                "message_preview": "Hotel booked successfully"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_flight_info_aviationstack",
+      "get_flight_info_flightaware"
+    ],
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 1
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T14:24:22.788733+00:00",
+  "end_time": "2026-10-23T14:25:29.469935+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: missing shared tools: ['book_flight', 'book_hotel', 'send_instant_message']; 'get_flight_info_flightaware' failed but agent neither retried (calls=1) nor switched to alt tool",
+  "failed_tools": [
+    "get_flight_info_flightaware"
+  ],
+  "tokens": {
+    "input_tokens": 7736,
+    "output_tokens": 4188,
+    "total_tokens": 11924
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether Alice is available starting on 2025-07-01 using calendar user ID u_alice. Then look up the status of flight CA1234 for travel_date 2025-07-01 and book John Doe on that flight in economy, with quantity 2. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, with room_type standard and quantity 2. Once the hotel booking is confirmed, send Alice an instant message letting her know the hotel was booked successfully.",
+      "calendar_user_id": "u_alice",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "flight_number": "CA1234",
+      "hotel_name": "Grand Hyatt",
+      "passenger_name": "John Doe",
+      "quantity": 2,
+      "room_type": "standard",
+      "seat_class": "economy",
+      "travel_date": "2025-07-01"
+    },
+    "task_description": "Please check whether Alice is available starting on 2025-07-01, then look up the status of flight CA1234 and book John Doe on that flight in economy. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and then send Alice an instant message saying the hotel was booked successfully.",
+    "template_id": "C2_template_034",
+    "domains": [
+      "Office",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_flight_info_flightaware'], matching recorded execution failure in tools ['get_flight_info_flightaware'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_034_path_0_get_flight_info_aviationstack",
+        "target_tool": "get_flight_info_aviationstack",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Temporarily Unavailable"
+        },
+        "error_message": "503 ServiceUnavailable",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_info_provider_pair:aviationstack"
+        ]
+      },
+      {
+        "config_id": "C2_task_034_path_1_get_flight_info_flightaware",
+        "target_tool": "get_flight_info_flightaware",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Bad Gateway"
+        },
+        "error_message": "502 BadGateway",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_info_provider_pair:flightaware"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_flight_info_flightaware",
+        "tool_name": "get_flight_info_flightaware",
+        "step": 2,
+        "timestamp": "2026-10-23T14:25:26.208469+00:00",
+        "config_id": "C2_task_034_path_1_get_flight_info_flightaware",
+        "configured_mode": "P1",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "flight_number": "CA1234"
+        },
+        "modified_output_sample": {
+          "error": "Bad Gateway"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "arguments": {
+        "quantity": 1,
+        "start_date": "2025-07-01",
+        "item_id": "u_alice"
+      },
+      "result_sample": {
+        "user_id": "u_alice",
+        "query_date": "2025-07-01",
+        "free_slots": [],
+        "total_slots": 0
+      },
+      "status": "success",
+      "duration_ms": 0.3851429792121053,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T14:25:03.777255+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "error": "Bad Gateway"
+      },
+      "status": "error",
+      "duration_ms": 0.23330096155405045,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T14:25:26.208469+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.01
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.065
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_google_calendar'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "start_date",
+              "item_id"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_google_calendar' output",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T14:25:03.777481+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Bad Gateway"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T14:25:26.208793+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: missing shared tools: ['book_flight', 'book_hotel', 'send_instant_message']; 'get_flight_info_flightaware' failed but agent neither retried (calls=1) nor switched to alt tool",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_flight_info_flightaware",
+      "missing_tools": [
+        "book_flight",
+        "book_hotel",
+        "get_flight_info_aviationstack",
+        "send_instant_message"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_flight_info_aviationstack",
+              "book_flight",
+              "book_hotel",
+              "send_instant_message"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_availability_google_calendar",
+              "get_flight_info_flightaware",
+              "book_flight",
+              "book_hotel",
+              "send_instant_message"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_flight_info_aviationstack",
+          "get_flight_info_flightaware"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_availability_google_calendar",
+          "get_flight_info_flightaware"
+        ]
+      }
+    }
+  }
+}

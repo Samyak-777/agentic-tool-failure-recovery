@@ -1,0 +1,543 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c2_full",
+  "task_id": "C2_task_014",
+  "mode": "P0",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_014",
+    "template_id": "C2_template_014",
+    "complexity": "C2",
+    "task_description": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my Paris trip in Celsius, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and after that check the status of my checking account and send me a Trip Summary balance alert in USD through the app.",
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my trip to Paris using Celsius. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Once that’s done, check the status of my checking account for user_001 and send me a Trip Summary balance alert in USD through the app.",
+      "account_type": "checking",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Grand Hyatt",
+      "room_type": "standard",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info_flightaware",
+          "build_weather_brief_payload",
+          "book_hotel",
+          "get_account_balance",
+          "create_balance_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_account_balance_default_broker_api:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "Paris",
+              "to_unit": "celsius",
+              "title": "Trip Summary",
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "create_balance_report_and_alert",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_flight_info_flightaware": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "step_2_build_weather_brief_payload": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_account_balance": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "step_5_create_balance_report_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info_flightaware",
+          "build_weather_brief_payload",
+          "book_hotel",
+          "get_account_balance_broker_api",
+          "create_balance_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_account_balance_default_broker_api:broker_api"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "Paris",
+              "to_unit": "celsius",
+              "title": "Trip Summary",
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "create_balance_report_and_alert",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_flight_info_flightaware": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "step_2_build_weather_brief_payload": {
+              "title": "Trip Summary",
+              "content": "City: Paris\nCondition: Cloudy\nTemperature (C): 18\nTemperature (C): 18.0",
+              "tags": [
+                "weather",
+                "paris"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "city": "Paris",
+              "converted_unit": "celsius"
+            },
+            "step_3_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "step_4_get_account_balance_broker_api": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "balance": 28495,
+              "currency": "USD",
+              "status": "active"
+            },
+            "step_5_create_balance_report_and_alert": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "workflow": "balance_text_report"
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_account_balance",
+      "get_account_balance_broker_api"
+    ],
+    "domains": [
+      "Travel",
+      "Financial"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T11:32:01.404327+00:00",
+  "end_time": "2026-10-24T11:33:41.923338+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['book_hotel', 'build_weather_brief_payload', 'create_balance_report_and_alert', 'get_account_balance', 'get_flight_info_flightaware']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my trip to Paris using Celsius. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Once that’s done, check the status of my checking account for user_001 and send me a Trip Summary balance alert in USD through the app.",
+      "account_type": "checking",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "destination_city": "Paris",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Grand Hyatt",
+      "room_type": "standard",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, then prepare a Trip Summary for my Paris trip in Celsius, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and after that check the status of my checking account and send me a Trip Summary balance alert in USD through the app.",
+    "template_id": "C2_template_014",
+    "domains": [
+      "Travel",
+      "Financial"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['book_hotel', 'build_weather_brief_payload', 'create_balance_report_and_alert', 'get_account_balance', 'get_flight_info_flightaware']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "book_hotel",
+        "build_weather_brief_payload",
+        "create_balance_report_and_alert",
+        "get_account_balance",
+        "get_flight_info_flightaware"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info_flightaware",
+              "build_weather_brief_payload",
+              "book_hotel",
+              "get_account_balance",
+              "create_balance_report_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info_flightaware",
+              "build_weather_brief_payload",
+              "book_hotel",
+              "get_account_balance_broker_api",
+              "create_balance_report_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_account_balance",
+          "get_account_balance_broker_api"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

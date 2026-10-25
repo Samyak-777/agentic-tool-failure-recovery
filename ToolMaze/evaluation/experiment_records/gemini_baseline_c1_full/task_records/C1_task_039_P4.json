@@ -1,0 +1,501 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_039",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_039",
+    "template_id": "C1_template_039",
+    "complexity": "C1",
+    "task_description": "Please look up Alice’s contact info, then find meeting rooms available on 2025-06-01 at 09:00 for 5 people, shortlist the best options, choose the most suitable one, and prepare a booking request for 09:00–10:00. After that, schedule a “Q2 Planning” meeting with Alice and then turn on the living room light to warm white at 75% brightness.",
+    "user_input": {
+      "query": "Please look up the contact info for alice, then find meeting rooms available on 2025-06-01 at 09:00 for 5 attendees. Shortlist the best options, pick the most suitable room, and prepare a booking request for 09:00–10:00. After that, schedule a meeting titled “Q2 Planning” with alice for that same time. Finally, turn on the living room light with ID light_living to warm_white at 75% brightness.",
+      "attendees": 5,
+      "brightness": 75,
+      "contact_name": "alice",
+      "date": "2025-06-01",
+      "end_time": "10:00",
+      "light_color": "warm_white",
+      "light_id": "light_living",
+      "meeting_title": "Q2 Planning",
+      "start_time": "09:00"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_contact_info_hris",
+        "arguments": {
+          "name": "alice"
+        },
+        "output": {
+          "found": true,
+          "name": "Alice",
+          "email": "alice@company.com",
+          "phone": "+1-555-0101",
+          "department": "Engineering",
+          "user_id": "u_alice"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "get_meeting_rooms_workplace",
+        "arguments": {
+          "min_capacity": 5,
+          "date": "2025-06-01",
+          "start_time": "09:00"
+        },
+        "output": {
+          "count": 4,
+          "rooms": [
+            {
+              "name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ]
+            },
+            {
+              "name": "Meeting Room 2",
+              "capacity": 30,
+              "equipment": [
+                "Projector"
+              ]
+            },
+            {
+              "name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ]
+            },
+            {
+              "name": "Conference Room B",
+              "capacity": 100,
+              "equipment": [
+                "TV Screen",
+                "Video Conference"
+              ]
+            }
+          ],
+          "filters_applied": {
+            "min_capacity": 5,
+            "date": "2025-06-01",
+            "start_time": "09:00"
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "shortlist_meeting_rooms",
+        "arguments": {
+          "rooms": [
+            {
+              "name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ]
+            },
+            {
+              "name": "Meeting Room 2",
+              "capacity": 30,
+              "equipment": [
+                "Projector"
+              ]
+            },
+            {
+              "name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ]
+            },
+            {
+              "name": "Conference Room B",
+              "capacity": 100,
+              "equipment": [
+                "TV Screen",
+                "Video Conference"
+              ]
+            }
+          ],
+          "attendees": 5
+        },
+        "output": {
+          "room_name": "Conference Room A",
+          "capacity": 50,
+          "equipment": [
+            "Projector",
+            "Whiteboard"
+          ],
+          "selection_reason": "Most equipped room that still fits 5 attendees"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "build_room_booking_request",
+        "arguments": {
+          "selection_data": {
+            "room_name": "Conference Room A",
+            "capacity": 50,
+            "equipment": [
+              "Projector",
+              "Whiteboard"
+            ],
+            "selection_reason": "Most equipped room that still fits 5 attendees"
+          },
+          "date": "2025-06-01",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "attendees": 5
+        },
+        "output": {
+          "room_name": "Conference Room A",
+          "date": "2025-06-01",
+          "start_time": "18:00",
+          "end_time": "17:00",
+          "attendees": -5,
+          "selection_reason": "Most equipped room that still fits 5 attendees"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "schedule_meeting",
+        "arguments": {
+          "title": "Q2 Planning",
+          "participants": [
+            null
+          ],
+          "start_time": "09:00",
+          "end_time": "10:00"
+        },
+        "output": {
+          "status": "meeting scheduled",
+          "message": "Meeting scheduled successfully and invitations sent",
+          "meeting_id": "MTG-5A3B2C1D",
+          "title": "Q2 Planning",
+          "participants": [
+            null
+          ],
+          "participant_count": 1,
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "invitation_status": "sent"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 6,
+        "tool_name": "set_light_state",
+        "arguments": {
+          "device_id": "light_living",
+          "state": "on",
+          "brightness": 75,
+          "color": "warm_white"
+        },
+        "output": {
+          "device_id": "light_living",
+          "operation": "control_smart_light",
+          "changes": {
+            "power_state": "on",
+            "brightness": 75,
+            "color": "warm_white"
+          },
+          "status": "executed"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_contact_info_hris",
+          "arguments": {
+            "name": "alice"
+          },
+          "output": {
+            "found": true,
+            "name": "Alice",
+            "email": "alice@company.com",
+            "phone": "+1-555-0101",
+            "department": "Engineering",
+            "user_id": "u_alice"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_meeting_rooms_workplace",
+          "arguments": {
+            "min_capacity": 5,
+            "date": "2025-06-01",
+            "start_time": "09:00"
+          },
+          "output": {
+            "count": 4,
+            "rooms": [
+              {
+                "name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ]
+              },
+              {
+                "name": "Meeting Room 2",
+                "capacity": 30,
+                "equipment": [
+                  "Projector"
+                ]
+              },
+              {
+                "name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ]
+              },
+              {
+                "name": "Conference Room B",
+                "capacity": 100,
+                "equipment": [
+                  "TV Screen",
+                  "Video Conference"
+                ]
+              }
+            ],
+            "filters_applied": {
+              "min_capacity": 5,
+              "date": "2025-06-01",
+              "start_time": "09:00"
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "shortlist_meeting_rooms",
+          "arguments": {
+            "rooms": [
+              {
+                "name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ]
+              },
+              {
+                "name": "Meeting Room 2",
+                "capacity": 30,
+                "equipment": [
+                  "Projector"
+                ]
+              },
+              {
+                "name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ]
+              },
+              {
+                "name": "Conference Room B",
+                "capacity": 100,
+                "equipment": [
+                  "TV Screen",
+                  "Video Conference"
+                ]
+              }
+            ],
+            "attendees": 5
+          },
+          "output": {
+            "room_name": "Conference Room A",
+            "capacity": 50,
+            "equipment": [
+              "Projector",
+              "Whiteboard"
+            ],
+            "selection_reason": "Most equipped room that still fits 5 attendees"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_room_booking_request",
+          "arguments": {
+            "selection_data": {
+              "room_name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "selection_reason": "Most equipped room that still fits 5 attendees"
+            },
+            "date": "2025-06-01",
+            "start_time": "09:00",
+            "end_time": "10:00",
+            "attendees": 5
+          },
+          "output": {
+            "room_name": "Conference Room A",
+            "date": "2025-06-01",
+            "start_time": "18:00",
+            "end_time": "17:00",
+            "attendees": -5,
+            "selection_reason": "Most equipped room that still fits 5 attendees"
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "set_light_state",
+          "arguments": {
+            "device_id": "light_living",
+            "state": "on",
+            "brightness": 75,
+            "color": "warm_white"
+          },
+          "output": {
+            "device_id": "light_living",
+            "operation": "control_smart_light",
+            "changes": {
+              "power_state": "on",
+              "brightness": 75,
+              "color": "warm_white"
+            },
+            "status": "executed"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Office",
+      "IoT"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "fact_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-23T23:02:49.552283+00:00",
+  "end_time": "2026-10-23T23:04:29.438805+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: 'build_room_booking_request' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up the contact info for alice, then find meeting rooms available on 2025-06-01 at 09:00 for 5 attendees. Shortlist the best options, pick the most suitable room, and prepare a booking request for 09:00–10:00. After that, schedule a meeting titled “Q2 Planning” with alice for that same time. Finally, turn on the living room light with ID light_living to warm_white at 75% brightness.",
+      "attendees": 5,
+      "brightness": 75,
+      "contact_name": "alice",
+      "date": "2025-06-01",
+      "end_time": "10:00",
+      "light_color": "warm_white",
+      "light_id": "light_living",
+      "meeting_title": "Q2 Planning",
+      "start_time": "09:00"
+    },
+    "task_description": "Please look up Alice’s contact info, then find meeting rooms available on 2025-06-01 at 09:00 for 5 people, shortlist the best options, choose the most suitable one, and prepare a booking request for 09:00–10:00. After that, schedule a “Q2 Planning” meeting with Alice and then turn on the living room light to warm white at 75% brightness.",
+    "template_id": "C1_template_039",
+    "domains": [
+      "Office",
+      "IoT"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['build_room_booking_request'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_039_step_4_build_room_booking_request",
+        "target_tool": "build_room_booking_request",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_name": "Conference Room A",
+          "date": "2025-06-01",
+          "start_time": "18:00",
+          "end_time": "17:00",
+          "attendees": -5,
+          "selection_reason": "Most equipped room that still fits 5 attendees"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: 'build_room_booking_request' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "build_room_booking_request",
+      "missing_tools": [
+        "shortlist_meeting_rooms",
+        "build_room_booking_request",
+        "get_meeting_rooms_workplace",
+        "get_contact_info_hris"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_contact_info_hris",
+          "get_meeting_rooms_workplace",
+          "shortlist_meeting_rooms",
+          "build_room_booking_request",
+          "schedule_meeting",
+          "set_light_state"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

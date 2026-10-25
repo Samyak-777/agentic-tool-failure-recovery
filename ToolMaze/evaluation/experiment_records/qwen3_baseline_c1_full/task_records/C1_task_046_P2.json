@@ -1,0 +1,1070 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c1_full",
+  "task_id": "C1_task_046",
+  "mode": "P2",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_046",
+    "template_id": "C1_template_046",
+    "complexity": "C1",
+    "task_description": "Please check which devices are connected in the living room, then diagnose whether any of them are offline, and after that identify the smart light there. Then restart the living room device, and finally save a note titled “Trip Summary” summarizing the living room area, total devices, issues found, the smart light target, and the restart status/message.",
+    "user_input": {
+      "query": "Please check which devices are connected in the living_room, see whether any of them are offline, and identify the smart_light there. Then restart the living_room device, and after that save a note titled “Trip Summary” that summarizes the living_room area, the total number of devices, any offline issues found, the smart_light target, and the restart status or message. Please also include the tags finance and travel in that note.",
+      "area": "living_room",
+      "device_type": "smart_light",
+      "status_criteria": "offline",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "query_connected_devices",
+        "arguments": {
+          "area": "living_room"
+        },
+        "output": {
+          "found": true,
+          "area_name": "living_room",
+          "total_items": 4,
+          "items": [
+            "lock_main",
+            "light_living",
+            "ac_living",
+            "tv_living"
+          ]
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "diagnose_device_health",
+        "arguments": {
+          "devices_data": [
+            "lock_main",
+            "light_living",
+            "ac_living",
+            "tv_living"
+          ],
+          "status_criteria": "offline"
+        },
+        "output": {
+          "count": 0,
+          "status_criteria": "offline",
+          "abnormal_devices": []
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "resolve_connected_device_by_type",
+        "arguments": {
+          "connected_data": {
+            "found": true,
+            "area_name": "living_room",
+            "total_items": 4,
+            "items": [
+              "lock_main",
+              "light_living",
+              "ac_living",
+              "tv_living"
+            ]
+          },
+          "device_type": "smart_light"
+        },
+        "output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "status": "error",
+        "error_message": "451 UnavailableForLegalReasons",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "restart_device",
+        "arguments": {
+          "device_id": "living_room"
+        },
+        "output": {
+          "device_id": "living_room",
+          "status": "rebooting",
+          "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+          "timestamp": "2026-02-22T23:04:54.104641"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "create_document",
+        "arguments": {
+          "title": "Trip Summary",
+          "content": "Area: living_room, Total devices: 4, Issues found: 0, Target type: smart_light, Restarted device id: living_room, Restart status: rebooting, Message: Device is restarting. Please wait 30 seconds before reconnecting.",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "output": {
+          "message": "Note saved successfully",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "content_length": 215,
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "query_connected_devices",
+          "arguments": {
+            "area": "living_room"
+          },
+          "output": {
+            "found": true,
+            "area_name": "living_room",
+            "total_items": 4,
+            "items": [
+              "lock_main",
+              "light_living",
+              "ac_living",
+              "tv_living"
+            ]
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "diagnose_device_health",
+          "arguments": {
+            "devices_data": [
+              "lock_main",
+              "light_living",
+              "ac_living",
+              "tv_living"
+            ],
+            "status_criteria": "offline"
+          },
+          "output": {
+            "count": 0,
+            "status_criteria": "offline",
+            "abnormal_devices": []
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "resolve_connected_device_by_type",
+          "arguments": {
+            "connected_data": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "device_type": "smart_light"
+          },
+          "output": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "status": "error",
+          "is_perturbed": true
+        }
+      ]
+    },
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 2
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T08:15:59.586222+00:00",
+  "end_time": "2026-10-23T08:17:14.458204+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: agent should have stopped but called other tools after victim: ['create_document', 'restart_device']",
+  "failed_tools": [
+    "create_document",
+    "resolve_connected_device_by_type"
+  ],
+  "tokens": {
+    "input_tokens": 17547,
+    "output_tokens": 3478,
+    "total_tokens": 21025
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check which devices are connected in the living_room, see whether any of them are offline, and identify the smart_light there. Then restart the living_room device, and after that save a note titled “Trip Summary” that summarizes the living_room area, the total number of devices, any offline issues found, the smart_light target, and the restart status or message. Please also include the tags finance and travel in that note.",
+      "area": "living_room",
+      "device_type": "smart_light",
+      "status_criteria": "offline",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary"
+    },
+    "task_description": "Please check which devices are connected in the living room, then diagnose whether any of them are offline, and after that identify the smart light there. Then restart the living room device, and finally save a note titled “Trip Summary” summarizing the living room area, total devices, issues found, the smart light target, and the restart status/message.",
+    "template_id": "C1_template_046",
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['resolve_connected_device_by_type'], matching recorded execution failure in tools ['resolve_connected_device_by_type'] leading to task failure.",
+    "configured_count": 1,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_046_step_3_resolve_connected_device_by_type",
+        "target_tool": "resolve_connected_device_by_type",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "all_calls",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_resolve_connected_device_by_type",
+        "tool_name": "resolve_connected_device_by_type",
+        "step": 3,
+        "timestamp": "2026-10-23T08:16:48.241954+00:00",
+        "config_id": "C1_task_046_step_3_resolve_connected_device_by_type",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "connected_data": {
+            "area_name": "living_room",
+            "found": true,
+            "items": [
+              "lock_main",
+              "light_living",
+              "ac_living",
+              "tv_living"
+            ],
+            "total_items": 4
+          },
+          "device_type": "smart_light"
+        },
+        "modified_output_sample": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "arguments": {
+        "area": "living_room",
+        "device_type": "light"
+      },
+      "result_sample": {
+        "found": true,
+        "area_name": "living_room",
+        "total_items": 4,
+        "items": [
+          "lock_main",
+          "light_living",
+          "ac_living",
+          "tv_living"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.3648680867627263,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T08:16:30.718147+00:00"
+    },
+    {
+      "call_id": "tc_2_2_diagnose_device_health",
+      "tool_name": "diagnose_device_health",
+      "arguments": {
+        "devices_data": [
+          "lock_main",
+          "light_living",
+          "ac_living",
+          "tv_living"
+        ],
+        "status_criteria": "offline"
+      },
+      "result_sample": {
+        "count": 0,
+        "status_criteria": "offline",
+        "abnormal_devices": []
+      },
+      "status": "success",
+      "duration_ms": 0.32111804466694593,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T08:16:39.153470+00:00"
+    },
+    {
+      "call_id": "tc_3_3_resolve_connected_device_by_type",
+      "tool_name": "resolve_connected_device_by_type",
+      "arguments": {
+        "connected_data": {
+          "area_name": "living_room",
+          "found": true,
+          "items": [
+            "lock_main",
+            "light_living",
+            "ac_living",
+            "tv_living"
+          ],
+          "total_items": 4
+        },
+        "device_type": "smart_light"
+      },
+      "result_sample": {
+        "error": "Unavailable For Legal Reasons"
+      },
+      "status": "error",
+      "duration_ms": 0.3054259577766061,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T08:16:48.241954+00:00"
+    },
+    {
+      "call_id": "tc_4_4_restart_device",
+      "tool_name": "restart_device",
+      "arguments": {
+        "device_id": "light_living"
+      },
+      "result_sample": {
+        "device_id": "light_living",
+        "status": "rebooting",
+        "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+        "timestamp": "2026-02-22T23:04:54.104641"
+      },
+      "status": "success",
+      "duration_ms": 0.45605795457959175,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T08:17:02.442721+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_document",
+      "tool_name": "create_document",
+      "arguments": {
+        "content": "Area: living_room, Total Devices: 4, Offline Devices: 0, Smart Light Target: light_living, Restart Status: rebooting",
+        "tags": [
+          "finance",
+          "travel"
+        ],
+        "title": "Trip Summary"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_document' is missing required schema field(s): timestamp; [required] Required field violation for 'create_document': missing: ['timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Note saved successfully",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "content_length": 116,
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.5097470711916685,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T08:17:10.009492+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "checked_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_connected_devices'",
+          "details": {
+            "arguments": [
+              "area",
+              "device_type"
+            ],
+            "output": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_connected_devices' output",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T08:16:30.718381+00:00"
+    },
+    {
+      "call_id": "tc_2_2_diagnose_device_health",
+      "tool_name": "diagnose_device_health",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "diagnose_device_health",
+            "verified_fields": [
+              "count",
+              "status_criteria",
+              "abnormal_devices"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "diagnose_device_health",
+            "checked_fields": [
+              "count",
+              "status_criteria",
+              "abnormal_devices"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "diagnose_device_health",
+            "verified_fields": [
+              "count",
+              "status_criteria",
+              "abnormal_devices"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'diagnose_device_health'",
+          "details": {
+            "tool_name": "diagnose_device_health"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'diagnose_device_health'",
+          "details": {
+            "tool_name": "diagnose_device_health"
+          },
+          "latency_ms": 0.03
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'diagnose_device_health'",
+          "details": {
+            "arguments": [
+              "devices_data",
+              "status_criteria"
+            ],
+            "output": [
+              "count",
+              "status_criteria",
+              "abnormal_devices"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'diagnose_device_health'",
+          "details": {
+            "tool_name": "diagnose_device_health"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'diagnose_device_health' output",
+          "details": {
+            "tool_name": "diagnose_device_health"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'diagnose_device_health'",
+          "details": {
+            "tool_name": "diagnose_device_health"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T08:16:39.153693+00:00"
+    },
+    {
+      "call_id": "tc_3_3_resolve_connected_device_by_type",
+      "tool_name": "resolve_connected_device_by_type",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.004
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Unavailable For Legal Reasons"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T08:16:48.242322+00:00"
+    },
+    {
+      "call_id": "tc_4_4_restart_device",
+      "tool_name": "restart_device",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "restart_device",
+            "verified_fields": [
+              "device_id",
+              "status",
+              "message",
+              "timestamp"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "restart_device",
+            "checked_fields": [
+              "device_id",
+              "status",
+              "message",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "restart_device",
+            "verified_fields": [
+              "device_id",
+              "status",
+              "message",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'restart_device'",
+          "details": {
+            "tool_name": "restart_device"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "restart_device",
+            "checked_fields": [
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.128
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'restart_device'",
+          "details": {
+            "arguments": [
+              "device_id"
+            ],
+            "output": [
+              "device_id",
+              "status",
+              "message",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'restart_device'",
+          "details": {
+            "tool_name": "restart_device"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'restart_device' output",
+          "details": {
+            "tool_name": "restart_device"
+          },
+          "latency_ms": 0.033
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'restart_device'",
+          "details": {
+            "tool_name": "restart_device"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T08:17:02.442939+00:00"
+    },
+    {
+      "call_id": "tc_5_5_create_document",
+      "tool_name": "create_document",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_document' is missing required schema field(s): timestamp",
+          "details": {
+            "tool_name": "create_document",
+            "missing_fields": [
+              "timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags",
+              "timestamp"
+            ],
+            "actual_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_document",
+            "checked_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_document': missing: ['timestamp']",
+          "details": {
+            "tool_name": "create_document",
+            "missing_fields": [
+              "timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags",
+              "timestamp"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.016
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.071
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'create_document'",
+          "details": {
+            "arguments": [
+              "content",
+              "tags",
+              "title"
+            ],
+            "output": [
+              "message",
+              "note_id",
+              "title",
+              "content_length",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_document' output",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.014
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_document'",
+          "details": {
+            "tool_name": "create_document"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T08:17:10.009935+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: agent should have stopped but called other tools after victim: ['create_document', 'restart_device']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "resolve_connected_device_by_type",
+      "missing_tools": [],
+      "forbidden_tools_called": [
+        "create_document",
+        "restart_device"
+      ],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "query_connected_devices",
+          "diagnose_device_health",
+          "resolve_connected_device_by_type",
+          "restart_device",
+          "create_document"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_connected_devices",
+          "diagnose_device_health",
+          "resolve_connected_device_by_type",
+          "restart_device",
+          "create_document"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): ['create_document', 'restart_device']"
+    }
+  }
+}

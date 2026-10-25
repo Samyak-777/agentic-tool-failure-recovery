@@ -1,0 +1,5557 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_011",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_011",
+    "template_id": "C4_template_011",
+    "complexity": "C4",
+    "task_description": "Please check whether my checking account is active, then look up AAPL and BTC, place a guarded $250 buy order, get the latest AAPL quote and archive that snapshot in my app as a high-priority “Daily Quote Archive,” and then pull today’s business news. After that, find similar audio products to the Sony WH-1000XM5 in black, pick one recommendation to review, place an order for 1 black Sony WH-1000XM5 with the best available discount using PayPal, and finally send me a high-priority in-app alert when all of that is done.",
+    "user_input": {
+      "query": "Please check whether my checking account is active. Then look up AAPL and BTC, and place a guarded buy order for 250 USD. After that, get the latest AAPL quote and archive that snapshot in my app as a high-priority archive titled “Daily Quote Archive” for user_123, then pull today’s business news. Next, find similar audio products to the Sony WH-1000XM5 in black in the audio category, choose one recommendation for me to review, and place an order for 1 black Sony WH-1000XM5 using product_id p_sony_xm5_blk, with items [{product_id: p_sony_xm5_blk, quantity: 1}] and order_quantity 1, using the best available discount and payment_method paypal. Finally, send me a high-priority alert through the app channel when everything is done.",
+      "account_type": "checking",
+      "archive_title": "Daily Quote Archive",
+      "buy_amount": 250,
+      "channel": "app",
+      "crypto_symbol": "BTC",
+      "items": [
+        {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 1
+        }
+      ],
+      "order_quantity": 1,
+      "payment_method": "paypal",
+      "priority": "high",
+      "product_category": "audio",
+      "product_id": "p_sony_xm5_blk",
+      "target_currency": "USD",
+      "ticker": "AAPL",
+      "user_id": "user_123"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_stock_alpha_vantage",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "archive_quote_snapshot_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1a",
+          "s2a",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -150,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": 17025.0,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "qs_msft",
+              "symbol": "AAPL",
+              "usd_last": -170.25,
+              "venue": "nasdaq_native",
+              "quoted_at": "not_a_timestamp"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "direct_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -150,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": 17025.0,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "qs_msft",
+                "symbol": "AAPL",
+                "usd_last": -170.25,
+                "venue": "nasdaq_native",
+                "quoted_at": "not_a_timestamp"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "direct_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_stock_alpha_vantage",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "archive_fx_quote_ticket_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1a",
+          "s2a",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": -170.25,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "fxt_msft",
+              "ticker_code": "AAPL",
+              "local_last": 170.25,
+              "settlement_ccy": "EUR",
+              "usd_reference": 0,
+              "fx_rate": 1.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_fx_quote_ticket_native",
+            "arguments": {
+              "quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "fx_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": -170.25,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "fxt_msft",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "EUR",
+                "usd_reference": 0,
+                "fx_rate": 1.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_fx_quote_ticket_native",
+              "arguments": {
+                "quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "fx_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_stock_finnhub",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "archive_quote_snapshot_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1a",
+          "s2b",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 0,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "qs_msft",
+              "symbol": "AAPL",
+              "usd_last": -170.25,
+              "venue": "nasdaq_native",
+              "quoted_at": "2026-02-22T15:04:54Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "direct_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 0,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "qs_msft",
+                "symbol": "AAPL",
+                "usd_last": -170.25,
+                "venue": "nasdaq_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "direct_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_stock_finnhub",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "archive_fx_quote_ticket_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1a",
+          "s2b",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": -170.25,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "fxt_msft",
+              "ticker_code": "AAPL",
+              "local_last": 170.25,
+              "settlement_ccy": "EUR",
+              "usd_reference": 170.25,
+              "fx_rate": -1.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_fx_quote_ticket_native",
+            "arguments": {
+              "quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "fx_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": -170.25,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "fxt_msft",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": -1.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_fx_quote_ticket_native",
+              "arguments": {
+                "quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "fx_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_alpha_vantage",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "archive_quote_snapshot_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1b",
+          "s2a",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": 170250.0,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "qs_msft",
+              "symbol": "AAPL",
+              "usd_last": -170.25,
+              "venue": "nasdaq_native",
+              "quoted_at": "2026-02-22T15:04:54Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "direct_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": 170250.0,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "qs_msft",
+                "symbol": "AAPL",
+                "usd_last": -170.25,
+                "venue": "nasdaq_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "direct_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_alpha_vantage",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "archive_fx_quote_ticket_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1b",
+          "s2a",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": 0,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "fxt_msft",
+              "ticker_code": "AAPL",
+              "local_last": 170.25,
+              "settlement_ccy": "EUR",
+              "usd_reference": 170250.0,
+              "fx_rate": 1.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_fx_quote_ticket_native",
+            "arguments": {
+              "quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "fx_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": 0,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "fxt_msft",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170250.0,
+                "fx_rate": 1.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_fx_quote_ticket_native",
+              "arguments": {
+                "quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "fx_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_finnhub",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "archive_quote_snapshot_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1b",
+          "s2b",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 17025.0,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "qs_msft",
+              "symbol": "AAPL",
+              "usd_last": -170.25,
+              "venue": "nasdaq_native",
+              "quoted_at": "not_a_timestamp"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "direct_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 17025.0,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "qs_msft",
+                "symbol": "AAPL",
+                "usd_last": -170.25,
+                "venue": "nasdaq_native",
+                "quoted_at": "not_a_timestamp"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "direct_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_finnhub",
+          "get_crypto_price",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "archive_fx_quote_ticket_native",
+          "get_news_gnews",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "submit_order_with_best_discount",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1b",
+          "s2b",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "checking"
+            },
+            "output": {
+              "user_id": "user_999",
+              "account_type": "savings",
+              "balance": -250,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": -170.25,
+              "currency": "EUR"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 250
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 250,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "fxt_msft",
+              "ticker_code": "AAPL",
+              "local_last": 170.25,
+              "settlement_ccy": "EUR",
+              "usd_reference": -170.25,
+              "fx_rate": 1.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_fx_quote_ticket_native",
+            "arguments": {
+              "quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "title": "Daily Quote Archive",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "fx_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Daily Quote Archive",
+              "target_user": "user_123",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_gnews",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "audio",
+              "user_id": "user_123"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 1
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "submit_order_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "paypal"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 359.1,
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_blk",
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "quantity": 1,
+                  "subtotal": 399.0
+                }
+              ],
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "cart_subtotal": 399.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "checking"
+              },
+              "output": {
+                "user_id": "user_999",
+                "account_type": "savings",
+                "balance": -250,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": -170.25,
+                "currency": "EUR"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 250
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 250,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "fxt_msft",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "EUR",
+                "usd_reference": -170.25,
+                "fx_rate": 1.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_fx_quote_ticket_native",
+              "arguments": {
+                "quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "title": "Daily Quote Archive",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "fx_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Daily Quote Archive",
+                "target_user": "user_123",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_gnews",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "audio",
+                "user_id": "user_123"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk",
+                "count": 2,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found alternatives in the same category."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "select_recommendation",
+              "arguments": {
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "quantity": 1
+              },
+              "output": {
+                "product_id": "p_sony_xm5_slv",
+                "name": "Sony WH-1000XM5 Headphones (Silver)",
+                "price": 399.0,
+                "relevance_score": 3,
+                "available_stock": 10,
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "paypal"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 359.1,
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_blk",
+                    "name": "Sony WH-1000XM5 Headphones (Black)",
+                    "quantity": 1,
+                    "subtotal": 399.0
+                  }
+                ],
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "cart_subtotal": 399.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "Your balance review, market snapshot, guarded buy order, quote archive, and discounted product order have been completed.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_fx_quote_ticket_native",
+      "archive_quote_snapshot_native",
+      "get_account_balance_bank_api",
+      "get_account_balance_broker_api",
+      "get_fx_quote_ticket_native",
+      "get_quote_snapshot_native",
+      "get_stock_alpha_vantage",
+      "get_stock_finnhub"
+    ],
+    "domains": [
+      "Financial",
+      "General",
+      "Shopping"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s1",
+        "s2",
+        "s5"
+      ]
+    },
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T04:33:23.915399+00:00",
+  "end_time": "2026-10-24T04:33:39.381820+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_account_balance_bank_api' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_account_balance_bank_api"
+  ],
+  "tokens": {
+    "input_tokens": 5104,
+    "output_tokens": 902,
+    "total_tokens": 6006
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether my checking account is active. Then look up AAPL and BTC, and place a guarded buy order for 250 USD. After that, get the latest AAPL quote and archive that snapshot in my app as a high-priority archive titled “Daily Quote Archive” for user_123, then pull today’s business news. Next, find similar audio products to the Sony WH-1000XM5 in black in the audio category, choose one recommendation for me to review, and place an order for 1 black Sony WH-1000XM5 using product_id p_sony_xm5_blk, with items [{product_id: p_sony_xm5_blk, quantity: 1}] and order_quantity 1, using the best available discount and payment_method paypal. Finally, send me a high-priority alert through the app channel when everything is done.",
+      "account_type": "checking",
+      "archive_title": "Daily Quote Archive",
+      "buy_amount": 250,
+      "channel": "app",
+      "crypto_symbol": "BTC",
+      "items": [
+        {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 1
+        }
+      ],
+      "order_quantity": 1,
+      "payment_method": "paypal",
+      "priority": "high",
+      "product_category": "audio",
+      "product_id": "p_sony_xm5_blk",
+      "target_currency": "USD",
+      "ticker": "AAPL",
+      "user_id": "user_123"
+    },
+    "task_description": "Please check whether my checking account is active, then look up AAPL and BTC, place a guarded $250 buy order, get the latest AAPL quote and archive that snapshot in my app as a high-priority “Daily Quote Archive,” and then pull today’s business news. After that, find similar audio products to the Sony WH-1000XM5 in black, pick one recommendation to review, place an order for 1 black Sony WH-1000XM5 with the best available discount using PayPal, and finally send me a high-priority in-app alert when all of that is done.",
+    "template_id": "C4_template_011",
+    "domains": [
+      "Financial",
+      "General",
+      "Shopping"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_account_balance_bank_api'], matching recorded execution failure in tools ['get_account_balance_bank_api'] leading to task failure.",
+    "configured_count": 24,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_011_path_0_get_account_balance_bank_api",
+        "target_tool": "get_account_balance_bank_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -150,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_0_get_stock_alpha_vantage",
+        "target_tool": "get_stock_alpha_vantage",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": 17025.0,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "qs_msft",
+          "symbol": "AAPL",
+          "usd_last": -170.25,
+          "venue": "nasdaq_native",
+          "quoted_at": "not_a_timestamp"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_1_get_account_balance_bank_api",
+        "target_tool": "get_account_balance_bank_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_1_get_stock_alpha_vantage",
+        "target_tool": "get_stock_alpha_vantage",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_1_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_msft",
+          "ticker_code": "AAPL",
+          "local_last": 170.25,
+          "settlement_ccy": "EUR",
+          "usd_reference": 0,
+          "fx_rate": 1.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_2_get_account_balance_bank_api",
+        "target_tool": "get_account_balance_bank_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_2_get_stock_finnhub",
+        "target_tool": "get_stock_finnhub",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": 0,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_2_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "qs_msft",
+          "symbol": "AAPL",
+          "usd_last": -170.25,
+          "venue": "nasdaq_native",
+          "quoted_at": "2026-02-22T15:04:54Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_3_get_account_balance_bank_api",
+        "target_tool": "get_account_balance_bank_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_3_get_stock_finnhub",
+        "target_tool": "get_stock_finnhub",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_3_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_msft",
+          "ticker_code": "AAPL",
+          "local_last": 170.25,
+          "settlement_ccy": "EUR",
+          "usd_reference": 170.25,
+          "fx_rate": -1.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_account_balance_provider_pair:bank_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_4_get_account_balance_broker_api",
+        "target_tool": "get_account_balance_broker_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_4_get_stock_alpha_vantage",
+        "target_tool": "get_stock_alpha_vantage",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": 170250.0,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_4_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "qs_msft",
+          "symbol": "AAPL",
+          "usd_last": -170.25,
+          "venue": "nasdaq_native",
+          "quoted_at": "2026-02-22T15:04:54Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_5_get_account_balance_broker_api",
+        "target_tool": "get_account_balance_broker_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_5_get_stock_alpha_vantage",
+        "target_tool": "get_stock_alpha_vantage",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": 0,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_5_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_msft",
+          "ticker_code": "AAPL",
+          "local_last": 170.25,
+          "settlement_ccy": "EUR",
+          "usd_reference": 170250.0,
+          "fx_rate": 1.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:alpha_vantage",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_6_get_account_balance_broker_api",
+        "target_tool": "get_account_balance_broker_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_6_get_stock_finnhub",
+        "target_tool": "get_stock_finnhub",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": 17025.0,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_6_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "qs_msft",
+          "symbol": "AAPL",
+          "usd_last": -170.25,
+          "venue": "nasdaq_native",
+          "quoted_at": "not_a_timestamp"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_7_get_account_balance_broker_api",
+        "target_tool": "get_account_balance_broker_api",
+        "step": 1,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -250,
+          "currency": "USD",
+          "status": "active"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_7_get_stock_finnhub",
+        "target_tool": "get_stock_finnhub",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "price_usd": -170.25,
+          "currency": "EUR"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_011_path_7_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_msft",
+          "ticker_code": "AAPL",
+          "local_last": 170.25,
+          "settlement_ccy": "EUR",
+          "usd_reference": -170.25,
+          "fx_rate": 1.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_account_balance_provider_pair:broker_api",
+          "alt_stock_price_provider_pair:finnhub",
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_account_balance_bank_api",
+        "tool_name": "get_account_balance_bank_api",
+        "step": 1,
+        "timestamp": "2026-10-24T04:33:32.811347+00:00",
+        "config_id": "C4_task_011_path_0_get_account_balance_bank_api",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "account_type": "checking",
+          "user_id": "user_123"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='user_123', but output returned user_id='user_999'",
+          "validation_failed_checks": [
+            "entity"
+          ],
+          "untrusted_output": {
+            "user_id": "user_999",
+            "account_type": "savings",
+            "balance": -150,
+            "currency": "USD",
+            "status": "active"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_account_balance_bank_api",
+      "tool_name": "get_account_balance_bank_api",
+      "arguments": {
+        "account_type": "checking",
+        "user_id": "user_123"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='user_123', but output returned user_id='user_999'",
+        "validation_failed_checks": [
+          "entity"
+        ],
+        "untrusted_output": {
+          "user_id": "user_999",
+          "account_type": "savings",
+          "balance": -150,
+          "currency": "USD",
+          "status": "active"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3475799458101392,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:33:32.811347+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_account_balance_bank_api",
+      "tool_name": "get_account_balance_bank_api",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "checked_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "INVALID",
+          "reason": "Entity mismatch detected: Requested user_id='user_123', but output returned user_id='user_999'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "violations": [
+              {
+                "field": "user_id",
+                "requested": "user_123",
+                "returned": "user_999",
+                "reason": "Requested user_id='user_123', but output returned user_id='user_999'"
+              }
+            ],
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_123",
+                "returned": "user_999",
+                "match": false
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_account_balance_bank_api' output",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "entity"
+      ],
+      "timestamp": "2026-10-24T04:33:32.811836+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_account_balance_bank_api' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_account_balance_bank_api",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "archive_quote_snapshot_native",
+        "get_crypto_price",
+        "get_news_gnews",
+        "get_quote_snapshot_native",
+        "get_recommendations_collaborative",
+        "get_stock_alpha_vantage",
+        "place_buy_order_with_risk_check",
+        "push_alert",
+        "select_recommendation",
+        "submit_order_with_best_discount"
+      ],
+      "insufficient_calls": {
+        "get_stock_alpha_vantage": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_crypto_price": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_buy_order_with_risk_check": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_news_gnews": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_recommendations_collaborative": {
+          "expected": 1,
+          "actual": 0
+        },
+        "select_recommendation": {
+          "expected": 1,
+          "actual": 0
+        },
+        "submit_order_with_best_discount": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_stock_alpha_vantage",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "archive_quote_snapshot_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_stock_alpha_vantage",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "archive_fx_quote_ticket_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_stock_finnhub",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "archive_quote_snapshot_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_stock_finnhub",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "archive_fx_quote_ticket_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_alpha_vantage",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "archive_quote_snapshot_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_alpha_vantage",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "archive_fx_quote_ticket_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_finnhub",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "archive_quote_snapshot_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_finnhub",
+              "get_crypto_price",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "archive_fx_quote_ticket_native",
+              "get_news_gnews",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "submit_order_with_best_discount",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_fx_quote_ticket_native",
+          "archive_quote_snapshot_native",
+          "get_account_balance_bank_api",
+          "get_account_balance_broker_api",
+          "get_fx_quote_ticket_native",
+          "get_quote_snapshot_native",
+          "get_stock_alpha_vantage",
+          "get_stock_finnhub"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s1",
+            "s2",
+            "s5"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_account_balance_bank_api"
+        ]
+      }
+    }
+  }
+}

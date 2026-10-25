@@ -1,0 +1,485 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "test_gemini_persistence_001",
+  "task_id": "C1_task_001",
+  "mode": "P0",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_001",
+    "template_id": "C1_template_001",
+    "complexity": "C1",
+    "task_description": "Please check the status of flight CA1234 first, then book an economy seat on that flight for John Doe. After that, look up Hilton Tokyo and book a standard room there for John Doe from 2025-07-01 to 2025-07-05.",
+    "user_input": {
+      "query": "Please first check the status of flight CA1234. If everything looks good, book an economy seat on that flight for John Doe. After that, please look up Hilton Tokyo and book a standard room there for John Doe from 2025-07-01 to 2025-07-05.",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "passenger_name": "John Doe",
+      "room_type": "standard",
+      "seat_class": "economy"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_flight_info",
+        "arguments": {
+          "flight_number": "CA1234"
+        },
+        "output": {
+          "flight_number": "CA1234",
+          "airline": "Air China",
+          "departure": "Beijing Capital Airport",
+          "arrival": "Shanghai Pudong Airport",
+          "departure_time": "08:30",
+          "arrival_time": "11:00",
+          "status": "On Time",
+          "gate": "A12"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "build_flight_booking_request",
+        "arguments": {
+          "flight_data": {
+            "flight_number": "CA1234",
+            "airline": "Air China",
+            "departure": "Beijing Capital Airport",
+            "arrival": "Shanghai Pudong Airport",
+            "departure_time": "08:30",
+            "arrival_time": "11:00",
+            "status": "On Time",
+            "gate": "A12"
+          },
+          "passenger_name": "John Doe",
+          "seat_class": "economy"
+        },
+        "output": {
+          "flight_number": "CA1234",
+          "passenger_name": "John Doe",
+          "seat_class": "economy",
+          "route_summary": "Beijing Capital Airport -> Shanghai Pudong Airport",
+          "booking_ready": true
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "book_flight_with_status_check",
+        "arguments": {
+          "flight_number": "CA1234",
+          "passenger_name": "John Doe",
+          "seat_class": "economy"
+        },
+        "output": {
+          "message": "Flight booked successfully",
+          "booking_id": "FLIGHT5A3B2C",
+          "confirmation_code": "D4E6F7",
+          "flight_number": "CA1234",
+          "passenger_name": "John Doe",
+          "seat_class": "economy",
+          "status": "confirmed",
+          "flight_status": "On Time"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "get_hotel_info_expedia",
+        "arguments": {
+          "hotel_name": "Hilton Tokyo"
+        },
+        "output": {
+          "hotel_name": "Hilton Tokyo",
+          "location": "Tokyo, Japan",
+          "price_per_night": 180,
+          "currency": "USD",
+          "rating": 4.5,
+          "availability": "Available"
+        },
+        "status": "success"
+      },
+      {
+        "step": 5,
+        "tool_name": "book_hotel",
+        "arguments": {
+          "hotel_name": "Hilton Tokyo",
+          "check_in_date": "2025-07-01",
+          "check_out_date": "2025-07-05",
+          "guest_name": "John Doe",
+          "room_type": "standard"
+        },
+        "output": {
+          "message": "Hotel booked successfully",
+          "booking_id": "HOTEL8D99FB",
+          "confirmation_code": "891392",
+          "hotel_name": "Hilton Tokyo",
+          "guest_name": "John Doe",
+          "check_in_date": "2025-07-01",
+          "check_out_date": "2025-07-05",
+          "room_type": "standard",
+          "status": "confirmed"
+        },
+        "status": "success"
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_flight_info",
+          "arguments": {
+            "flight_number": "CA1234"
+          },
+          "output": {
+            "flight_number": "CA1234",
+            "airline": "Air China",
+            "departure": "Beijing Capital Airport",
+            "arrival": "Shanghai Pudong Airport",
+            "departure_time": "08:30",
+            "arrival_time": "11:00",
+            "status": "On Time",
+            "gate": "A12"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_flight_booking_request",
+          "arguments": {
+            "flight_data": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "passenger_name": "John Doe",
+            "seat_class": "economy"
+          },
+          "output": {
+            "flight_number": "CA1234",
+            "passenger_name": "John Doe",
+            "seat_class": "economy",
+            "route_summary": "Beijing Capital Airport -> Shanghai Pudong Airport",
+            "booking_ready": true
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "book_flight_with_status_check",
+          "arguments": {
+            "flight_number": "CA1234",
+            "passenger_name": "John Doe",
+            "seat_class": "economy"
+          },
+          "output": {
+            "message": "Flight booked successfully",
+            "booking_id": "FLIGHT5A3B2C",
+            "confirmation_code": "D4E6F7",
+            "flight_number": "CA1234",
+            "passenger_name": "John Doe",
+            "seat_class": "economy",
+            "status": "confirmed",
+            "flight_status": "On Time"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_hotel_info_expedia",
+          "arguments": {
+            "hotel_name": "Hilton Tokyo"
+          },
+          "output": {
+            "hotel_name": "Hilton Tokyo",
+            "location": "Tokyo, Japan",
+            "price_per_night": 180,
+            "currency": "USD",
+            "rating": 4.5,
+            "availability": "Available"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "book_hotel",
+          "arguments": {
+            "hotel_name": "Hilton Tokyo",
+            "check_in_date": "2025-07-01",
+            "check_out_date": "2025-07-05",
+            "guest_name": "John Doe",
+            "room_type": "standard"
+          },
+          "output": {
+            "message": "Hotel booked successfully",
+            "booking_id": "HOTEL8D99FB",
+            "confirmation_code": "891392",
+            "hotel_name": "Hilton Tokyo",
+            "guest_name": "John Doe",
+            "check_in_date": "2025-07-01",
+            "check_out_date": "2025-07-05",
+            "room_type": "standard",
+            "status": "confirmed"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Travel"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": 0
+  },
+  "agent_type": "care",
+  "model": "gemini-3.8-flash",
+  "start_time": "2026-10-23T06:41:03.531003+00:00",
+  "end_time": "2026-10-23T06:44:22.056597+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P0 failed: missing required tools: ['book_flight_with_status_check', 'get_hotel_info_expedia', 'book_hotel', 'build_flight_booking_request']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 1275,
+    "output_tokens": 49,
+    "total_tokens": 1324
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please first check the status of flight CA1234. If everything looks good, book an economy seat on that flight for John Doe. After that, please look up Hilton Tokyo and book a standard room there for John Doe from 2025-07-01 to 2025-07-05.",
+      "check_in_date": "2025-07-01",
+      "check_out_date": "2025-07-05",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "passenger_name": "John Doe",
+      "room_type": "standard",
+      "seat_class": "economy"
+    },
+    "task_description": "Please check the status of flight CA1234 first, then book an economy seat on that flight for John Doe. After that, look up Hilton Tokyo and book a standard room there for John Doe from 2025-07-01 to 2025-07-05.",
+    "template_id": "C1_template_001",
+    "domains": [
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3.8-flash",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info",
+      "tool_name": "get_flight_info",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "flight_number": "CA1234",
+        "airline": "Air China",
+        "departure": "Beijing Capital Airport",
+        "arrival": "Shanghai Pudong Airport",
+        "departure_time": "08:30",
+        "arrival_time": "11:00",
+        "status": "On Time",
+        "gate": "A12"
+      },
+      "status": "success",
+      "duration_ms": 2.6762690395116806,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T06:42:05.566919+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info",
+      "tool_name": "get_flight_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 2.332
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "CA1234",
+                "returned": "CA1234",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "get_flight_info",
+            "applied_rules": [
+              "CFR-004"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info' output",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T06:42:05.567189+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P0 failed: missing required tools: ['book_flight_with_status_check', 'get_hotel_info_expedia', 'book_hotel', 'build_flight_booking_request']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "book_flight_with_status_check",
+        "get_hotel_info_expedia",
+        "book_hotel",
+        "build_flight_booking_request"
+      ],
+      "ground_truth": {
+        "execution_trace": [
+          "get_flight_info",
+          "build_flight_booking_request",
+          "book_flight_with_status_check",
+          "get_hotel_info_expedia",
+          "book_hotel"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info"
+        ]
+      }
+    }
+  }
+}

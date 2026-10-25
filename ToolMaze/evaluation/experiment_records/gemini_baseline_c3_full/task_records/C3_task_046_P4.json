@@ -1,0 +1,750 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_046",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_046",
+    "template_id": "C3_template_046",
+    "complexity": "C3",
+    "task_description": "Check my investment account balance for user_8831 and get the current price for AAPL. I'm a VIP member, so please estimate the trading cost for $170.25 worth of stock, then place an equity order for AAPL for the total amount of $170.34. After the trade, fetch the NASDAQ market window details and archive that information under the title \"Post-Trade Market Archive\" with medium priority. Finally, extract the reference ID from the archived alpha NASDAQ data.",
+    "user_input": {
+      "query": "Could you please check my investment account balance for user_8831 and get the current price for AAPL? I'm a vip member, so I'd like you to first estimate the trading cost for $170.25 worth of stock, and then place an equity order for AAPL for the total amount of $170.34. After the trade goes through, please fetch the NASDAQ market window details and archive that information under the title \"Post-Trade Market Archive\" with medium priority. Finally, extract the reference ID from the archived alpha NASDAQ data so I have it for my records.",
+      "exchange": "NASDAQ",
+      "ticker": "AAPL",
+      "user_id": "user_8831",
+      "user_tier": "vip"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_finnhub",
+          "estimate_trading_cost",
+          "place_equity_order_from_cost",
+          "get_alpha_market_window_native",
+          "archive_alpha_market_window_native",
+          "get_field_value"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_market_archive_native_2to2:alpha_market_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_8831",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_8831",
+              "account_type": "investment",
+              "balance": 23905,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "estimate_trading_cost",
+            "arguments": {
+              "amount": 170.25,
+              "asset_type": "stock",
+              "user_tier": "vip"
+            },
+            "output": {
+              "amount": 170.25,
+              "fee_rate": "0.05%",
+              "fee_amount": 0.09,
+              "total_cost": 170.34,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "place_equity_order_from_cost",
+            "arguments": {
+              "amount": 170.34,
+              "ticker": "AAPL"
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 150.0,
+              "message": "Order executed successfully",
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved",
+              "ticker": "AAPL",
+              "order_strategy": "equity_cost_checked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_alpha_market_window_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "alpha_window_id": "tokyo_market_main",
+              "venue_code": "JPX_TSE",
+              "market_live": false,
+              "phase_label": "closed_overnight",
+              "transition_mark": "09:00 JST"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_alpha_market_window_native",
+            "arguments": {
+              "market_window": {
+                "alpha_window_id": "alpha_nasdaq",
+                "venue_code": "NASDAQ",
+                "market_live": true,
+                "phase_label": "regular",
+                "transition_mark": "16:00 EST"
+              },
+              "title": "Post-Trade Market Archive",
+              "user_id": "user_8831",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "alpha_market_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Post-Trade Market Archive",
+              "market_ref": "alpha_nasdaq"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_field_value",
+            "arguments": {
+              "data": "alpha_nasdaq",
+              "target_field": "reference_id"
+            },
+            "output": {
+              "source_type": "str",
+              "extracted_value": "alpha_nasdaq"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_8831",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_8831",
+                "account_type": "investment",
+                "balance": 23905,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "estimate_trading_cost",
+              "arguments": {
+                "amount": 170.25,
+                "asset_type": "stock",
+                "user_tier": "vip"
+              },
+              "output": {
+                "amount": 170.25,
+                "fee_rate": "0.05%",
+                "fee_amount": 0.09,
+                "total_cost": 170.34,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_equity_order_from_cost",
+              "arguments": {
+                "amount": 170.34,
+                "ticker": "AAPL"
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 150.0,
+                "message": "Order executed successfully",
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved",
+                "ticker": "AAPL",
+                "order_strategy": "equity_cost_checked"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_alpha_market_window_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "alpha_window_id": "tokyo_market_main",
+                "venue_code": "JPX_TSE",
+                "market_live": false,
+                "phase_label": "closed_overnight",
+                "transition_mark": "09:00 JST"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_alpha_market_window_native",
+              "arguments": {
+                "market_window": {
+                  "alpha_window_id": "alpha_nasdaq",
+                  "venue_code": "NASDAQ",
+                  "market_live": true,
+                  "phase_label": "regular",
+                  "transition_mark": "16:00 EST"
+                },
+                "title": "Post-Trade Market Archive",
+                "user_id": "user_8831",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "alpha_market_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Post-Trade Market Archive",
+                "market_ref": "alpha_nasdaq"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_field_value",
+              "arguments": {
+                "data": "alpha_nasdaq",
+                "target_field": "reference_id"
+              },
+              "output": {
+                "source_type": "str",
+                "extracted_value": "alpha_nasdaq"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_account_balance_broker_api",
+          "get_stock_finnhub",
+          "estimate_trading_cost",
+          "place_equity_order_from_cost",
+          "get_polygon_market_board_native",
+          "archive_polygon_market_board_native",
+          "get_field_value"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_market_archive_native_2to2:polygon_market_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_broker_api",
+            "arguments": {
+              "user_id": "user_8831",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_8831",
+              "account_type": "investment",
+              "balance": 23905,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "estimate_trading_cost",
+            "arguments": {
+              "amount": 170.25,
+              "asset_type": "stock",
+              "user_tier": "vip"
+            },
+            "output": {
+              "amount": 170.25,
+              "fee_rate": "0.05%",
+              "fee_amount": 0.09,
+              "total_cost": 170.34,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "place_equity_order_from_cost",
+            "arguments": {
+              "amount": 170.34,
+              "ticker": "AAPL"
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 150.0,
+              "message": "Order executed successfully",
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved",
+              "ticker": "AAPL",
+              "order_strategy": "equity_cost_checked"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_polygon_market_board_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "polygon_board_id": "tsukiji_fish_market",
+              "market_code": "BLUEFIN_TUNA",
+              "board_live": false,
+              "session_band": "morning_auction",
+              "next_mark": "05:30 JST"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "archive_polygon_market_board_native",
+            "arguments": {
+              "market_board": {
+                "polygon_board_id": "polygon_nasdaq",
+                "market_code": "NASDAQ",
+                "board_live": true,
+                "session_band": "regular",
+                "next_mark": "16:00 EST"
+              },
+              "title": "Post-Trade Market Archive",
+              "user_id": "user_8831",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "polygon_market_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Post-Trade Market Archive",
+              "market_ref": "polygon_nasdaq"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_field_value",
+            "arguments": {
+              "data": "polygon_nasdaq",
+              "target_field": "reference_id"
+            },
+            "output": {
+              "source_type": "str",
+              "extracted_value": "polygon_nasdaq"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_broker_api",
+              "arguments": {
+                "user_id": "user_8831",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_8831",
+                "account_type": "investment",
+                "balance": 23905,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "estimate_trading_cost",
+              "arguments": {
+                "amount": 170.25,
+                "asset_type": "stock",
+                "user_tier": "vip"
+              },
+              "output": {
+                "amount": 170.25,
+                "fee_rate": "0.05%",
+                "fee_amount": 0.09,
+                "total_cost": 170.34,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_equity_order_from_cost",
+              "arguments": {
+                "amount": 170.34,
+                "ticker": "AAPL"
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 150.0,
+                "message": "Order executed successfully",
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved",
+                "ticker": "AAPL",
+                "order_strategy": "equity_cost_checked"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_polygon_market_board_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "polygon_board_id": "tsukiji_fish_market",
+                "market_code": "BLUEFIN_TUNA",
+                "board_live": false,
+                "session_band": "morning_auction",
+                "next_mark": "05:30 JST"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_polygon_market_board_native",
+              "arguments": {
+                "market_board": {
+                  "polygon_board_id": "polygon_nasdaq",
+                  "market_code": "NASDAQ",
+                  "board_live": true,
+                  "session_band": "regular",
+                  "next_mark": "16:00 EST"
+                },
+                "title": "Post-Trade Market Archive",
+                "user_id": "user_8831",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "polygon_market_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Post-Trade Market Archive",
+                "market_ref": "polygon_nasdaq"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_field_value",
+              "arguments": {
+                "data": "polygon_nasdaq",
+                "target_field": "reference_id"
+              },
+              "output": {
+                "source_type": "str",
+                "extracted_value": "polygon_nasdaq"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_alpha_market_window_native",
+      "archive_polygon_market_board_native",
+      "get_alpha_market_window_native",
+      "get_polygon_market_board_native"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 4,
+    "corruption_type": "irrelevant_response"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T04:16:25.423458+00:00",
+  "end_time": "2026-10-25T04:18:05.801221+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check my investment account balance for user_8831 and get the current price for AAPL? I'm a vip member, so I'd like you to first estimate the trading cost for $170.25 worth of stock, and then place an equity order for AAPL for the total amount of $170.34. After the trade goes through, please fetch the NASDAQ market window details and archive that information under the title \"Post-Trade Market Archive\" with medium priority. Finally, extract the reference ID from the archived alpha NASDAQ data so I have it for my records.",
+      "exchange": "NASDAQ",
+      "ticker": "AAPL",
+      "user_id": "user_8831",
+      "user_tier": "vip"
+    },
+    "task_description": "Check my investment account balance for user_8831 and get the current price for AAPL. I'm a VIP member, so please estimate the trading cost for $170.25 worth of stock, then place an equity order for AAPL for the total amount of $170.34. After the trade, fetch the NASDAQ market window details and archive that information under the title \"Post-Trade Market Archive\" with medium priority. Finally, extract the reference ID from the archived alpha NASDAQ data.",
+    "template_id": "C3_template_046",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_alpha_market_window_native', 'get_polygon_market_board_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_046_path_0_get_alpha_market_window_native",
+        "target_tool": "get_alpha_market_window_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "alpha_window_id": "tokyo_market_main",
+          "venue_code": "JPX_TSE",
+          "market_live": false,
+          "phase_label": "closed_overnight",
+          "transition_mark": "09:00 JST"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_market_archive_native_2to2:alpha_market_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_046_path_1_get_polygon_market_board_native",
+        "target_tool": "get_polygon_market_board_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "polygon_board_id": "tsukiji_fish_market",
+          "market_code": "BLUEFIN_TUNA",
+          "board_live": false,
+          "session_band": "morning_auction",
+          "next_mark": "05:30 JST"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_market_archive_native_2to2:polygon_market_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_alpha_market_window_native",
+        "estimate_trading_cost",
+        "get_account_balance_broker_api",
+        "get_alpha_market_window_native",
+        "get_field_value",
+        "get_stock_finnhub",
+        "place_equity_order_from_cost"
+      ],
+      "insufficient_calls": {
+        "get_account_balance_broker_api": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_stock_finnhub": {
+          "expected": 1,
+          "actual": 0
+        },
+        "estimate_trading_cost": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_equity_order_from_cost": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_alpha_market_window_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_alpha_market_window_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_field_value": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_finnhub",
+              "estimate_trading_cost",
+              "place_equity_order_from_cost",
+              "get_alpha_market_window_native",
+              "archive_alpha_market_window_native",
+              "get_field_value"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_account_balance_broker_api",
+              "get_stock_finnhub",
+              "estimate_trading_cost",
+              "place_equity_order_from_cost",
+              "get_polygon_market_board_native",
+              "archive_polygon_market_board_native",
+              "get_field_value"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_alpha_market_window_native",
+          "archive_polygon_market_board_native",
+          "get_alpha_market_window_native",
+          "get_polygon_market_board_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

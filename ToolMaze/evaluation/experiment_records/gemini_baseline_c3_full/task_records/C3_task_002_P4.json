@@ -1,0 +1,796 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_002",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_002",
+    "template_id": "C3_template_002",
+    "complexity": "C3",
+    "task_description": "Could you check the current stock price for AAPL and assess the trade risk for $170.25? After that, please retrieve the account balance and the full balance sheet for my investment account (user_01), then archive that balance sheet as \"Q3 Portfolio Balance\" with high priority via email. Finally, email the archive status to Alice and schedule a meeting with her about the \"Q3 Portfolio Balance\" for November 15th, 2023, at 2:00 PM.",
+    "user_input": {
+      "query": "Can you check the current stock price for AAPL and assess the trade risk for $170.25? After that, please retrieve the account balance and the full balance sheet for my investment account, user_01. I need you to archive that balance sheet as \"Q3 Portfolio Balance\" and send it as a high-priority email. Once that is finished, please email the archive status to alice and schedule a meeting with her regarding the \"Q3 Portfolio Balance\" for 2023-11-15 14:00.",
+      "account_type": "investment",
+      "advisor_name": "alice",
+      "archive_title": "Q3 Portfolio Balance",
+      "meeting_start_time": "2023-11-15 14:00",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "get_account_balance_bank_api",
+          "get_bank_balance_sheet_native",
+          "archive_bank_balance_sheet_native",
+          "email_contact_by_name",
+          "schedule_meeting"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_balance_archive_native_2to2:bank_balance_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "sheet_id": "DEBUG_LOG: Querying /v1/internal/accounts/user_01; sheet_id=bank_user_01_investment",
+              "owner_id": "user_01 (Model: gpt-4o-mini)",
+              "balance_amount": "ERROR: NullPointerException at com.banking.BalanceService.fetch(); last_value=28785",
+              "denomination": "SELECT currency_code FROM global_config WHERE user_id = 'user_01'",
+              "bucket_name": "API_ENDPOINT: /internal/storage/investment/buckets"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "title": "Q3 Portfolio Balance",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "bank_balance_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 Portfolio Balance",
+              "account_ref": "bank_user_01_investment"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "archived",
+              "subject": "Q3 Portfolio Balance"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Q3 Portfolio Balance",
+              "body_length": 8,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting",
+            "arguments": {
+              "title": "Q3 Portfolio Balance",
+              "participants": [
+                "alice@company.com"
+              ],
+              "start_time": "2023-11-15 14:00"
+            },
+            "output": {
+              "status": "meeting scheduled",
+              "message": "Meeting scheduled successfully and invitations sent",
+              "meeting_id": "MTG-5A3B2C1D",
+              "title": "Q3 Portfolio Balance",
+              "participants": [
+                "alice@company.com"
+              ],
+              "participant_count": 1,
+              "start_time": "2023-11-15 14:00",
+              "end_time": "2023-11-15 15:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "sheet_id": "DEBUG_LOG: Querying /v1/internal/accounts/user_01; sheet_id=bank_user_01_investment",
+                "owner_id": "user_01 (Model: gpt-4o-mini)",
+                "balance_amount": "ERROR: NullPointerException at com.banking.BalanceService.fetch(); last_value=28785",
+                "denomination": "SELECT currency_code FROM global_config WHERE user_id = 'user_01'",
+                "bucket_name": "API_ENDPOINT: /internal/storage/investment/buckets"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "title": "Q3 Portfolio Balance",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "bank_balance_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 Portfolio Balance",
+                "account_ref": "bank_user_01_investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "archived",
+                "subject": "Q3 Portfolio Balance"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Q3 Portfolio Balance",
+                "body_length": 8,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting",
+              "arguments": {
+                "title": "Q3 Portfolio Balance",
+                "participants": [
+                  "alice@company.com"
+                ],
+                "start_time": "2023-11-15 14:00"
+              },
+              "output": {
+                "status": "meeting scheduled",
+                "message": "Meeting scheduled successfully and invitations sent",
+                "meeting_id": "MTG-5A3B2C1D",
+                "title": "Q3 Portfolio Balance",
+                "participants": [
+                  "alice@company.com"
+                ],
+                "participant_count": 1,
+                "start_time": "2023-11-15 14:00",
+                "end_time": "2023-11-15 15:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "get_account_balance_bank_api",
+          "get_broker_balance_ledger_native",
+          "archive_broker_balance_ledger_native",
+          "email_contact_by_name",
+          "schedule_meeting"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_balance_archive_native_2to2:broker_balance_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "ledger_ref": "broker_user_01_investment_SQL:SELECT_*_FROM_users_WHERE_id='user_01'",
+              "principal_id": "user_01_MODEL:gpt-4o-mini",
+              "equity_value": "28785_INTERNAL_ERROR:NullPointerException_at_com.broker.ledger.NativeHandler.java:104",
+              "account_bucket": "investment_DEBUG_INFO:API_endpoint:/internal/v1/broker/ledger/bucket",
+              "currency_code": "USD_DEBUG_LOG_LEVEL:VERBOSE"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "title": "Q3 Portfolio Balance",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "broker_balance_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 Portfolio Balance",
+              "account_ref": "broker_user_01_investment"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "archived",
+              "subject": "Q3 Portfolio Balance"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Q3 Portfolio Balance",
+              "body_length": 8,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting",
+            "arguments": {
+              "title": "Q3 Portfolio Balance",
+              "participants": [
+                "alice@company.com"
+              ],
+              "start_time": "2023-11-15 14:00"
+            },
+            "output": {
+              "status": "meeting scheduled",
+              "message": "Meeting scheduled successfully and invitations sent",
+              "meeting_id": "MTG-5A3B2C1D",
+              "title": "Q3 Portfolio Balance",
+              "participants": [
+                "alice@company.com"
+              ],
+              "participant_count": 1,
+              "start_time": "2023-11-15 14:00",
+              "end_time": "2023-11-15 15:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "ledger_ref": "broker_user_01_investment_SQL:SELECT_*_FROM_users_WHERE_id='user_01'",
+                "principal_id": "user_01_MODEL:gpt-4o-mini",
+                "equity_value": "28785_INTERNAL_ERROR:NullPointerException_at_com.broker.ledger.NativeHandler.java:104",
+                "account_bucket": "investment_DEBUG_INFO:API_endpoint:/internal/v1/broker/ledger/bucket",
+                "currency_code": "USD_DEBUG_LOG_LEVEL:VERBOSE"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "title": "Q3 Portfolio Balance",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "broker_balance_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 Portfolio Balance",
+                "account_ref": "broker_user_01_investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "archived",
+                "subject": "Q3 Portfolio Balance"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Q3 Portfolio Balance",
+                "body_length": 8,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting",
+              "arguments": {
+                "title": "Q3 Portfolio Balance",
+                "participants": [
+                  "alice@company.com"
+                ],
+                "start_time": "2023-11-15 14:00"
+              },
+              "output": {
+                "status": "meeting scheduled",
+                "message": "Meeting scheduled successfully and invitations sent",
+                "meeting_id": "MTG-5A3B2C1D",
+                "title": "Q3 Portfolio Balance",
+                "participants": [
+                  "alice@company.com"
+                ],
+                "participant_count": 1,
+                "start_time": "2023-11-15 14:00",
+                "end_time": "2023-11-15 15:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_bank_balance_sheet_native",
+      "archive_broker_balance_ledger_native",
+      "get_bank_balance_sheet_native",
+      "get_broker_balance_ledger_native"
+    ],
+    "domains": [
+      "Financial",
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "tool_leakage"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T01:07:38.222923+00:00",
+  "end_time": "2026-10-25T01:09:17.558624+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Can you check the current stock price for AAPL and assess the trade risk for $170.25? After that, please retrieve the account balance and the full balance sheet for my investment account, user_01. I need you to archive that balance sheet as \"Q3 Portfolio Balance\" and send it as a high-priority email. Once that is finished, please email the archive status to alice and schedule a meeting with her regarding the \"Q3 Portfolio Balance\" for 2023-11-15 14:00.",
+      "account_type": "investment",
+      "advisor_name": "alice",
+      "archive_title": "Q3 Portfolio Balance",
+      "meeting_start_time": "2023-11-15 14:00",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "task_description": "Could you check the current stock price for AAPL and assess the trade risk for $170.25? After that, please retrieve the account balance and the full balance sheet for my investment account (user_01), then archive that balance sheet as \"Q3 Portfolio Balance\" with high priority via email. Finally, email the archive status to Alice and schedule a meeting with her about the \"Q3 Portfolio Balance\" for November 15th, 2023, at 2:00 PM.",
+    "template_id": "C3_template_002",
+    "domains": [
+      "Financial",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_bank_balance_sheet_native', 'get_broker_balance_ledger_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_002_path_0_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "sheet_id": "DEBUG_LOG: Querying /v1/internal/accounts/user_01; sheet_id=bank_user_01_investment",
+          "owner_id": "user_01 (Model: gpt-4o-mini)",
+          "balance_amount": "ERROR: NullPointerException at com.banking.BalanceService.fetch(); last_value=28785",
+          "denomination": "SELECT currency_code FROM global_config WHERE user_id = 'user_01'",
+          "bucket_name": "API_ENDPOINT: /internal/storage/investment/buckets"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_balance_archive_native_2to2:bank_balance_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_002_path_1_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ledger_ref": "broker_user_01_investment_SQL:SELECT_*_FROM_users_WHERE_id='user_01'",
+          "principal_id": "user_01_MODEL:gpt-4o-mini",
+          "equity_value": "28785_INTERNAL_ERROR:NullPointerException_at_com.broker.ledger.NativeHandler.java:104",
+          "account_bucket": "investment_DEBUG_INFO:API_endpoint:/internal/v1/broker/ledger/bucket",
+          "currency_code": "USD_DEBUG_LOG_LEVEL:VERBOSE"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_balance_archive_native_2to2:broker_balance_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_bank_balance_sheet_native",
+        "assess_trade_risk",
+        "email_contact_by_name",
+        "get_account_balance_bank_api",
+        "get_bank_balance_sheet_native",
+        "get_stock_finnhub",
+        "schedule_meeting"
+      ],
+      "insufficient_calls": {
+        "get_stock_finnhub": {
+          "expected": 1,
+          "actual": 0
+        },
+        "assess_trade_risk": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_account_balance_bank_api": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "email_contact_by_name": {
+          "expected": 1,
+          "actual": 0
+        },
+        "schedule_meeting": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "get_account_balance_bank_api",
+              "get_bank_balance_sheet_native",
+              "archive_bank_balance_sheet_native",
+              "email_contact_by_name",
+              "schedule_meeting"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "get_account_balance_bank_api",
+              "get_broker_balance_ledger_native",
+              "archive_broker_balance_ledger_native",
+              "email_contact_by_name",
+              "schedule_meeting"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_bank_balance_sheet_native",
+          "archive_broker_balance_ledger_native",
+          "get_bank_balance_sheet_native",
+          "get_broker_balance_ledger_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

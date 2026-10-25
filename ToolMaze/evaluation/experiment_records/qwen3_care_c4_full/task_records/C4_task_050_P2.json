@@ -1,0 +1,5265 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c4_full",
+  "task_id": "C4_task_050",
+  "mode": "P2",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_050",
+    "template_id": "C4_template_050",
+    "complexity": "C4",
+    "task_description": "Please check the status of my investment account, get the USD-to-EUR exchange rate, and then prepare a high-priority email with a cross-currency balance and market snapshot for me. After that, check whether NASDAQ is open, get the current AAPL price, use that quote to sell 10 shares of AAPL, and then email me a high-priority trade execution summary. Finally, retrieve my investment balance sheet and publish it to me by email.",
+    "user_input": {
+      "query": "Hi, for user_01, please check the status of my investment account and get the USD-to-EUR exchange rate. Then prepare and send me a high priority email with my cross-currency balance in EUR and a market snapshot. After that, please check whether NASDAQ is open, get the current AAPL price, and use that quote to sell 10 shares of AAPL. Once the trade is done, send me a high priority email with the trade execution summary. Finally, retrieve my investment balance sheet and publish it to me by email.",
+      "account_type": "investment",
+      "channel": "email",
+      "exchange": "NASDAQ",
+      "priority": "high",
+      "quantity": 10,
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_fixer",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Tool Not Found"
+            },
+            "status": "error",
+            "error_message": "404 NotFound",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Tool Not Found"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 170.25,
+                  "target_currency": "USD"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_fixer",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Account Quota Exhausted"
+            },
+            "status": "error",
+            "error_message": "402 QuotaExhausted",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 170.25,
+                  "target_currency": "USD"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Account Quota Exhausted"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_fixer",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 156.63,
+                  "target_currency": "EUR"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_fixer",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_fixer",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_fixer",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 156.63,
+                  "target_currency": "EUR"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_currencyapi",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "error": "Feature Discontinued"
+            },
+            "status": "error",
+            "error_message": "410 FeatureDiscontinued",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "error": "Feature Discontinued"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 170.25,
+                  "target_currency": "USD"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_currencyapi",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_yahoo_finance",
+          "resolve_direct_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_direct_quote_profile",
+            "arguments": {
+              "quote_data": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "direct_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 170.25,
+              "display_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 170.25,
+              "target_currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_direct_quote_profile",
+              "arguments": {
+                "quote_data": {
+                  "price_usd": 170.25,
+                  "currency": "USD"
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "direct_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 170.25,
+                "display_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 170.25,
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 170.25,
+                  "target_currency": "USD"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"USD\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 170.25, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_currencyapi",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "error": "Tool Not Found"
+            },
+            "status": "error",
+            "error_message": "404 NotFound",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Tool Not Found"
+            },
+            "status": "error",
+            "error_message": "404 NotFound",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "error": "Tool Not Found"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 156.63,
+                  "target_currency": "EUR"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Tool Not Found"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "get_account_balance_bank_api",
+          "get_exchange_rate_currencyapi",
+          "build_balance_data_payload",
+          "get_market_status_polygon",
+          "get_stock_price_and_convert",
+          "resolve_converted_quote_profile",
+          "place_sell_order_from_converted_quote",
+          "create_document_and_alert_from_data",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2"
+        ],
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_balance_data_payload",
+            "arguments": {
+              "balance_data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "rate_data": {
+                "rate": 0.92
+              },
+              "target_currency": "EUR",
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 26482.2
+              },
+              "title": "Cross-Currency Balance and Market Snapshot",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_market_status_polygon",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "error": "Service Unavailable In Your Region"
+            },
+            "status": "error",
+            "error_message": "451 GeoBlocked",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "resolve_converted_quote_profile",
+            "arguments": {
+              "converted_quote": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "ticker": "AAPL"
+            },
+            "output": {
+              "pricing_mode": "converted_quote",
+              "ticker": "AAPL",
+              "reference_price_usd": 170.25,
+              "display_price": 156.63,
+              "display_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "place_sell_order_from_converted_quote",
+            "arguments": {
+              "ticker": "AAPL",
+              "quantity": 10,
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "output": {
+              "order_id": "ORD-SELL-FAEF1",
+              "ticker": "AAPL",
+              "action": "SELL",
+              "quantity": 10,
+              "status": "filled",
+              "realized_pnl": 1702.5,
+              "message": "Order executed successfully",
+              "price_usd": 170.25,
+              "converted_price": 156.63,
+              "target_currency": "EUR"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trade Execution Summary",
+              "data": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trade Execution Summary",
+              "tags": [
+                "finance",
+                "trade",
+                "sell-order"
+              ],
+              "source_type": "dict",
+              "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_balance_data_payload",
+              "arguments": {
+                "balance_data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "currency": "USD",
+                  "status": "active"
+                },
+                "rate_data": {
+                  "rate": 0.92
+                },
+                "target_currency": "EUR",
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_01",
+                  "account_type": "investment",
+                  "balance": 28785,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 26482.2
+                },
+                "title": "Cross-Currency Balance and Market Snapshot",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_market_status_polygon",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "error": "Service Unavailable In Your Region"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_converted_quote_profile",
+              "arguments": {
+                "converted_quote": {
+                  "price": 156.63,
+                  "currency": "EUR",
+                  "ticker": "AAPL",
+                  "price_usd": 170.25,
+                  "rate": 0.92
+                },
+                "ticker": "AAPL"
+              },
+              "output": {
+                "pricing_mode": "converted_quote",
+                "ticker": "AAPL",
+                "reference_price_usd": 170.25,
+                "display_price": 156.63,
+                "display_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_sell_order_from_converted_quote",
+              "arguments": {
+                "ticker": "AAPL",
+                "quantity": 10,
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "output": {
+                "order_id": "ORD-SELL-FAEF1",
+                "ticker": "AAPL",
+                "action": "SELL",
+                "quantity": 10,
+                "status": "filled",
+                "realized_pnl": 1702.5,
+                "message": "Order executed successfully",
+                "price_usd": 170.25,
+                "converted_price": 156.63,
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trade Execution Summary",
+                "data": {
+                  "order_id": "ORD-SELL-FAEF1",
+                  "ticker": "AAPL",
+                  "action": "SELL",
+                  "quantity": 10,
+                  "status": "filled",
+                  "realized_pnl": 1702.5,
+                  "message": "Order executed successfully",
+                  "price_usd": 170.25,
+                  "converted_price": 156.63,
+                  "target_currency": "EUR"
+                },
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"price_usd\": 170.25, \"quantity\": 10, \"realized_pnl\": 1702.5, \"status\": \"filled\", \"target_currency\": \"EUR\", \"ticker\": \"AAPL\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trade Execution Summary",
+                "tags": [
+                  "finance",
+                  "trade",
+                  "sell-order"
+                ],
+                "source_type": "dict",
+                "serialized_preview": "{\"action\": \"SELL\", \"converted_price\": 156.63, \"message\": \"Order executed successfully\", \"order_id\": \"ORD-SELL-FAEF1\", \"p"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_bank_balance_sheet_native",
+      "get_broker_balance_ledger_native",
+      "get_exchange_rate_currencyapi",
+      "get_exchange_rate_fixer",
+      "get_stock_price_and_convert",
+      "get_stock_yahoo_finance",
+      "publish_bank_balance_sheet_native",
+      "publish_broker_balance_ledger_native",
+      "resolve_converted_quote_profile",
+      "resolve_direct_quote_profile"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s2",
+        "s5",
+        "s8"
+      ]
+    }
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T12:32:48.700248+00:00",
+  "end_time": "2026-10-24T12:33:04.424460+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_broker_balance_ledger_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_broker_balance_ledger_native"
+  ],
+  "tokens": {
+    "input_tokens": 4968,
+    "output_tokens": 656,
+    "total_tokens": 5624
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, for user_01, please check the status of my investment account and get the USD-to-EUR exchange rate. Then prepare and send me a high priority email with my cross-currency balance in EUR and a market snapshot. After that, please check whether NASDAQ is open, get the current AAPL price, and use that quote to sell 10 shares of AAPL. Once the trade is done, send me a high priority email with the trade execution summary. Finally, retrieve my investment balance sheet and publish it to me by email.",
+      "account_type": "investment",
+      "channel": "email",
+      "exchange": "NASDAQ",
+      "priority": "high",
+      "quantity": 10,
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "user_id": "user_01"
+    },
+    "task_description": "Please check the status of my investment account, get the USD-to-EUR exchange rate, and then prepare a high-priority email with a cross-currency balance and market snapshot for me. After that, check whether NASDAQ is open, get the current AAPL price, use that quote to sell 10 shares of AAPL, and then email me a high-priority trade execution summary. Finally, retrieve my investment balance sheet and publish it to me by email.",
+    "template_id": "C4_template_050",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_broker_balance_ledger_native'], matching recorded execution failure in tools ['get_broker_balance_ledger_native', 'get_broker_balance_ledger_native'] leading to task failure.",
+    "configured_count": 24,
+    "activated_count": 2,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_050_path_0_get_exchange_rate_fixer",
+        "target_tool": "get_exchange_rate_fixer",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Not Found"
+        },
+        "error_message": "404 NotFound",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_0_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_0_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_1_get_exchange_rate_fixer",
+        "target_tool": "get_exchange_rate_fixer",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_1_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_1_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_2_get_exchange_rate_fixer",
+        "target_tool": "get_exchange_rate_fixer",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_2_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_2_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_3_get_exchange_rate_fixer",
+        "target_tool": "get_exchange_rate_fixer",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_3_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_3_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:fixer",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_4_get_exchange_rate_currencyapi",
+        "target_tool": "get_exchange_rate_currencyapi",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_4_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Feature Discontinued"
+        },
+        "error_message": "410 FeatureDiscontinued",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_4_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_5_get_exchange_rate_currencyapi",
+        "target_tool": "get_exchange_rate_currencyapi",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_5_get_stock_yahoo_finance",
+        "target_tool": "get_stock_yahoo_finance",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_5_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:direct_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_6_get_exchange_rate_currencyapi",
+        "target_tool": "get_exchange_rate_currencyapi",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_6_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Not Found"
+        },
+        "error_message": "404 NotFound",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_6_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Not Found"
+        },
+        "error_message": "404 NotFound",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_7_get_exchange_rate_currencyapi",
+        "target_tool": "get_exchange_rate_currencyapi",
+        "step": 2,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_7_get_stock_price_and_convert",
+        "target_tool": "get_stock_price_and_convert",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Unavailable In Your Region"
+        },
+        "error_message": "451 GeoBlocked",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_050_path_7_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 9,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_exchange_rate_fixer_currencyapi:currencyapi",
+          "alt_quote_profile_resolution_2to2:converted_quote_profile",
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_broker_balance_ledger_native",
+        "tool_name": "get_broker_balance_ledger_native",
+        "step": 1,
+        "timestamp": "2026-10-24T12:33:01.438130+00:00",
+        "config_id": "C4_task_050_path_1_get_broker_balance_ledger_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "user_id": "user_01",
+          "account_type": "investment"
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_get_broker_balance_ledger_native",
+        "tool_name": "get_broker_balance_ledger_native",
+        "step": 2,
+        "timestamp": "2026-10-24T12:33:04.422313+00:00",
+        "config_id": "C4_task_050_path_1_get_broker_balance_ledger_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "account_type": "investment",
+          "user_id": "user_01"
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_broker_balance_ledger_native",
+      "tool_name": "get_broker_balance_ledger_native",
+      "arguments": {
+        "user_id": "user_01",
+        "account_type": "investment"
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.25137909688055515,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T12:33:01.438130+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_broker_balance_ledger_native",
+      "tool_name": "get_broker_balance_ledger_native",
+      "arguments": {
+        "account_type": "investment",
+        "user_id": "user_01"
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.2271370030939579,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T12:33:04.422313+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_broker_balance_ledger_native",
+      "tool_name": "get_broker_balance_ledger_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.004
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.001
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.001
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.001
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T12:33:01.438476+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_broker_balance_ledger_native",
+      "tool_name": "get_broker_balance_ledger_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.005
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.001
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T12:33:04.422632+00:00"
+    }
+  ],
+  "diagnoses": [
+    {
+      "tool_name": "get_broker_balance_ledger_native",
+      "category": "external_service_error",
+      "persistence": "transient",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "retry",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "get_broker_balance_ledger_native",
+          "execution_id": "5453e47f-fa50-4a93-8881-544762d37041",
+          "task_id": "task_0",
+          "step": 1,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.044,
+          "timestamp": "2026-10-24T12:33:01.438814+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-24T12:33:01.438960+00:00"
+    },
+    {
+      "tool_name": "get_broker_balance_ledger_native",
+      "category": "external_service_error",
+      "persistence": "permanent",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "reroute",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "get_broker_balance_ledger_native",
+          "execution_id": "5453e47f-fa50-4a93-8881-544762d37041",
+          "task_id": "task_0",
+          "step": 2,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.028,
+          "timestamp": "2026-10-24T12:33:04.422945+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-24T12:33:04.423075+00:00"
+    }
+  ],
+  "recovery_events": [
+    {
+      "failed_tool": "get_broker_balance_ledger_native",
+      "action": "retry",
+      "suggested_tool": "get_broker_balance_ledger_native",
+      "remaining_budget": 5,
+      "loop_warning": null,
+      "rationale": "Transient failure detected on 'get_broker_balance_ledger_native'. Budget allows retry.",
+      "timestamp": "2026-10-24T12:33:01.439327+00:00"
+    },
+    {
+      "failed_tool": "get_broker_balance_ledger_native",
+      "action": "abort",
+      "suggested_tool": null,
+      "remaining_budget": 4,
+      "loop_warning": "Immediate loop detected: Tool 'get_broker_balance_ledger_native' called 2 times consecutively without progress. Tool marked for rerouting.",
+      "rationale": "Tool 'get_broker_balance_ledger_native' is blacklisted and no healthy alternatives exist in DAG.",
+      "timestamp": "2026-10-24T12:33:04.423442+00:00"
+    }
+  ],
+  "dag_decisions": [
+    {
+      "failed_tool": "get_broker_balance_ledger_native",
+      "candidate_tools": [
+        "get_broker_balance_ledger_native"
+      ],
+      "selected_tool": "get_broker_balance_ledger_native",
+      "is_viable": true,
+      "reason": "Transient failure detected on 'get_broker_balance_ledger_native'. Budget allows retry.",
+      "target_path": null,
+      "timestamp": "2026-10-24T12:33:01.439459+00:00"
+    }
+  ],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_broker_balance_ledger_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_broker_balance_ledger_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_balance_data_payload",
+        "create_document_and_alert_from_data",
+        "get_account_balance_bank_api",
+        "get_bank_balance_sheet_native",
+        "get_exchange_rate_fixer",
+        "get_market_status_polygon",
+        "get_stock_yahoo_finance",
+        "place_sell_order_from_converted_quote",
+        "publish_bank_balance_sheet_native",
+        "resolve_direct_quote_profile"
+      ],
+      "insufficient_calls": {
+        "get_account_balance_bank_api": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_exchange_rate_fixer": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_balance_data_payload": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_market_status_polygon": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_stock_yahoo_finance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "resolve_direct_quote_profile": {
+          "expected": 1,
+          "actual": 0
+        },
+        "place_sell_order_from_converted_quote": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert_from_data": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_fixer",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_fixer",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_fixer",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_fixer",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_currencyapi",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_currencyapi",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_yahoo_finance",
+              "resolve_direct_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_currencyapi",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "get_account_balance_bank_api",
+              "get_exchange_rate_currencyapi",
+              "build_balance_data_payload",
+              "get_market_status_polygon",
+              "get_stock_price_and_convert",
+              "resolve_converted_quote_profile",
+              "place_sell_order_from_converted_quote",
+              "create_document_and_alert_from_data",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_bank_balance_sheet_native",
+          "get_broker_balance_ledger_native",
+          "get_exchange_rate_currencyapi",
+          "get_exchange_rate_fixer",
+          "get_stock_price_and_convert",
+          "get_stock_yahoo_finance",
+          "publish_bank_balance_sheet_native",
+          "publish_broker_balance_ledger_native",
+          "resolve_converted_quote_profile",
+          "resolve_direct_quote_profile"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s2",
+            "s5",
+            "s8"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_broker_balance_ledger_native",
+          "get_broker_balance_ledger_native"
+        ]
+      }
+    }
+  }
+}

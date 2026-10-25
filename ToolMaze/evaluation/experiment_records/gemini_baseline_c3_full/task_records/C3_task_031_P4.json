@@ -1,0 +1,829 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_031",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_031",
+    "template_id": "C3_template_031",
+    "complexity": "C3",
+    "task_description": "I have a sequence of tasks for you. First, check the weather in Tokyo and look up the gate board details for flight CA1234. Next, publish a high-priority gate board notice on the app for user usr_98765. After that, archive the moderate \"Flight Weather Alert\" card (alert ID wa_001) for the same user via the app, and build a high-priority contact alert payload for Alice Chen with the message \"Flight Weather Alert\". Finally, get a workplace room pass for at least 2 people on January 16, 2026, starting at 09:00, and fetch the latest business news.",
+    "user_input": {
+      "query": "Could you please check the weather in Tokyo and look up the gate board details for flight CA1234? After that, I need you to publish a high-priority gate board notice on the app for user usr_98765. Please also archive the moderate severity \"Flight Weather Alert\" card with alert ID wa_001 for user usr_98765, and build a high-priority contact alert payload for Alice Chen with the message \"Flight Weather Alert\". Finally, can you get a workplace room pass for at least 2 people on 2026-01-16 starting at 09:00 and fetch the latest business news for me?",
+      "alert_card_data": {
+        "alert_id": "wa_001",
+        "severity": "moderate"
+      },
+      "contact_data": {
+        "user_id": "usr_98765",
+        "name": "Alice Chen"
+      },
+      "destination_city": "Tokyo",
+      "flight_number": "CA1234",
+      "meeting_date": "2026-01-16",
+      "meeting_time": "09:00",
+      "user_id": "usr_98765"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_weather_openweather",
+          "get_aviationstack_gate_board_native",
+          "publish_gate_board_notice_native",
+          "archive_weatherapi_alert_card_native",
+          "build_contact_alert_payload",
+          "get_workplace_room_pass_native",
+          "get_news_currents"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "board_ref": "DEBUG: API endpoint: /internal/v1/gate_lookup/CA1234",
+              "flight_code": "gpt-4o-mini-processed-CA1234",
+              "dep_airport": "SELECT * FROM global_airports WHERE iata='PEK' -- internal_query",
+              "arr_airport": "INTERNAL_PATH: /usr/local/bin/worker/logs/destination_Shanghai",
+              "gate_label": "NullPointerException at com.aviation.GateMapper.java:42",
+              "status_text": "ERROR: Connection refused to legacy_db_01.internal.net"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_gate_board_notice_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "user_id": "usr_98765",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "gate_board_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "usr_98765",
+              "transport_ref": "gate_ca1234",
+              "content": "CA1234 On Time at gate A12"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_id": "wa_001",
+                "severity": "moderate"
+              },
+              "title": "Flight Weather Alert",
+              "user_id": "usr_98765",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Flight Weather Alert",
+              "weather_ref": "weatherapi_alert_card"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "user_id": "usr_98765",
+                "name": "Alice Chen"
+              },
+              "message": "Flight Weather Alert",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "usr_98765",
+              "recipient_name": "Alice Chen",
+              "message": "Flight Weather Alert",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 2,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "board_ref": "DEBUG: API endpoint: /internal/v1/gate_lookup/CA1234",
+                "flight_code": "gpt-4o-mini-processed-CA1234",
+                "dep_airport": "SELECT * FROM global_airports WHERE iata='PEK' -- internal_query",
+                "arr_airport": "INTERNAL_PATH: /usr/local/bin/worker/logs/destination_Shanghai",
+                "gate_label": "NullPointerException at com.aviation.GateMapper.java:42",
+                "status_text": "ERROR: Connection refused to legacy_db_01.internal.net"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_gate_board_notice_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_ca1234",
+                  "flight_code": "CA1234",
+                  "dep_airport": "Beijing Capital Airport",
+                  "arr_airport": "Shanghai Pudong Airport",
+                  "gate_label": "A12",
+                  "status_text": "On Time"
+                },
+                "user_id": "usr_98765",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "gate_board_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "usr_98765",
+                "transport_ref": "gate_ca1234",
+                "content": "CA1234 On Time at gate A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_id": "wa_001",
+                  "severity": "moderate"
+                },
+                "title": "Flight Weather Alert",
+                "user_id": "usr_98765",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "weatherapi_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Flight Weather Alert",
+                "weather_ref": "weatherapi_alert_card"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "user_id": "usr_98765",
+                  "name": "Alice Chen"
+                },
+                "message": "Flight Weather Alert",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "usr_98765",
+                "recipient_name": "Alice Chen",
+                "message": "Flight Weather Alert",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 2,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_weather_openweather",
+          "get_flightaware_trip_timeline_native",
+          "publish_trip_timeline_notice_native",
+          "archive_weatherapi_alert_card_native",
+          "build_contact_alert_payload",
+          "get_workplace_room_pass_native",
+          "get_news_currents"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "timeline_id": "trip_ca1234_DEBUG_sql_query: SELECT * FROM users",
+              "flight_no": "CA1234_model_used: gpt-4o-mini",
+              "route_text": "API endpoint: /internal/path/routes/PEK-PVG",
+              "latest_state": "NullPointerException at FlightStateMapper.java:42",
+              "checkpoint_gate": "A12_internal_db_host: 10.0.4.12"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "publish_trip_timeline_notice_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "user_id": "usr_98765",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "trip_timeline_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "usr_98765",
+              "transport_ref": "trip_ca1234",
+              "content": "CA1234 On Time on Beijing Capital Airport -> Shanghai Pudong Airport"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_id": "wa_001",
+                "severity": "moderate"
+              },
+              "title": "Flight Weather Alert",
+              "user_id": "usr_98765",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "weatherapi_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Flight Weather Alert",
+              "weather_ref": "weatherapi_alert_card"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "user_id": "usr_98765",
+                "name": "Alice Chen"
+              },
+              "message": "Flight Weather Alert",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "usr_98765",
+              "recipient_name": "Alice Chen",
+              "message": "Flight Weather Alert",
+              "priority": "high",
+              "channel": "app"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 2,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "wp_meeting_room_1",
+              "resource_label": "Meeting Room 1",
+              "max_people": 20,
+              "reserve_date": "2026-01-16",
+              "slot_begin": "09:00",
+              "room_name": "Meeting Room 1"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "timeline_id": "trip_ca1234_DEBUG_sql_query: SELECT * FROM users",
+                "flight_no": "CA1234_model_used: gpt-4o-mini",
+                "route_text": "API endpoint: /internal/path/routes/PEK-PVG",
+                "latest_state": "NullPointerException at FlightStateMapper.java:42",
+                "checkpoint_gate": "A12_internal_db_host: 10.0.4.12"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_trip_timeline_notice_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_ca1234",
+                  "flight_no": "CA1234",
+                  "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "A12"
+                },
+                "user_id": "usr_98765",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "trip_timeline_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "usr_98765",
+                "transport_ref": "trip_ca1234",
+                "content": "CA1234 On Time on Beijing Capital Airport -> Shanghai Pudong Airport"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "archive_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_id": "wa_001",
+                  "severity": "moderate"
+                },
+                "title": "Flight Weather Alert",
+                "user_id": "usr_98765",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "weatherapi_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Flight Weather Alert",
+                "weather_ref": "weatherapi_alert_card"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "user_id": "usr_98765",
+                  "name": "Alice Chen"
+                },
+                "message": "Flight Weather Alert",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "usr_98765",
+                "recipient_name": "Alice Chen",
+                "message": "Flight Weather Alert",
+                "priority": "high",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_workplace_room_pass_native",
+              "arguments": {
+                "min_capacity": 2,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native",
+      "publish_gate_board_notice_native",
+      "publish_trip_timeline_notice_native"
+    ],
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 1,
+    "corruption_type": "tool_leakage"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T03:12:47.479682+00:00",
+  "end_time": "2026-10-25T03:14:28.567262+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the weather in Tokyo and look up the gate board details for flight CA1234? After that, I need you to publish a high-priority gate board notice on the app for user usr_98765. Please also archive the moderate severity \"Flight Weather Alert\" card with alert ID wa_001 for user usr_98765, and build a high-priority contact alert payload for Alice Chen with the message \"Flight Weather Alert\". Finally, can you get a workplace room pass for at least 2 people on 2026-01-16 starting at 09:00 and fetch the latest business news for me?",
+      "alert_card_data": {
+        "alert_id": "wa_001",
+        "severity": "moderate"
+      },
+      "contact_data": {
+        "user_id": "usr_98765",
+        "name": "Alice Chen"
+      },
+      "destination_city": "Tokyo",
+      "flight_number": "CA1234",
+      "meeting_date": "2026-01-16",
+      "meeting_time": "09:00",
+      "user_id": "usr_98765"
+    },
+    "task_description": "I have a sequence of tasks for you. First, check the weather in Tokyo and look up the gate board details for flight CA1234. Next, publish a high-priority gate board notice on the app for user usr_98765. After that, archive the moderate \"Flight Weather Alert\" card (alert ID wa_001) for the same user via the app, and build a high-priority contact alert payload for Alice Chen with the message \"Flight Weather Alert\". Finally, get a workplace room pass for at least 2 people on January 16, 2026, starting at 09:00, and fetch the latest business news.",
+    "template_id": "C3_template_031",
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_aviationstack_gate_board_native', 'get_flightaware_trip_timeline_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_031_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "board_ref": "DEBUG: API endpoint: /internal/v1/gate_lookup/CA1234",
+          "flight_code": "gpt-4o-mini-processed-CA1234",
+          "dep_airport": "SELECT * FROM global_airports WHERE iata='PEK' -- internal_query",
+          "arr_airport": "INTERNAL_PATH: /usr/local/bin/worker/logs/destination_Shanghai",
+          "gate_label": "NullPointerException at com.aviation.GateMapper.java:42",
+          "status_text": "ERROR: Connection refused to legacy_db_01.internal.net"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_031_path_1_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "timeline_id": "trip_ca1234_DEBUG_sql_query: SELECT * FROM users",
+          "flight_no": "CA1234_model_used: gpt-4o-mini",
+          "route_text": "API endpoint: /internal/path/routes/PEK-PVG",
+          "latest_state": "NullPointerException at FlightStateMapper.java:42",
+          "checkpoint_gate": "A12_internal_db_host: 10.0.4.12"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_weatherapi_alert_card_native",
+        "build_contact_alert_payload",
+        "get_aviationstack_gate_board_native",
+        "get_news_currents",
+        "get_weather_openweather",
+        "get_workplace_room_pass_native",
+        "publish_gate_board_notice_native"
+      ],
+      "insufficient_calls": {
+        "get_weather_openweather": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_gate_board_notice_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_contact_alert_payload": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_workplace_room_pass_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_news_currents": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_weather_openweather",
+              "get_aviationstack_gate_board_native",
+              "publish_gate_board_notice_native",
+              "archive_weatherapi_alert_card_native",
+              "build_contact_alert_payload",
+              "get_workplace_room_pass_native",
+              "get_news_currents"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_weather_openweather",
+              "get_flightaware_trip_timeline_native",
+              "publish_trip_timeline_notice_native",
+              "archive_weatherapi_alert_card_native",
+              "build_contact_alert_payload",
+              "get_workplace_room_pass_native",
+              "get_news_currents"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native",
+          "publish_gate_board_notice_native",
+          "publish_trip_timeline_notice_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

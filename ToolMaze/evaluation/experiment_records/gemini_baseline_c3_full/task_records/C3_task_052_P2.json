@@ -1,0 +1,728 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_052",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_052",
+    "template_id": "C3_template_052",
+    "complexity": "C3",
+    "task_description": "Please get the information for the Hilton Tokyo and book a deluxe room there for John Doe from May 12th to May 15th, 2026. After that, look up the gate information for flight CA1234, archive those flight details for my trip, analyze the archive record, and finally send me a high-priority email notification confirming that the hotel is booked and the flight details are archived.",
+    "user_input": {
+      "query": "Can you get the information for the Hilton Tokyo and book a deluxe room for John Doe? The dates are 2026-05-12 for check-in and 2026-05-15 for check-out. After making the booking, please look up the gate information for flight CA1234, archive those flight details for my trip, and analyze the archive record. Finally, since my account ID is user_99, please send me a high-priority email notification confirming: Your hotel is booked and flight details have been archived.",
+      "check_in": "2026-05-12",
+      "check_out": "2026-05-15",
+      "confirmation_message": "Your hotel is booked and flight details have been archived.",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Hilton Tokyo",
+      "notification_channel": "email",
+      "room_type": "deluxe",
+      "user_id": "user_99"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_hotel_info",
+          "book_hotel",
+          "get_aviationstack_gate_board_native",
+          "archive_aviationstack_gate_board_native",
+          "analyze_text",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-05-12",
+              "check_out_date": "2026-05-15",
+              "guest_name": "John Doe",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "John Doe",
+              "check_in_date": "2026-05-12",
+              "check_out_date": "2026-05-15",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_aviationstack_gate_board_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_ca1234",
+                "flight_code": "CA1234",
+                "dep_airport": "Beijing Capital Airport",
+                "arr_airport": "Shanghai Pudong Airport",
+                "gate_label": "A12",
+                "status_text": "On Time"
+              },
+              "title": "Trip Flight Archive",
+              "user_id": "user_99",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "aviationstack_gate_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Flight Archive",
+              "transport_ref": "gate_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "aviationstack_gate_archive_native"
+            },
+            "output": {
+              "raw_content": "aviationstack_gate_archive_native",
+              "character_count": 33,
+              "word_count": 1,
+              "line_count": 1,
+              "alphabetic_count": 30,
+              "digit_count": 0,
+              "whitespace_count": 0,
+              "longest_word": "aviationstack_gate_archive_native",
+              "longest_word_length": 33,
+              "average_word_length": 33.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your hotel is booked and flight details have been archived.",
+              "user_id": "user_99",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_99",
+              "content": "Your hotel is booked and flight details have been archived.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo",
+                "check_in_date": "2026-05-12",
+                "check_out_date": "2026-05-15",
+                "guest_name": "John Doe",
+                "room_type": "deluxe"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Hilton Tokyo",
+                "guest_name": "John Doe",
+                "check_in_date": "2026-05-12",
+                "check_out_date": "2026-05-15",
+                "room_type": "deluxe",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_aviationstack_gate_board_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_ca1234",
+                  "flight_code": "CA1234",
+                  "dep_airport": "Beijing Capital Airport",
+                  "arr_airport": "Shanghai Pudong Airport",
+                  "gate_label": "A12",
+                  "status_text": "On Time"
+                },
+                "title": "Trip Flight Archive",
+                "user_id": "user_99",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "aviationstack_gate_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Flight Archive",
+                "transport_ref": "gate_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "analyze_text",
+              "arguments": {
+                "text": "aviationstack_gate_archive_native"
+              },
+              "output": {
+                "raw_content": "aviationstack_gate_archive_native",
+                "character_count": 33,
+                "word_count": 1,
+                "line_count": 1,
+                "alphabetic_count": 30,
+                "digit_count": 0,
+                "whitespace_count": 0,
+                "longest_word": "aviationstack_gate_archive_native",
+                "longest_word_length": 33,
+                "average_word_length": 33.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your hotel is booked and flight details have been archived.",
+                "user_id": "user_99",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_99",
+                "content": "Your hotel is booked and flight details have been archived.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_hotel_info",
+          "book_hotel",
+          "get_flightaware_trip_timeline_native",
+          "archive_flightaware_trip_timeline_native",
+          "analyze_text",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-05-12",
+              "check_out_date": "2026-05-15",
+              "guest_name": "John Doe",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "John Doe",
+              "check_in_date": "2026-05-12",
+              "check_out_date": "2026-05-15",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "error": "Data Source Retired"
+            },
+            "status": "error",
+            "error_message": "410 DataSourceRetired",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_flightaware_trip_timeline_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_ca1234",
+                "flight_no": "CA1234",
+                "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                "latest_state": "On Time",
+                "checkpoint_gate": "A12"
+              },
+              "title": "Trip Flight Archive",
+              "user_id": "user_99",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "flightaware_timeline_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Flight Archive",
+              "transport_ref": "trip_ca1234"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "flightaware_timeline_archive_native"
+            },
+            "output": {
+              "raw_content": "flightaware_timeline_archive_native",
+              "character_count": 35,
+              "word_count": 1,
+              "line_count": 1,
+              "alphabetic_count": 32,
+              "digit_count": 0,
+              "whitespace_count": 0,
+              "longest_word": "flightaware_timeline_archive_native",
+              "longest_word_length": 35,
+              "average_word_length": 35.0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Your hotel is booked and flight details have been archived.",
+              "user_id": "user_99",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_99",
+              "content": "Your hotel is booked and flight details have been archived.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo",
+                "location": "Tokyo, Japan",
+                "price_per_night": 180,
+                "currency": "USD",
+                "rating": 4.5,
+                "availability": "Available"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo",
+                "check_in_date": "2026-05-12",
+                "check_out_date": "2026-05-15",
+                "guest_name": "John Doe",
+                "room_type": "deluxe"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Hilton Tokyo",
+                "guest_name": "John Doe",
+                "check_in_date": "2026-05-12",
+                "check_out_date": "2026-05-15",
+                "room_type": "deluxe",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "error": "Data Source Retired"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_flightaware_trip_timeline_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_ca1234",
+                  "flight_no": "CA1234",
+                  "route_text": "Beijing Capital Airport -> Shanghai Pudong Airport",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "A12"
+                },
+                "title": "Trip Flight Archive",
+                "user_id": "user_99",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "flightaware_timeline_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Flight Archive",
+                "transport_ref": "trip_ca1234"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "analyze_text",
+              "arguments": {
+                "text": "flightaware_timeline_archive_native"
+              },
+              "output": {
+                "raw_content": "flightaware_timeline_archive_native",
+                "character_count": 35,
+                "word_count": 1,
+                "line_count": 1,
+                "alphabetic_count": 32,
+                "digit_count": 0,
+                "whitespace_count": 0,
+                "longest_word": "flightaware_timeline_archive_native",
+                "longest_word_length": 35,
+                "average_word_length": 35.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Your hotel is booked and flight details have been archived.",
+                "user_id": "user_99",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_99",
+                "content": "Your hotel is booked and flight details have been archived.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_aviationstack_gate_board_native",
+      "archive_flightaware_trip_timeline_native",
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native"
+    ],
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 2
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T04:39:47.113198+00:00",
+  "end_time": "2026-10-25T04:41:26.763704+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Can you get the information for the Hilton Tokyo and book a deluxe room for John Doe? The dates are 2026-05-12 for check-in and 2026-05-15 for check-out. After making the booking, please look up the gate information for flight CA1234, archive those flight details for my trip, and analyze the archive record. Finally, since my account ID is user_99, please send me a high-priority email notification confirming: Your hotel is booked and flight details have been archived.",
+      "check_in": "2026-05-12",
+      "check_out": "2026-05-15",
+      "confirmation_message": "Your hotel is booked and flight details have been archived.",
+      "flight_number": "CA1234",
+      "guest_name": "John Doe",
+      "hotel_name": "Hilton Tokyo",
+      "notification_channel": "email",
+      "room_type": "deluxe",
+      "user_id": "user_99"
+    },
+    "task_description": "Please get the information for the Hilton Tokyo and book a deluxe room there for John Doe from May 12th to May 15th, 2026. After that, look up the gate information for flight CA1234, archive those flight details for my trip, analyze the archive record, and finally send me a high-priority email notification confirming that the hotel is booked and the flight details are archived.",
+    "template_id": "C3_template_052",
+    "domains": [
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['get_aviationstack_gate_board_native', 'get_flightaware_trip_timeline_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_052_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:aviationstack_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_052_path_1_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Data Source Retired"
+        },
+        "error_message": "410 DataSourceRetired",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_archive_native_2to2:flightaware_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "analyze_text",
+        "archive_aviationstack_gate_board_native",
+        "book_hotel",
+        "get_aviationstack_gate_board_native",
+        "get_hotel_info",
+        "push_alert"
+      ],
+      "insufficient_calls": {
+        "get_hotel_info": {
+          "expected": 1,
+          "actual": 0
+        },
+        "book_hotel": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "analyze_text": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_hotel_info",
+              "book_hotel",
+              "get_aviationstack_gate_board_native",
+              "archive_aviationstack_gate_board_native",
+              "analyze_text",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_hotel_info",
+              "book_hotel",
+              "get_flightaware_trip_timeline_native",
+              "archive_flightaware_trip_timeline_native",
+              "analyze_text",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_aviationstack_gate_board_native",
+          "archive_flightaware_trip_timeline_native",
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

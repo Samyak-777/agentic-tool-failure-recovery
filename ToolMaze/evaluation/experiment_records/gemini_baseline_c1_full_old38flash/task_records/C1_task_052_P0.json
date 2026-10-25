@@ -1,0 +1,446 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_052",
+  "mode": "P0",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_052",
+    "template_id": "C1_template_052",
+    "complexity": "C1",
+    "task_description": "Please check whether the Sony WH-1000XM5 in black is in stock, then reserve the best available recommendation for me if needed. After that, create an invoice from that reservation using my email and Stripe, send me an in-app alert with a summary of the item and payment, and then place the order for 1 using my credit card with the best discount available.",
+    "user_input": {
+      "query": "Please check whether the Sony WH-1000XM5 in black is in stock for product_id p_sony_xm5_blk. If it isn’t available, reserve the best available recommendation for me in the books category, using the tags finance and travel. Then create an invoice from that reservation and send it to user@example.com using stripe. After that, send me an in-app alert for user_id user_001 with the title Trip Summary and include a summary of the item and payment. Finally, place the order for quantity 1 using my credit_card and apply the best discount available.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "payment_method": "credit_card",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "recommendation_category": "books",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_stock_level",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk"
+        },
+        "output": {
+          "product_id": "p_sony_xm5_blk",
+          "name": "Sony WH-1000XM5 Headphones (Black)",
+          "stock": 10,
+          "status": "in_stock",
+          "low_stock_warning": false
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "hold_best_recommendation",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 1,
+          "user_id": "user_001",
+          "category": "books"
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 1,
+          "total_price": 399.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 1,
+            "total_price": 399.0
+          },
+          "original_product_id": "p_sony_xm5_blk",
+          "recommended_product_id": "p_sony_xm5_slv",
+          "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+          "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+          "selected_relevance_score": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "build_invoice_from_hold",
+        "arguments": {
+          "hold_data": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 1,
+            "total_price": 399.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+            "selected_relevance_score": 3
+          },
+          "quantity": 1,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "output": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            }
+          ],
+          "payment_amount": 399.0,
+          "reservation_id": "RESV-14729548",
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "create_document_and_alert_from_data",
+        "arguments": {
+          "title": "Trip Summary",
+          "data": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              }
+            ],
+            "payment_amount": 399.0,
+            "reservation_id": "RESV-14729548",
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "user_id": "user_001",
+          "priority": "medium",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "{\"email\": \"user@example.com\", \"items\": [{\"product_id\": \"p_sony_xm5_slv\", \"quantity\": 1}], \"payment_amount\": 399.0, \"payment_gateway\": \"stripe\", \"reservation_id\": \"RESV-14729548\", \"user_id\": \"user_001\"}",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "source_type": "dict",
+          "serialized_preview": "{\"email\": \"user@example.com\", \"items\": [{\"product_id\": \"p_sony_xm5_slv\", \"quantity\": 1}], \"payment_amount\": 399.0, \"paym"
+        },
+        "status": "success"
+      },
+      {
+        "step": 5,
+        "tool_name": "submit_order_with_best_discount",
+        "arguments": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1
+            }
+          ],
+          "user_id": "user_001",
+          "payment_method": "credit_card"
+        },
+        "output": {
+          "order_id": "ORD-8B2C1D3E",
+          "status": "confirmed",
+          "total_amount": 359.1,
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "name": "Sony WH-1000XM5 Headphones (Black)",
+              "quantity": 1,
+              "subtotal": 399.0
+            }
+          ],
+          "best_coupon_code": "WELCOME10",
+          "estimated_savings": 39.9,
+          "cart_subtotal": 399.0
+        },
+        "status": "success"
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_stock_level",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk"
+          },
+          "output": {
+            "product_id": "p_sony_xm5_blk",
+            "name": "Sony WH-1000XM5 Headphones (Black)",
+            "stock": 10,
+            "status": "in_stock",
+            "low_stock_warning": false
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "hold_best_recommendation",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1,
+            "user_id": "user_001",
+            "category": "books"
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 1,
+            "total_price": 399.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+            "selected_relevance_score": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_invoice_from_hold",
+          "arguments": {
+            "hold_data": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+              "selected_relevance_score": 3
+            },
+            "quantity": 1,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "output": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              }
+            ],
+            "payment_amount": 399.0,
+            "reservation_id": "RESV-14729548",
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document_and_alert_from_data",
+          "arguments": {
+            "title": "Trip Summary",
+            "data": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 399.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "user_id": "user_001",
+            "priority": "medium",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "user_001",
+            "content": "{\"email\": \"user@example.com\", \"items\": [{\"product_id\": \"p_sony_xm5_slv\", \"quantity\": 1}], \"payment_amount\": 399.0, \"payment_gateway\": \"stripe\", \"reservation_id\": \"RESV-14729548\", \"user_id\": \"user_001\"}",
+            "priority": "medium",
+            "note_id": "NOTE18E3D",
+            "title": "Trip Summary",
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "document_timestamp": "2024-12-08 12:00:00",
+            "source_type": "dict",
+            "serialized_preview": "{\"email\": \"user@example.com\", \"items\": [{\"product_id\": \"p_sony_xm5_slv\", \"quantity\": 1}], \"payment_amount\": 399.0, \"paym"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "submit_order_with_best_discount",
+          "arguments": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 1
+              }
+            ],
+            "user_id": "user_001",
+            "payment_method": "credit_card"
+          },
+          "output": {
+            "order_id": "ORD-8B2C1D3E",
+            "status": "confirmed",
+            "total_amount": 359.1,
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "name": "Sony WH-1000XM5 Headphones (Black)",
+                "quantity": 1,
+                "subtotal": 399.0
+              }
+            ],
+            "best_coupon_code": "WELCOME10",
+            "estimated_savings": 39.9,
+            "cart_subtotal": 399.0
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": 0
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3.8-flash",
+  "start_time": "2026-10-23T10:50:43.451148+00:00",
+  "end_time": "2026-10-23T10:52:23.327056+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P0 failed: missing required tools: ['create_document_and_alert_from_data', 'get_stock_level', 'hold_best_recommendation', 'build_invoice_from_hold', 'submit_order_with_best_discount']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the Sony WH-1000XM5 in black is in stock for product_id p_sony_xm5_blk. If it isn’t available, reserve the best available recommendation for me in the books category, using the tags finance and travel. Then create an invoice from that reservation and send it to user@example.com using stripe. After that, send me an in-app alert for user_id user_001 with the title Trip Summary and include a summary of the item and payment. Finally, place the order for quantity 1 using my credit_card and apply the best discount available.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "payment_method": "credit_card",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "recommendation_category": "books",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether the Sony WH-1000XM5 in black is in stock, then reserve the best available recommendation for me if needed. After that, create an invoice from that reservation using my email and Stripe, send me an in-app alert with a summary of the item and payment, and then place the order for 1 using my credit card with the best discount available.",
+    "template_id": "C1_template_052",
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3.8-flash",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P0 failed: missing required tools: ['create_document_and_alert_from_data', 'get_stock_level', 'hold_best_recommendation', 'build_invoice_from_hold', 'submit_order_with_best_discount']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "create_document_and_alert_from_data",
+        "get_stock_level",
+        "hold_best_recommendation",
+        "build_invoice_from_hold",
+        "submit_order_with_best_discount"
+      ],
+      "ground_truth": {
+        "execution_trace": [
+          "get_stock_level",
+          "hold_best_recommendation",
+          "build_invoice_from_hold",
+          "create_document_and_alert_from_data",
+          "submit_order_with_best_discount"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

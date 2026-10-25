@@ -1,0 +1,1501 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c2_full",
+  "task_id": "C2_task_008",
+  "mode": "P0",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_008",
+    "template_id": "C2_template_008",
+    "complexity": "C2",
+    "task_description": "Please look up Sony electronics, then check some recommended alternatives and choose one of the recommended items with quantity 2. After that, get Alice’s contact info, generate a Stripe invoice for 2 items totaling 250.0 and send it to alice@company.com, and then create a document titled “Trip Summary” with the content “Summary of today’s events.” tagged finance and travel.",
+    "user_input": {
+      "query": "For user_001, please look up Sony electronics in the electronics category and use max_results 10. Start with product_id p_sony_xm5_blk, then check recommended alternatives and pick one of the recommended items. Also include the items list with product_id prod_001 and quantity 2, and make sure the selected item quantity is 2. Then get contact info for alice and send an invoice for 2 items totaling 250.0 to alice@company.com using stripe. After that, create a document titled Trip Summary with the content \"Summary of today's events.\" and tag it with finance and travel.",
+      "category": "electronics",
+      "contact_name": "alice",
+      "content": "Summary of today's events.",
+      "items": [
+        {
+          "product_id": "prod_001",
+          "quantity": 2
+        }
+      ],
+      "max_results": 10,
+      "payment_amount": 250.0,
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_catalog",
+          "get_recommendations",
+          "select_recommendation",
+          "get_contact_info",
+          "generate_payment_invoice",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_recommendation_default_collaborative:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_catalog",
+            "arguments": {
+              "query": "sony",
+              "category": "electronics",
+              "max_results": 10
+            },
+            "output": {
+              "query": "sony",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_recommendations",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "user_001"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 2
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "generate_payment_invoice",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "prod_001",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 250.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 250.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trip Summary",
+              "content": "Summary of today's events.",
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_catalog": {
+              "query": "sony",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "step_2_get_recommendations": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "step_3_select_recommendation": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2"
+            },
+            "step_4_get_contact_info": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_5_generate_payment_invoice": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 250.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "step_6_create_document": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_catalog",
+          "get_recommendations_collaborative",
+          "select_recommendation",
+          "get_contact_info",
+          "generate_payment_invoice",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_recommendation_default_collaborative:collaborative"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_catalog",
+            "arguments": {
+              "query": "sony",
+              "category": "electronics",
+              "max_results": 10
+            },
+            "output": {
+              "query": "sony",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "user_001"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "select_recommendation",
+            "arguments": {
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "quantity": 2
+            },
+            "output": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "generate_payment_invoice",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "prod_001",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 250.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 250.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Trip Summary",
+              "content": "Summary of today's events.",
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_query_catalog": {
+              "query": "sony",
+              "count": 2,
+              "results": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Black)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_blk"
+                },
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "id": "p_sony_xm5_slv"
+                }
+              ],
+              "hint": "Use check_inventory to verify availability."
+            },
+            "step_2_get_recommendations_collaborative": {
+              "original_product_id": "p_sony_xm5_blk",
+              "count": 2,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found alternatives in the same category."
+            },
+            "step_3_select_recommendation": {
+              "product_id": "p_sony_xm5_slv",
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "relevance_score": 3,
+              "available_stock": 10,
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2"
+            },
+            "step_4_get_contact_info": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "step_5_generate_payment_invoice": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 250.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "step_6_create_document": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "content_length": 26,
+              "tags": [
+                "finance",
+                "travel"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_recommendations",
+      "get_recommendations_collaborative"
+    ],
+    "domains": [
+      "Shopping",
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T13:15:07.549399+00:00",
+  "end_time": "2026-10-23T13:16:26.294834+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['create_document', 'get_contact_info']",
+  "failed_tools": [
+    "generate_payment_invoice"
+  ],
+  "tokens": {
+    "input_tokens": 11832,
+    "output_tokens": 4785,
+    "total_tokens": 16617
+  },
+  "parameters": {
+    "user_input": {
+      "query": "For user_001, please look up Sony electronics in the electronics category and use max_results 10. Start with product_id p_sony_xm5_blk, then check recommended alternatives and pick one of the recommended items. Also include the items list with product_id prod_001 and quantity 2, and make sure the selected item quantity is 2. Then get contact info for alice and send an invoice for 2 items totaling 250.0 to alice@company.com using stripe. After that, create a document titled Trip Summary with the content \"Summary of today's events.\" and tag it with finance and travel.",
+      "category": "electronics",
+      "contact_name": "alice",
+      "content": "Summary of today's events.",
+      "items": [
+        {
+          "product_id": "prod_001",
+          "quantity": 2
+        }
+      ],
+      "max_results": 10,
+      "payment_amount": 250.0,
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please look up Sony electronics, then check some recommended alternatives and choose one of the recommended items with quantity 2. After that, get Alice’s contact info, generate a Stripe invoice for 2 items totaling 250.0 and send it to alice@company.com, and then create a document titled “Trip Summary” with the content “Summary of today’s events.” tagged finance and travel.",
+    "template_id": "C2_template_008",
+    "domains": [
+      "Shopping",
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_catalog",
+      "tool_name": "query_catalog",
+      "arguments": {
+        "category": "electronics",
+        "query": "sony",
+        "max_results": 10
+      },
+      "result_sample": {
+        "query": "sony",
+        "count": 2,
+        "results": [
+          {
+            "name": "Sony WH-1000XM5 Headphones (Black)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "id": "p_sony_xm5_blk"
+          },
+          {
+            "name": "Sony WH-1000XM5 Headphones (Silver)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "id": "p_sony_xm5_slv"
+          }
+        ],
+        "hint": "Use check_inventory to verify availability."
+      },
+      "status": "success",
+      "duration_ms": 0.4044740926474333,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:15:51.381907+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_recommendations",
+      "tool_name": "get_recommendations",
+      "arguments": {
+        "user_id": "user_001",
+        "product_id": "p_sony_xm5_blk"
+      },
+      "result_sample": {
+        "original_product_id": "p_sony_xm5_blk",
+        "count": 2,
+        "similar_products": [
+          {
+            "name": "Sony WH-1000XM5 Headphones (Silver)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "stock": 10,
+            "id": "p_sony_xm5_slv",
+            "relevance_score": 3
+          },
+          {
+            "name": "Apple AirPods Pro 2",
+            "price": 249.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "apple",
+              "earbuds"
+            ],
+            "stock": 50,
+            "id": "p_apple_airpods",
+            "relevance_score": 1
+          }
+        ],
+        "message": "Found alternatives in the same category."
+      },
+      "status": "success",
+      "duration_ms": 0.33339892979711294,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:15:56.088464+00:00"
+    },
+    {
+      "call_id": "tc_3_3_select_recommendation",
+      "tool_name": "select_recommendation",
+      "arguments": {
+        "similar_products": [
+          {
+            "id": "p_sony_xm5_slv",
+            "name": "Sony WH-1000XM5 Headphones (Silver)",
+            "price": 399,
+            "relevance_score": 3,
+            "stock": 10
+          },
+          {
+            "id": "p_apple_airpods",
+            "name": "Apple AirPods Pro 2",
+            "price": 249,
+            "relevance_score": 1,
+            "stock": 50
+          }
+        ],
+        "quantity": 2
+      },
+      "result_sample": {
+        "product_id": "p_sony_xm5_slv",
+        "name": "Sony WH-1000XM5 Headphones (Silver)",
+        "price": 399.0,
+        "relevance_score": 3,
+        "available_stock": 10,
+        "selection_reason": "Highest relevance recommendation with enough stock for quantity 2"
+      },
+      "status": "success",
+      "duration_ms": 0.39083894807845354,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:16:04.868520+00:00"
+    },
+    {
+      "call_id": "tc_4_4_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2
+          }
+        ],
+        "payment_amount": 798,
+        "payment_gateway": "stripe",
+        "user_id": "user_001"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+        "validation_failed_checks": [
+          "type",
+          "required"
+        ],
+        "untrusted_output": {
+          "invoice_id": "INV-F685ABC9",
+          "status": "generated",
+          "total_due": 798,
+          "currency": "USD",
+          "billing_email": null,
+          "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+          "message": "Invoice generated. Please complete payment via the link."
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.42523699812591076,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T13:16:08.791865+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_catalog",
+      "tool_name": "query_catalog",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_catalog",
+            "verified_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_catalog",
+            "checked_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_catalog",
+            "verified_fields": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.035
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_catalog'",
+          "details": {
+            "arguments": [
+              "category",
+              "query",
+              "max_results"
+            ],
+            "output": [
+              "query",
+              "count",
+              "results",
+              "hint"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_catalog' output",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_catalog'",
+          "details": {
+            "tool_name": "query_catalog"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:15:51.382175+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_recommendations",
+      "tool_name": "get_recommendations",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_recommendations",
+            "verified_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_recommendations",
+            "checked_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_recommendations",
+            "verified_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_recommendations'",
+          "details": {
+            "tool_name": "get_recommendations"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_recommendations'",
+          "details": {
+            "tool_name": "get_recommendations"
+          },
+          "latency_ms": 0.035
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_recommendations'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "product_id"
+            ],
+            "output": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_recommendations'",
+          "details": {
+            "tool_name": "get_recommendations"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_recommendations' output",
+          "details": {
+            "tool_name": "get_recommendations"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_recommendations'",
+          "details": {
+            "tool_name": "get_recommendations"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:15:56.088767+00:00"
+    },
+    {
+      "call_id": "tc_3_3_select_recommendation",
+      "tool_name": "select_recommendation",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "select_recommendation",
+            "verified_fields": [
+              "product_id",
+              "name",
+              "price",
+              "relevance_score",
+              "available_stock",
+              "selection_reason"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "select_recommendation",
+            "checked_fields": [
+              "product_id",
+              "name",
+              "price",
+              "relevance_score",
+              "available_stock",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "select_recommendation",
+            "verified_fields": [
+              "product_id",
+              "name",
+              "price",
+              "relevance_score",
+              "available_stock",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'select_recommendation'",
+          "details": {
+            "tool_name": "select_recommendation"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'select_recommendation'",
+          "details": {
+            "tool_name": "select_recommendation"
+          },
+          "latency_ms": 0.048
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'select_recommendation'",
+          "details": {
+            "arguments": [
+              "similar_products",
+              "quantity"
+            ],
+            "output": [
+              "product_id",
+              "name",
+              "price",
+              "relevance_score",
+              "available_stock",
+              "selection_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'select_recommendation'",
+          "details": {
+            "tool_name": "select_recommendation"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'select_recommendation' output",
+          "details": {
+            "tool_name": "select_recommendation"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'select_recommendation'",
+          "details": {
+            "tool_name": "select_recommendation"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T13:16:04.868855+00:00"
+    },
+    {
+      "call_id": "tc_4_4_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.038
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "violations": [
+              {
+                "field": "billing_email",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "missing_fields": [],
+            "null_fields": [
+              "billing_email"
+            ],
+            "expected_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.056
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_payment_invoice'",
+          "details": {
+            "arguments": [
+              "items",
+              "payment_amount",
+              "payment_gateway",
+              "user_id"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_payment_invoice' output",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required"
+      ],
+      "timestamp": "2026-10-23T13:16:08.792147+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C2 P0 failed: no complete path executed successfully; missing_tools=['create_document', 'get_contact_info']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "create_document",
+        "get_contact_info"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_catalog",
+              "get_recommendations",
+              "select_recommendation",
+              "get_contact_info",
+              "generate_payment_invoice",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_catalog",
+              "get_recommendations_collaborative",
+              "select_recommendation",
+              "get_contact_info",
+              "generate_payment_invoice",
+              "create_document"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_recommendations",
+          "get_recommendations_collaborative"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_catalog",
+          "get_recommendations",
+          "select_recommendation",
+          "generate_payment_invoice"
+        ]
+      }
+    }
+  }
+}

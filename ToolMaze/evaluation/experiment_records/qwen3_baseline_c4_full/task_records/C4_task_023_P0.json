@@ -1,0 +1,3076 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_023",
+  "mode": "P0",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_023",
+    "template_id": "C4_template_023",
+    "complexity": "C4",
+    "task_description": "Please check the current weather in Tokyo and convert 22°C to Fahrenheit for me, then look up the Hilton Tokyo and book a deluxe room there for Alex Johnson from 2026-01-10 to 2026-01-12. After that, scan for devices in the living room, check the status of the living room light, prepare and apply a change to set its brightness to 70, then set the living room AC to cool at 22°C and give me the AC change details in a readable format.",
+    "user_input": {
+      "query": "Please check the current weather in Tokyo and convert 22°C to Fahrenheit for me. Then look up the Hilton Tokyo and book a deluxe room for Alex Johnson from 2026-01-10 to 2026-01-12. After that, scan for devices in the living_room area, check the status of the living room light with ID light_living, prepare and apply a change to set its brightness to 70, and then set the AC with device ID ac_living in the living_room to cool mode at 22°C. Finally, give me the AC change details in a clear, readable format.",
+      "ac_device_id": "ac_living",
+      "ac_mode": "cool",
+      "area": "living_room",
+      "brightness": 70,
+      "check_in_date": "2026-01-10",
+      "check_out_date": "2026-01-12",
+      "city": "Tokyo",
+      "guest_name": "Alex Johnson",
+      "hotel_name": "Hilton Tokyo",
+      "light_id": "light_living",
+      "room_type": "deluxe",
+      "target_temperature": 22
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_weather_openweather",
+          "temperature_converter",
+          "get_hotel_info",
+          "book_hotel",
+          "discover_smart_devices",
+          "get_light_status",
+          "build_device_config_request",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "adjust_temperature",
+          "stringify_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5a",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_scan:discover_smart",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "guest_name": "Alex Johnson",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 70
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              }
+            },
+            "output": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_weather_openweather": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "step_2_temperature_converter": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "step_3_get_hotel_info": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_4_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "step_5_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_6_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_7_build_device_config_request": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "step_8_get_light_mesh_snapshot_native": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "step_9_apply_light_mesh_scene_native": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "step_10_adjust_temperature": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "step_11_stringify_data": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_weather_openweather",
+          "temperature_converter",
+          "get_hotel_info",
+          "book_hotel",
+          "discover_smart_devices",
+          "get_light_status",
+          "build_device_config_request",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "adjust_temperature",
+          "stringify_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5a",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_scan:discover_smart",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "guest_name": "Alex Johnson",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "light_living",
+              "bridge_state": "off",
+              "dimmer": 0,
+              "tone": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 70
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              }
+            },
+            "output": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_weather_openweather": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "step_2_temperature_converter": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "step_3_get_hotel_info": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_4_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "step_5_discover_smart_devices": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "step_6_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_7_build_device_config_request": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "step_8_get_light_bridge_payload_native": {
+              "bridge_light_id": "light_living",
+              "bridge_state": "off",
+              "dimmer": 0,
+              "tone": "white"
+            },
+            "step_9_apply_light_bridge_scene_native": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "step_10_adjust_temperature": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "step_11_stringify_data": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_weather_openweather",
+          "temperature_converter",
+          "get_hotel_info",
+          "book_hotel",
+          "query_connected_devices",
+          "get_light_status",
+          "build_device_config_request",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "adjust_temperature",
+          "stringify_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5b",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_scan:query_connected",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "guest_name": "Alex Johnson",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 70
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              }
+            },
+            "output": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_weather_openweather": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "step_2_temperature_converter": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "step_3_get_hotel_info": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_4_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "step_5_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_6_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_7_build_device_config_request": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "step_8_get_light_mesh_snapshot_native": {
+              "mesh_node": "light_living",
+              "lamp_state": "off",
+              "level_pct": 0,
+              "hue_name": "white"
+            },
+            "step_9_apply_light_mesh_scene_native": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "step_10_adjust_temperature": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "step_11_stringify_data": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            }
+          }
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_weather_openweather",
+          "temperature_converter",
+          "get_hotel_info",
+          "book_hotel",
+          "query_connected_devices",
+          "get_light_status",
+          "build_device_config_request",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "adjust_temperature",
+          "stringify_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4",
+          "s5b",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_iot_device_scan:query_connected",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "guest_name": "Alex Johnson",
+              "room_type": "deluxe"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room"
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "light_living",
+              "bridge_state": "off",
+              "dimmer": 0,
+              "tone": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 9,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 70
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "status": "success"
+          },
+          {
+            "step": 10,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 22,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 11,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 22.0
+                }
+              }
+            },
+            "output": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "status": "completed",
+          "message": "All tasks completed successfully",
+          "results": {
+            "step_1_get_weather_openweather": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "step_2_temperature_converter": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "step_3_get_hotel_info": {
+              "hotel_name": "Hilton Tokyo",
+              "location": "Tokyo, Japan",
+              "price_per_night": 180,
+              "currency": "USD",
+              "rating": 4.5,
+              "availability": "Available"
+            },
+            "step_4_book_hotel": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Hilton Tokyo",
+              "guest_name": "Alex Johnson",
+              "check_in_date": "2026-01-10",
+              "check_out_date": "2026-01-12",
+              "room_type": "deluxe",
+              "status": "confirmed"
+            },
+            "step_5_query_connected_devices": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "step_6_get_light_status": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "step_7_build_device_config_request": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "step_8_get_light_bridge_payload_native": {
+              "bridge_light_id": "light_living",
+              "bridge_state": "off",
+              "dimmer": 0,
+              "tone": "white"
+            },
+            "step_9_apply_light_bridge_scene_native": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 70,
+              "control_ref": "light_living"
+            },
+            "step_10_adjust_temperature": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 22.0
+              }
+            },
+            "step_11_stringify_data": {
+              "serialized_text": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}",
+              "source_type": "dict",
+              "preview": "{\"changes\": {\"mode\": \"cool\", \"temperature\": 22.0}, \"device_id\": \"ac_living\"}"
+            }
+          }
+        }
+      }
+    ],
+    "alternative_tools": [
+      "apply_light_bridge_scene_native",
+      "apply_light_mesh_scene_native",
+      "discover_smart_devices",
+      "get_light_bridge_payload_native",
+      "get_light_mesh_snapshot_native",
+      "query_connected_devices"
+    ],
+    "domains": [
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": null
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T05:14:03.042478+00:00",
+  "end_time": "2026-10-24T05:15:45.038955+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['build_device_config_request', 'stringify_data']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 41185,
+    "output_tokens": 5145,
+    "total_tokens": 46330
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check the current weather in Tokyo and convert 22°C to Fahrenheit for me. Then look up the Hilton Tokyo and book a deluxe room for Alex Johnson from 2026-01-10 to 2026-01-12. After that, scan for devices in the living_room area, check the status of the living room light with ID light_living, prepare and apply a change to set its brightness to 70, and then set the AC with device ID ac_living in the living_room to cool mode at 22°C. Finally, give me the AC change details in a clear, readable format.",
+      "ac_device_id": "ac_living",
+      "ac_mode": "cool",
+      "area": "living_room",
+      "brightness": 70,
+      "check_in_date": "2026-01-10",
+      "check_out_date": "2026-01-12",
+      "city": "Tokyo",
+      "guest_name": "Alex Johnson",
+      "hotel_name": "Hilton Tokyo",
+      "light_id": "light_living",
+      "room_type": "deluxe",
+      "target_temperature": 22
+    },
+    "task_description": "Please check the current weather in Tokyo and convert 22°C to Fahrenheit for me, then look up the Hilton Tokyo and book a deluxe room there for Alex Johnson from 2026-01-10 to 2026-01-12. After that, scan for devices in the living room, check the status of the living room light, prepare and apply a change to set its brightness to 70, then set the living room AC to cool at 22°C and give me the AC change details in a readable format.",
+    "template_id": "C4_template_023",
+    "domains": [
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_weather_openweather",
+      "tool_name": "get_weather_openweather",
+      "arguments": {
+        "city": "Tokyo"
+      },
+      "result_sample": {
+        "temperature_celsius": 22,
+        "condition": "Sunny"
+      },
+      "status": "success",
+      "duration_ms": 0.3394701052457094,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:14:39.444211+00:00"
+    },
+    {
+      "call_id": "tc_2_2_temperature_converter",
+      "tool_name": "temperature_converter",
+      "arguments": {
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit",
+        "value": 22
+      },
+      "result_sample": {
+        "converted_value": 71.6,
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit",
+        "original_value": 22.0
+      },
+      "status": "success",
+      "duration_ms": 0.34574500750750303,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:14:46.587849+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "arguments": {
+        "hotel_name": "Hilton Tokyo"
+      },
+      "result_sample": {
+        "hotel_name": "Hilton Tokyo",
+        "location": "Tokyo, Japan",
+        "price_per_night": 180,
+        "currency": "USD",
+        "rating": 4.5,
+        "availability": "Available"
+      },
+      "status": "success",
+      "duration_ms": 0.35385298542678356,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:14:51.574057+00:00"
+    },
+    {
+      "call_id": "tc_4_4_book_hotel",
+      "tool_name": "book_hotel",
+      "arguments": {
+        "check_out_date": "2026-01-12",
+        "guest_name": "Alex Johnson",
+        "hotel_name": "Hilton Tokyo",
+        "room_type": "deluxe",
+        "check_in_date": "2026-01-10"
+      },
+      "result_sample": {
+        "message": "Hotel booked successfully",
+        "booking_id": "HOTEL8D99FB",
+        "confirmation_code": "891392",
+        "hotel_name": "Hilton Tokyo",
+        "guest_name": "Alex Johnson",
+        "check_in_date": "2026-01-10",
+        "check_out_date": "2026-01-12",
+        "room_type": "deluxe",
+        "status": "confirmed"
+      },
+      "status": "success",
+      "duration_ms": 0.496368040330708,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:14:55.611762+00:00"
+    },
+    {
+      "call_id": "tc_5_5_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "arguments": {
+        "location": "living_room"
+      },
+      "result_sample": {
+        "location": "living_room",
+        "device_count": 4,
+        "devices": [
+          {
+            "device_id": "lock_main",
+            "name": "Main Door Lock",
+            "type": "smart_lock"
+          },
+          {
+            "device_id": "light_living",
+            "name": "Living Room Main Light",
+            "type": "smart_light"
+          },
+          {
+            "device_id": "ac_living",
+            "name": "Living Room AC",
+            "type": "thermostat"
+          },
+          {
+            "device_id": "tv_living",
+            "name": "Living Room TV",
+            "type": "media_player"
+          }
+        ],
+        "message": "Scan complete successfully."
+      },
+      "status": "success",
+      "duration_ms": 0.3227370325475931,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:00.642238+00:00"
+    },
+    {
+      "call_id": "tc_6_6_get_light_status",
+      "tool_name": "get_light_status",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "device_id": "light_living",
+        "power_state": "off",
+        "brightness": 0,
+        "color": "white"
+      },
+      "status": "success",
+      "duration_ms": 0.3620060160756111,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:04.299891+00:00"
+    },
+    {
+      "call_id": "tc_7_7_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "arguments": {
+        "mesh_snapshot": {
+          "brightness": 70
+        },
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "error": "Validation failed",
+        "details": [
+          "Missing required parameter: brightness"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.2951639471575618,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:08.345764+00:00"
+    },
+    {
+      "call_id": "tc_8_8_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "arguments": {
+        "bridge_payload": {
+          "light_id": "light_living"
+        },
+        "brightness": 70
+      },
+      "result_sample": {
+        "error": "Validation failed",
+        "details": [
+          "Missing required parameter: mesh_snapshot"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.3706440329551697,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:25.128130+00:00"
+    },
+    {
+      "call_id": "tc_9_9_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "mesh_node": "light_living",
+        "lamp_state": "off",
+        "level_pct": 0,
+        "hue_name": "white"
+      },
+      "status": "success",
+      "duration_ms": 0.3421299625188112,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:30.792615+00:00"
+    },
+    {
+      "call_id": "tc_10_10_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "arguments": {
+        "brightness": 70,
+        "mesh_snapshot": {
+          "hue_name": "white",
+          "lamp_state": "off",
+          "level_pct": 0,
+          "mesh_node": "light_living"
+        }
+      },
+      "result_sample": {
+        "status": "executed",
+        "strategy": "mesh_scene_native",
+        "device_id": "light_living",
+        "brightness": 70,
+        "control_ref": "light_living"
+      },
+      "status": "success",
+      "duration_ms": 0.38579804822802544,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:35.975943+00:00"
+    },
+    {
+      "call_id": "tc_11_11_adjust_temperature",
+      "tool_name": "adjust_temperature",
+      "arguments": {
+        "device_id": "ac_living",
+        "mode": "cool",
+        "temperature": 22
+      },
+      "result_sample": {
+        "device_id": "ac_living",
+        "changes": {
+          "mode": "cool",
+          "temperature": 22.0
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.38146006409078836,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T05:15:40.234800+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_weather_openweather",
+      "tool_name": "get_weather_openweather",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "get_weather_openweather",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_weather_openweather",
+            "checked_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "get_weather_openweather",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_weather_openweather'",
+          "details": {
+            "tool_name": "get_weather_openweather"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_weather_openweather'",
+          "details": {
+            "tool_name": "get_weather_openweather"
+          },
+          "latency_ms": 0.027
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_weather_openweather'",
+          "details": {
+            "arguments": [
+              "city"
+            ],
+            "output": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_weather_openweather'",
+          "details": {
+            "tool_name": "get_weather_openweather"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_weather_openweather' output",
+          "details": {
+            "tool_name": "get_weather_openweather"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_weather_openweather'",
+          "details": {
+            "tool_name": "get_weather_openweather"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:14:39.444428+00:00"
+    },
+    {
+      "call_id": "tc_2_2_temperature_converter",
+      "tool_name": "temperature_converter",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "temperature_converter",
+            "verified_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "temperature_converter",
+            "checked_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "temperature_converter",
+            "verified_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.039
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'temperature_converter'",
+          "details": {
+            "arguments": [
+              "from_unit",
+              "to_unit",
+              "value"
+            ],
+            "output": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'temperature_converter' output",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:14:46.588076+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "verified_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "checked_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "verified_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_hotel_info'",
+          "details": {
+            "arguments": [
+              "hotel_name"
+            ],
+            "output": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_hotel_info' output",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:14:51.574281+00:00"
+    },
+    {
+      "call_id": "tc_4_4_book_hotel",
+      "tool_name": "book_hotel",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (9 fields verified)",
+          "details": {
+            "tool_name": "book_hotel",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 9 checked output fields match expected types",
+          "details": {
+            "tool_name": "book_hotel",
+            "checked_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 9 required fields present and non-null",
+          "details": {
+            "tool_name": "book_hotel",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'book_hotel'",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "book_hotel",
+            "checked_fields": [
+              "check_in_date",
+              "check_out_date"
+            ]
+          },
+          "latency_ms": 0.141
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'book_hotel'",
+          "details": {
+            "arguments": [
+              "check_out_date",
+              "guest_name",
+              "hotel_name",
+              "room_type",
+              "check_in_date"
+            ],
+            "output": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "hotel_name",
+              "guest_name",
+              "check_in_date",
+              "check_out_date",
+              "room_type",
+              "status"
+            ]
+          },
+          "latency_ms": 0.02
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'book_hotel'",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'book_hotel' output",
+          "details": {
+            "tool_name": "book_hotel"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "VALID",
+          "reason": "Cross-tool consistency confirmed (1 rule(s) checked)",
+          "details": {
+            "tool_name": "book_hotel",
+            "applied_rules": [
+              "CTR-001"
+            ]
+          },
+          "latency_ms": 0.006
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:14:55.612020+00:00"
+    },
+    {
+      "call_id": "tc_5_5_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "checked_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.036
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'discover_smart_devices'",
+          "details": {
+            "arguments": [
+              "location"
+            ],
+            "output": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'discover_smart_devices' output",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:00.642499+00:00"
+    },
+    {
+      "call_id": "tc_6_6_get_light_status",
+      "tool_name": "get_light_status",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_status",
+            "checked_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_status",
+            "verified_fields": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.037
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_status'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "device_id",
+              "power_state",
+              "brightness",
+              "color"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_status' output",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_status'",
+          "details": {
+            "tool_name": "get_light_status"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:04.300112+00:00"
+    },
+    {
+      "call_id": "tc_7_7_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.026
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:08.345976+00:00"
+    },
+    {
+      "call_id": "tc_8_8_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.007
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.004
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:25.128498+00:00"
+    },
+    {
+      "call_id": "tc_9_9_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "checked_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.039
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_mesh_snapshot_native' output",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:30.792883+00:00"
+    },
+    {
+      "call_id": "tc_10_10_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.042
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "arguments": [
+              "brightness",
+              "mesh_snapshot"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'apply_light_mesh_scene_native' output",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:35.976182+00:00"
+    },
+    {
+      "call_id": "tc_11_11_adjust_temperature",
+      "tool_name": "adjust_temperature",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "adjust_temperature",
+            "verified_fields": [
+              "device_id",
+              "changes"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.017
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "adjust_temperature",
+            "checked_fields": [
+              "device_id",
+              "changes"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "adjust_temperature",
+            "verified_fields": [
+              "device_id",
+              "changes"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'adjust_temperature'",
+          "details": {
+            "tool_name": "adjust_temperature"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'adjust_temperature'",
+          "details": {
+            "tool_name": "adjust_temperature"
+          },
+          "latency_ms": 0.052
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'adjust_temperature'",
+          "details": {
+            "arguments": [
+              "device_id",
+              "mode",
+              "temperature"
+            ],
+            "output": [
+              "device_id",
+              "changes"
+            ]
+          },
+          "latency_ms": 0.019
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'adjust_temperature'",
+          "details": {
+            "tool_name": "adjust_temperature"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'adjust_temperature' output",
+          "details": {
+            "tool_name": "adjust_temperature"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'adjust_temperature'",
+          "details": {
+            "tool_name": "adjust_temperature"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T05:15:40.235027+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "C4 P0 failed: no complete valid path executed successfully; missing_tools=['build_device_config_request', 'stringify_data']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "build_device_config_request",
+        "stringify_data"
+      ],
+      "insufficient_calls": {
+        "build_device_config_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "stringify_data": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_weather_openweather",
+              "temperature_converter",
+              "get_hotel_info",
+              "book_hotel",
+              "discover_smart_devices",
+              "get_light_status",
+              "build_device_config_request",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "adjust_temperature",
+              "stringify_data"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_weather_openweather",
+              "temperature_converter",
+              "get_hotel_info",
+              "book_hotel",
+              "discover_smart_devices",
+              "get_light_status",
+              "build_device_config_request",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "adjust_temperature",
+              "stringify_data"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_weather_openweather",
+              "temperature_converter",
+              "get_hotel_info",
+              "book_hotel",
+              "query_connected_devices",
+              "get_light_status",
+              "build_device_config_request",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "adjust_temperature",
+              "stringify_data"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_weather_openweather",
+              "temperature_converter",
+              "get_hotel_info",
+              "book_hotel",
+              "query_connected_devices",
+              "get_light_status",
+              "build_device_config_request",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "adjust_temperature",
+              "stringify_data"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "apply_light_bridge_scene_native",
+          "apply_light_mesh_scene_native",
+          "discover_smart_devices",
+          "get_light_bridge_payload_native",
+          "get_light_mesh_snapshot_native",
+          "query_connected_devices"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_weather_openweather",
+          "temperature_converter",
+          "get_hotel_info",
+          "book_hotel",
+          "discover_smart_devices",
+          "get_light_status",
+          "apply_light_mesh_scene_native",
+          "apply_light_mesh_scene_native",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "adjust_temperature"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1509 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c3_full",
+  "task_id": "C3_task_094",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_094",
+    "template_id": "C3_template_094",
+    "complexity": "C3",
+    "task_description": "Please check which light is connected in the bedroom, then prepare a restart for it and grab its current light mesh state. After that, archive that pre-restart snapshot, restart the bedroom light, and then save a maintenance record and send me an app notification.",
+    "user_input": {
+      "query": "Please check which light is connected in the bedroom area and confirm the device status for light_bedroom: device_id light_bedroom, online true, power_state on. Then prepare a restart for that bedroom light and grab its current light mesh state. After that, archive the pre-restart snapshot with the title Bedroom Light Pre-Restart Archive, restart the bedroom light, and save a maintenance record named light_bedroom_restart_record in /ops/iot/maintenance. Once everything is done, send a medium priority notification to user_01 through the app channel.",
+      "archive_title": "Bedroom Light Pre-Restart Archive",
+      "area": "bedroom",
+      "backup_name": "light_bedroom_restart_record",
+      "channel": "app",
+      "device_status": {
+        "device_id": "light_bedroom",
+        "online": true,
+        "power_state": "on"
+      },
+      "priority": "medium",
+      "user_id": "user_01",
+      "workspace_path": "/ops/iot/maintenance"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_connected_devices",
+          "build_device_restart_request",
+          "get_light_mesh_snapshot_native",
+          "archive_light_mesh_snapshot_native",
+          "restart_device",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_light_archive_native_2to2:mesh_light_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "bedroom",
+              "device_type": "light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "bedroom",
+              "total_items": 5,
+              "items": [
+                "lock_bedroom",
+                "light_bedroom",
+                "ac_bedroom",
+                "sensor_bedroom_window",
+                "tv_bedroom"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_bedroom",
+                "online": true,
+                "power_state": "on"
+              }
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_bedroom"
+            },
+            "output": {
+              "error": "Account Quota Exhausted"
+            },
+            "status": "error",
+            "error_message": "402 QuotaExhausted",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_light_mesh_snapshot_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_bedroom",
+                "lamp_state": "on",
+                "level_pct": 50,
+                "hue_name": "white"
+              },
+              "title": "Bedroom Light Pre-Restart Archive",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "mesh_light_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Bedroom Light Pre-Restart Archive",
+              "light_ref": "light_bedroom"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "restart_device",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "status": "rebooting",
+              "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+              "timestamp": "2026-02-22T23:04:54.104641"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "bedroom",
+                "device_type": "light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "bedroom",
+                "total_items": 5,
+                "items": [
+                  "lock_bedroom",
+                  "light_bedroom",
+                  "ac_bedroom",
+                  "sensor_bedroom_window",
+                  "tv_bedroom"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_restart_request",
+              "arguments": {
+                "device_status": {
+                  "device_id": "light_bedroom",
+                  "online": true,
+                  "power_state": "on"
+                }
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "restart_reason": "status_driven_recovery"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_bedroom"
+              },
+              "output": {
+                "error": "Account Quota Exhausted"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_light_mesh_snapshot_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_bedroom",
+                  "lamp_state": "on",
+                  "level_pct": 50,
+                  "hue_name": "white"
+                },
+                "title": "Bedroom Light Pre-Restart Archive",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "mesh_light_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Bedroom Light Pre-Restart Archive",
+                "light_ref": "light_bedroom"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "restart_device",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "status": "rebooting",
+                "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+                "timestamp": "2026-02-22T23:04:54.104641"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_connected_devices",
+          "build_device_restart_request",
+          "get_light_bridge_payload_native",
+          "archive_light_bridge_payload_native",
+          "restart_device",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_light_archive_native_2to2:bridge_light_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "bedroom",
+              "device_type": "light"
+            },
+            "output": {
+              "found": true,
+              "area_name": "bedroom",
+              "total_items": 5,
+              "items": [
+                "lock_bedroom",
+                "light_bedroom",
+                "ac_bedroom",
+                "sensor_bedroom_window",
+                "tv_bedroom"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_device_restart_request",
+            "arguments": {
+              "device_status": {
+                "device_id": "light_bedroom",
+                "online": true,
+                "power_state": "on"
+              }
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "restart_reason": "status_driven_recovery"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "archive_light_bridge_payload_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_bedroom",
+                "bridge_state": "on",
+                "dimmer": 50,
+                "tone": "white"
+              },
+              "title": "Bedroom Light Pre-Restart Archive",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "bridge_light_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Bedroom Light Pre-Restart Archive",
+              "light_ref": "light_bedroom"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "restart_device",
+            "arguments": {
+              "device_id": "light_bedroom"
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "status": "rebooting",
+              "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+              "timestamp": "2026-02-22T23:04:54.104641"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "user_id": "user_01",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_01",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/ops/iot/maintenance",
+              "backup_name": "light_bedroom_restart_record",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "bedroom",
+                "device_type": "light"
+              },
+              "output": {
+                "found": true,
+                "area_name": "bedroom",
+                "total_items": 5,
+                "items": [
+                  "lock_bedroom",
+                  "light_bedroom",
+                  "ac_bedroom",
+                  "sensor_bedroom_window",
+                  "tv_bedroom"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_restart_request",
+              "arguments": {
+                "device_status": {
+                  "device_id": "light_bedroom",
+                  "online": true,
+                  "power_state": "on"
+                }
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "restart_reason": "status_driven_recovery"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_light_bridge_payload_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_bedroom",
+                  "bridge_state": "on",
+                  "dimmer": 50,
+                  "tone": "white"
+                },
+                "title": "Bedroom Light Pre-Restart Archive",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "bridge_light_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Bedroom Light Pre-Restart Archive",
+                "light_ref": "light_bedroom"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "restart_device",
+              "arguments": {
+                "device_id": "light_bedroom"
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "status": "rebooting",
+                "message": "Device is restarting. Please wait 30 seconds before reconnecting.",
+                "timestamp": "2026-02-22T23:04:54.104641"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "user_id": "user_01",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_01",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/ops/iot/maintenance",
+                "backup_name": "light_bedroom_restart_record",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_light_bridge_payload_native",
+      "archive_light_mesh_snapshot_native",
+      "get_light_bridge_payload_native",
+      "get_light_mesh_snapshot_native"
+    ],
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 2
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T03:43:19.318124+00:00",
+  "end_time": "2026-10-24T03:44:11.753886+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_light_mesh_snapshot_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_light_mesh_snapshot_native"
+  ],
+  "tokens": {
+    "input_tokens": 11680,
+    "output_tokens": 2982,
+    "total_tokens": 14662
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check which light is connected in the bedroom area and confirm the device status for light_bedroom: device_id light_bedroom, online true, power_state on. Then prepare a restart for that bedroom light and grab its current light mesh state. After that, archive the pre-restart snapshot with the title Bedroom Light Pre-Restart Archive, restart the bedroom light, and save a maintenance record named light_bedroom_restart_record in /ops/iot/maintenance. Once everything is done, send a medium priority notification to user_01 through the app channel.",
+      "archive_title": "Bedroom Light Pre-Restart Archive",
+      "area": "bedroom",
+      "backup_name": "light_bedroom_restart_record",
+      "channel": "app",
+      "device_status": {
+        "device_id": "light_bedroom",
+        "online": true,
+        "power_state": "on"
+      },
+      "priority": "medium",
+      "user_id": "user_01",
+      "workspace_path": "/ops/iot/maintenance"
+    },
+    "task_description": "Please check which light is connected in the bedroom, then prepare a restart for it and grab its current light mesh state. After that, archive that pre-restart snapshot, restart the bedroom light, and then save a maintenance record and send me an app notification.",
+    "template_id": "C3_template_094",
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_light_mesh_snapshot_native'], matching recorded execution failure in tools ['get_light_mesh_snapshot_native', 'get_light_mesh_snapshot_native'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 2,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_094_path_0_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_light_archive_native_2to2:mesh_light_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_094_path_1_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_light_archive_native_2to2:bridge_light_archive_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_light_mesh_snapshot_native",
+        "tool_name": "get_light_mesh_snapshot_native",
+        "step": 3,
+        "timestamp": "2026-10-24T03:44:06.909089+00:00",
+        "config_id": "C3_task_094_path_0_get_light_mesh_snapshot_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "light_id": "light_bedroom"
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_get_light_mesh_snapshot_native",
+        "tool_name": "get_light_mesh_snapshot_native",
+        "step": 4,
+        "timestamp": "2026-10-24T03:44:11.751513+00:00",
+        "config_id": "C3_task_094_path_0_get_light_mesh_snapshot_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "light_id": "light_bedroom"
+        },
+        "modified_output_sample": {
+          "error": "Account Quota Exhausted"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "arguments": {
+        "area": "bedroom",
+        "device_type": "light"
+      },
+      "result_sample": {
+        "found": true,
+        "area_name": "bedroom",
+        "total_items": 5,
+        "items": [
+          "lock_bedroom",
+          "light_bedroom",
+          "ac_bedroom",
+          "sensor_bedroom_window",
+          "tv_bedroom"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.5290900589898229,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T03:43:47.761057+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_device_restart_request",
+      "tool_name": "build_device_restart_request",
+      "arguments": {
+        "device_status": {
+          "device_id": "light_bedroom"
+        }
+      },
+      "result_sample": {
+        "device_id": "light_bedroom",
+        "restart_reason": "status_driven_recovery"
+      },
+      "status": "success",
+      "duration_ms": 0.2970030764117837,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T03:44:00.528204+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "arguments": {
+        "light_id": "light_bedroom"
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.3379029221832752,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T03:44:06.909089+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "arguments": {
+        "light_id": "light_bedroom"
+      },
+      "result_sample": {
+        "error": "Account Quota Exhausted"
+      },
+      "status": "error",
+      "duration_ms": 0.23754197172820568,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T03:44:11.751513+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "checked_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.016
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.067
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_connected_devices'",
+          "details": {
+            "arguments": [
+              "area",
+              "device_type"
+            ],
+            "output": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_connected_devices' output",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T03:43:47.761519+00:00"
+    },
+    {
+      "call_id": "tc_2_2_build_device_restart_request",
+      "tool_name": "build_device_restart_request",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "verified_fields": [
+              "device_id",
+              "restart_reason"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.01
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "checked_fields": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "build_device_restart_request",
+            "verified_fields": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.008
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.024
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'build_device_restart_request'",
+          "details": {
+            "arguments": [
+              "device_status"
+            ],
+            "output": [
+              "device_id",
+              "restart_reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_device_restart_request' output",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_device_restart_request'",
+          "details": {
+            "tool_name": "build_device_restart_request"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T03:44:00.528450+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.004
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.004
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T03:44:06.909791+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.003
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Quota Exhausted"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T03:44:11.751870+00:00"
+    }
+  ],
+  "diagnoses": [
+    {
+      "tool_name": "get_light_mesh_snapshot_native",
+      "category": "external_service_error",
+      "persistence": "transient",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "retry",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "get_light_mesh_snapshot_native",
+          "execution_id": "b740e4c7-5bab-4018-8200-8d9f15e18f1c",
+          "task_id": "task_0",
+          "step": 3,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.003
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.051,
+          "timestamp": "2026-10-24T03:44:06.910436+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-24T03:44:06.910781+00:00"
+    },
+    {
+      "tool_name": "get_light_mesh_snapshot_native",
+      "category": "external_service_error",
+      "persistence": "permanent",
+      "root_cause": "Tool runtime exception: account quota exhausted",
+      "severity": "HIGH",
+      "recommended_action": "reroute",
+      "evidence": {
+        "validation": {
+          "pipeline_status": "INCONCLUSIVE",
+          "tool_name": "get_light_mesh_snapshot_native",
+          "execution_id": "b740e4c7-5bab-4018-8200-8d9f15e18f1c",
+          "task_id": "task_0",
+          "step": 4,
+          "checks": {
+            "schema": {
+              "checker_name": "schema",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; output schema does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.002
+            },
+            "type": {
+              "checker_name": "type",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; type checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "required": {
+              "checker_name": "required",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; required fields do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "range": {
+              "checker_name": "range",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; range checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "temporal": {
+              "checker_name": "temporal",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; temporal check does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "entity": {
+              "checker_name": "entity",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; entity checking does not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_field": {
+              "checker_name": "cross_field",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "state": {
+              "checker_name": "state",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; state checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            },
+            "cross_tool": {
+              "checker_name": "cross_tool",
+              "status": "NOT_APPLICABLE",
+              "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+              "details": {
+                "error": "Account Quota Exhausted"
+              },
+              "latency_ms": 0.001
+            }
+          },
+          "failed_checks": [],
+          "warnings": [],
+          "reason": "No applicable validation checks could be executed for this tool/output combination. Validity is inconclusive.",
+          "validator_version": "1.0.0",
+          "total_latency_ms": 0.028,
+          "timestamp": "2026-10-24T03:44:11.752147+00:00"
+        },
+        "raw_error": {
+          "error": "Account Quota Exhausted"
+        }
+      },
+      "timestamp": "2026-10-24T03:44:11.752278+00:00"
+    }
+  ],
+  "recovery_events": [
+    {
+      "failed_tool": "get_light_mesh_snapshot_native",
+      "action": "retry",
+      "suggested_tool": "get_light_mesh_snapshot_native",
+      "remaining_budget": 5,
+      "loop_warning": null,
+      "rationale": "Transient failure detected on 'get_light_mesh_snapshot_native'. Budget allows retry.",
+      "timestamp": "2026-10-24T03:44:06.911580+00:00"
+    },
+    {
+      "failed_tool": "get_light_mesh_snapshot_native",
+      "action": "abort",
+      "suggested_tool": null,
+      "remaining_budget": 4,
+      "loop_warning": "Immediate loop detected: Tool 'get_light_mesh_snapshot_native' called 2 times consecutively without progress. Tool marked for rerouting.",
+      "rationale": "Tool 'get_light_mesh_snapshot_native' is blacklisted and no healthy alternatives exist in DAG.",
+      "timestamp": "2026-10-24T03:44:11.752686+00:00"
+    }
+  ],
+  "dag_decisions": [
+    {
+      "failed_tool": "get_light_mesh_snapshot_native",
+      "candidate_tools": [
+        "get_light_mesh_snapshot_native"
+      ],
+      "selected_tool": "get_light_mesh_snapshot_native",
+      "is_viable": true,
+      "reason": "Transient failure detected on 'get_light_mesh_snapshot_native'. Budget allows retry.",
+      "target_path": null,
+      "timestamp": "2026-10-24T03:44:06.911715+00:00"
+    }
+  ],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_light_mesh_snapshot_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_light_mesh_snapshot_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "archive_light_mesh_snapshot_native",
+        "get_light_mesh_snapshot_native",
+        "restart_device",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "get_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "restart_device": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_connected_devices",
+              "build_device_restart_request",
+              "get_light_mesh_snapshot_native",
+              "archive_light_mesh_snapshot_native",
+              "restart_device",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_connected_devices",
+              "build_device_restart_request",
+              "get_light_bridge_payload_native",
+              "archive_light_bridge_payload_native",
+              "restart_device",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_light_bridge_payload_native",
+          "archive_light_mesh_snapshot_native",
+          "get_light_bridge_payload_native",
+          "get_light_mesh_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_connected_devices",
+          "build_device_restart_request",
+          "get_light_mesh_snapshot_native",
+          "get_light_mesh_snapshot_native"
+        ]
+      }
+    }
+  }
+}

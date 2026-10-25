@@ -1,0 +1,5358 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_040",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_040",
+    "template_id": "C4_template_040",
+    "complexity": "C4",
+    "task_description": "Please look up Alice, send her a medium-priority app alert saying we’re starting the planning workflow for the client meeting, then check her availability for 2026-01-16. After that, find a room for at least 6 people starting at 09:00, reserve it until 10:00 for 10 attendees, also check the meeting room options again, look up information for Hilton Tokyo, review current business news, and then email Alice a summary saying the room was reserved, hotel options were checked, and business headlines were reviewed.",
+    "user_input": {
+      "query": "Please look up alice using calendar item ID u_alice, then send her a medium-priority app alert that says, \"Starting planning workflow for the client meeting.\" After that, check her availability for 2026-01-16. Then find a meeting room for at least 6 people starting at 09:00 and reserve it until 10:00 for 10 attendees. Also check the meeting room options again, look up information for Hilton Tokyo, and review the current business news. Finally, email Alice with the subject \"Meeting and travel planning summary\" and include this message: \"Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.\"",
+      "alert_message": "Starting planning workflow for the client meeting.",
+      "attendees": 10,
+      "calendar_item_id": "u_alice",
+      "contact_name": "alice",
+      "email_body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+      "email_subject": "Meeting and travel planning summary",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-16",
+      "meeting_end_time": "10:00",
+      "meeting_start_time": "09:00",
+      "min_capacity": 6
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "reserve_office365_room_ticket_native",
+          "get_meeting_rooms",
+          "get_hotel_info",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7a",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                "25:61-26:00"
+              ],
+              "total_slots": 6
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_beijing_jpy_utc5_room",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": -3,
+              "booking_day": "2026-02-30",
+              "slot_start": "25:61",
+              "room_name": "Beijing Room (UTC+5, JPY)"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "office365_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "o365_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 180,
+              "currency": "JPY",
+              "rating": -7.2,
+              "availability": "Sold Out"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-13-40",
+                "free_slots": [
+                  "25:61-26:00"
+                ],
+                "total_slots": 6
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2026-01-16",
+                  "slot_start": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "office365_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "o365_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 180,
+                "currency": "JPY",
+                "rating": -7.2,
+                "availability": "Sold Out"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_google_calendar",
+          "get_office365_room_ticket_native",
+          "reserve_office365_room_ticket_native",
+          "get_meeting_rooms",
+          "get_hotel_info_booking",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7b",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                "25:61-26:00"
+              ],
+              "total_slots": 11
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_beijing_jpy_utc5",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 5000,
+              "booking_day": "2026-02-30",
+              "slot_start": "25:00",
+              "room_name": "Beijing Office Room - UTC+5 - JPY"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "office365_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "o365_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 180000,
+              "currency": "JPY",
+              "rating": 7.2,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-13-40",
+                "free_slots": [
+                  "25:61-26:00"
+                ],
+                "total_slots": 11
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2026-01-16",
+                  "slot_start": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "office365_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "o365_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 180000,
+                "currency": "JPY",
+                "rating": 7.2,
+                "availability": "Available"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "reserve_workplace_room_pass_native",
+          "get_meeting_rooms",
+          "get_hotel_info",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2030-02-30",
+              "free_slots": [
+                "25:00-26:00"
+              ],
+              "total_slots": 9
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "beijing_jpy_room_pass",
+              "resource_label": "Beijing Office Room (Timezone UTC+5, Currency JPY)",
+              "max_people": 500,
+              "reserve_date": "2026-13-16",
+              "slot_begin": "25:00",
+              "room_name": "Beijing Room - UTC+5 / JPY"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "workplace_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "wp_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 180,
+              "currency": "JPY",
+              "rating": -6.2,
+              "availability": "Sold Out"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2030-02-30",
+                "free_slots": [
+                  "25:00-26:00"
+                ],
+                "total_slots": 9
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2026-01-16",
+                  "slot_begin": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "workplace_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "wp_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 180,
+                "currency": "JPY",
+                "rating": -6.2,
+                "availability": "Sold Out"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_google_calendar",
+          "get_workplace_room_pass_native",
+          "reserve_workplace_room_pass_native",
+          "get_meeting_rooms",
+          "get_hotel_info_booking",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_google_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                "25:00-26:00"
+              ],
+              "total_slots": 9
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "beijing_jpy_room",
+              "resource_label": "Beijing Office - UTC+5",
+              "max_people": 3000,
+              "reserve_date": "2026-13-40",
+              "slot_begin": "25:61",
+              "room_name": "Beijing JPY Room"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "workplace_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "wp_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo Beijing",
+              "location": "Beijing, Japan",
+              "price_per_night": 180,
+              "currency": "JPY",
+              "rating": -6.2,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_google_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-13-40",
+                "free_slots": [
+                  "25:00-26:00"
+                ],
+                "total_slots": 9
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2026-01-16",
+                  "slot_begin": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "workplace_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "wp_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo Beijing",
+                "location": "Beijing, Japan",
+                "price_per_night": 180,
+                "currency": "JPY",
+                "rating": -6.2,
+                "availability": "Available"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_outlook_calendar",
+          "get_office365_room_ticket_native",
+          "reserve_office365_room_ticket_native",
+          "get_meeting_rooms",
+          "get_hotel_info",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7a",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-02-30",
+              "free_slots": [
+                "25:00-26:00"
+              ],
+              "total_slots": 6
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_beijing_yen_room",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 0,
+              "booking_day": "2026-02-30",
+              "slot_start": "25:00",
+              "room_name": "Beijing JPY Room UTC+5"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "office365_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "o365_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 0,
+              "currency": "JPY",
+              "rating": 6.2,
+              "availability": "Sold Out"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-02-30",
+                "free_slots": [
+                  "25:00-26:00"
+                ],
+                "total_slots": 6
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2026-01-16",
+                  "slot_start": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "office365_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "o365_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 0,
+                "currency": "JPY",
+                "rating": 6.2,
+                "availability": "Sold Out"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_outlook_calendar",
+          "get_office365_room_ticket_native",
+          "reserve_office365_room_ticket_native",
+          "get_meeting_rooms",
+          "get_hotel_info_booking",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7b",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "3026-13-99",
+              "free_slots": [
+                "25:61-26:00"
+              ],
+              "total_slots": 16
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_office365_room_ticket_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_ticket_id": "o365_meeting_room_0",
+              "room_name_token": "[REDACTED]",
+              "seat_limit": 0,
+              "booking_day": "2026-01-15",
+              "slot_start": "25:00",
+              "room_name": "Meeting Room 0"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_office365_room_ticket_native",
+            "arguments": {
+              "room_ticket": {
+                "room_ticket_id": "o365_meeting_room_1",
+                "room_name_token": "[REDACTED]",
+                "seat_limit": 20,
+                "booking_day": "2026-01-16",
+                "slot_start": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "office365_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "o365_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 180,
+              "currency": "JPY",
+              "rating": 0,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "3026-13-99",
+                "free_slots": [
+                  "25:61-26:00"
+                ],
+                "total_slots": 16
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_office365_room_ticket_native",
+              "arguments": {
+                "room_ticket": {
+                  "room_ticket_id": "o365_meeting_room_1",
+                  "room_name_token": "[REDACTED]",
+                  "seat_limit": 20,
+                  "booking_day": "2026-01-16",
+                  "slot_start": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "office365_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "o365_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 180,
+                "currency": "JPY",
+                "rating": 0,
+                "availability": "Available"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_outlook_calendar",
+          "get_workplace_room_pass_native",
+          "reserve_workplace_room_pass_native",
+          "get_meeting_rooms",
+          "get_hotel_info",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                "25:00-26:00"
+              ],
+              "total_slots": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "beijing_jpy_room_ref",
+              "resource_label": "Beijing Office Room (Timezone UTC+5, Currency JPY)",
+              "max_people": 300,
+              "reserve_date": "2026-13-16",
+              "slot_begin": "25:00",
+              "room_name": "Beijing JPY Room"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "workplace_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "wp_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 0,
+              "currency": "JPY",
+              "rating": 7.8,
+              "availability": "Sold Out"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-13-40",
+                "free_slots": [
+                  "25:00-26:00"
+                ],
+                "total_slots": 0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2026-01-16",
+                  "slot_begin": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "workplace_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "wp_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 0,
+                "currency": "JPY",
+                "rating": 7.8,
+                "availability": "Sold Out"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "get_contact_info",
+          "build_contact_alert_payload",
+          "push_alert",
+          "query_availability_outlook_calendar",
+          "get_workplace_room_pass_native",
+          "reserve_workplace_room_pass_native",
+          "get_meeting_rooms",
+          "get_hotel_info_booking",
+          "get_news_currents",
+          "email_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_contact_alert_payload",
+            "arguments": {
+              "contact_data": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "Starting planning workflow for the client meeting.",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Starting planning workflow for the client meeting.",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Starting planning workflow for the client meeting.",
+              "priority": "medium"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2026-01-16"
+            },
+            "output": {
+              "user_id": "u_bob",
+              "query_date": "2026-13-40",
+              "free_slots": [
+                "25:00-26:00"
+              ],
+              "total_slots": 6
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_workplace_room_pass_native",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "room_pass_ref": "beijing_jpy_room",
+              "resource_label": "Beijing Office (Timezone UTC+5, Currency JPY)",
+              "max_people": -3,
+              "reserve_date": "2026-02-30",
+              "slot_begin": "25:61",
+              "room_name": "Beijing Room - UTC+5 / JPY"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "reserve_workplace_room_pass_native",
+            "arguments": {
+              "room_pass": {
+                "room_pass_ref": "wp_meeting_room_1",
+                "resource_label": "Meeting Room 1",
+                "max_people": 20,
+                "reserve_date": "2026-01-16",
+                "slot_begin": "09:00",
+                "room_name": "Meeting Room 1"
+              },
+              "end_time": "10:00",
+              "attendees": 10
+            },
+            "output": {
+              "status": "reserved",
+              "strategy": "workplace_room_booking_native",
+              "booking_id": "BK168D3",
+              "resource_ref": "wp_meeting_room_1",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-16"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_meeting_rooms",
+            "arguments": {
+              "min_capacity": 6,
+              "date": "2026-01-16",
+              "start_time": "09:00"
+            },
+            "output": {
+              "count": 4,
+              "rooms": [
+                {
+                  "name": "Meeting Room 1",
+                  "capacity": 20,
+                  "equipment": [
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Meeting Room 2",
+                  "capacity": 30,
+                  "equipment": [
+                    "Projector"
+                  ]
+                },
+                {
+                  "name": "Conference Room A",
+                  "capacity": 50,
+                  "equipment": [
+                    "Projector",
+                    "Whiteboard"
+                  ]
+                },
+                {
+                  "name": "Conference Room B",
+                  "capacity": 100,
+                  "equipment": [
+                    "TV Screen",
+                    "Video Conference"
+                  ]
+                }
+              ],
+              "filters_applied": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": "Hilton Tokyo Beijing",
+              "location": "Beijing, China",
+              "price_per_night": 180,
+              "currency": "JPY",
+              "rating": 0,
+              "availability": "Available"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_news_currents",
+            "arguments": {
+              "category": "business"
+            },
+            "output": {
+              "category": "business",
+              "headlines": [
+                "Global markets reach new highs",
+                "Major merger announced in tech sector",
+                "Economic growth exceeds expectations"
+              ],
+              "count": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+              "subject": "Meeting and travel planning summary"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Meeting and travel planning summary",
+              "body_length": 102,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_contact_alert_payload",
+              "arguments": {
+                "contact_data": {
+                  "found": true,
+                  "name": "Alice",
+                  "email": "alice@company.com",
+                  "phone": "+1-555-0101",
+                  "department": "Engineering",
+                  "user_id": "u_alice"
+                },
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "Starting planning workflow for the client meeting.",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Starting planning workflow for the client meeting.",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Starting planning workflow for the client meeting.",
+                "priority": "medium"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2026-01-16"
+              },
+              "output": {
+                "user_id": "u_bob",
+                "query_date": "2026-13-40",
+                "free_slots": [
+                  "25:00-26:00"
+                ],
+                "total_slots": 6
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "reserve_workplace_room_pass_native",
+              "arguments": {
+                "room_pass": {
+                  "room_pass_ref": "wp_meeting_room_1",
+                  "resource_label": "Meeting Room 1",
+                  "max_people": 20,
+                  "reserve_date": "2026-01-16",
+                  "slot_begin": "09:00",
+                  "room_name": "Meeting Room 1"
+                },
+                "end_time": "10:00",
+                "attendees": 10
+              },
+              "output": {
+                "status": "reserved",
+                "strategy": "workplace_room_booking_native",
+                "booking_id": "BK168D3",
+                "resource_ref": "wp_meeting_room_1",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-16"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_meeting_rooms",
+              "arguments": {
+                "min_capacity": 6,
+                "date": "2026-01-16",
+                "start_time": "09:00"
+              },
+              "output": {
+                "count": 4,
+                "rooms": [
+                  {
+                    "name": "Meeting Room 1",
+                    "capacity": 20,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Meeting Room 2",
+                    "capacity": 30,
+                    "equipment": [
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room A",
+                    "capacity": 50,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  },
+                  {
+                    "name": "Conference Room B",
+                    "capacity": 100,
+                    "equipment": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ]
+                  }
+                ],
+                "filters_applied": {
+                  "min_capacity": 6,
+                  "date": "2026-01-16",
+                  "start_time": "09:00"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": "Hilton Tokyo Beijing",
+                "location": "Beijing, China",
+                "price_per_night": 180,
+                "currency": "JPY",
+                "rating": 0,
+                "availability": "Available"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_news_currents",
+              "arguments": {
+                "category": "business"
+              },
+              "output": {
+                "category": "business",
+                "headlines": [
+                  "Global markets reach new highs",
+                  "Major merger announced in tech sector",
+                  "Economic growth exceeds expectations"
+                ],
+                "count": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+                "subject": "Meeting and travel planning summary"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Meeting and travel planning summary",
+                "body_length": 102,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_hotel_info",
+      "get_hotel_info_booking",
+      "get_office365_room_ticket_native",
+      "get_workplace_room_pass_native",
+      "query_availability_google_calendar",
+      "query_availability_outlook_calendar",
+      "reserve_office365_room_ticket_native",
+      "reserve_workplace_room_pass_native"
+    ],
+    "domains": [
+      "Office",
+      "General",
+      "Travel"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s4",
+        "s5",
+        "s7"
+      ]
+    },
+    "corruption_type": "fact_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T06:10:25.134773+00:00",
+  "end_time": "2026-10-24T06:11:22.561832+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'query_availability_google_calendar' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "query_availability_google_calendar"
+  ],
+  "tokens": {
+    "input_tokens": 16374,
+    "output_tokens": 2697,
+    "total_tokens": 19071
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up alice using calendar item ID u_alice, then send her a medium-priority app alert that says, \"Starting planning workflow for the client meeting.\" After that, check her availability for 2026-01-16. Then find a meeting room for at least 6 people starting at 09:00 and reserve it until 10:00 for 10 attendees. Also check the meeting room options again, look up information for Hilton Tokyo, and review the current business news. Finally, email Alice with the subject \"Meeting and travel planning summary\" and include this message: \"Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.\"",
+      "alert_message": "Starting planning workflow for the client meeting.",
+      "attendees": 10,
+      "calendar_item_id": "u_alice",
+      "contact_name": "alice",
+      "email_body": "Your meeting room has been reserved, hotel options were checked, and business headlines were reviewed.",
+      "email_subject": "Meeting and travel planning summary",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-16",
+      "meeting_end_time": "10:00",
+      "meeting_start_time": "09:00",
+      "min_capacity": 6
+    },
+    "task_description": "Please look up Alice, send her a medium-priority app alert saying we’re starting the planning workflow for the client meeting, then check her availability for 2026-01-16. After that, find a room for at least 6 people starting at 09:00, reserve it until 10:00 for 10 attendees, also check the meeting room options again, look up information for Hilton Tokyo, review current business news, and then email Alice a summary saying the room was reserved, hotel options were checked, and business headlines were reviewed.",
+    "template_id": "C4_template_040",
+    "domains": [
+      "Office",
+      "General",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['query_availability_google_calendar'], matching recorded execution failure in tools ['query_availability_google_calendar', 'query_availability_google_calendar'] leading to task failure.",
+    "configured_count": 24,
+    "activated_count": 2,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_040_path_0_query_availability_google_calendar",
+        "target_tool": "query_availability_google_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:61-26:00"
+          ],
+          "total_slots": 6
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_0_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_beijing_jpy_utc5_room",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": -3,
+          "booking_day": "2026-02-30",
+          "slot_start": "25:61",
+          "room_name": "Beijing Room (UTC+5, JPY)"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_0_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 180,
+          "currency": "JPY",
+          "rating": -7.2,
+          "availability": "Sold Out"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_1_query_availability_google_calendar",
+        "target_tool": "query_availability_google_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:61-26:00"
+          ],
+          "total_slots": 11
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_1_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_beijing_jpy_utc5",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 5000,
+          "booking_day": "2026-02-30",
+          "slot_start": "25:00",
+          "room_name": "Beijing Office Room - UTC+5 - JPY"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_1_get_hotel_info_booking",
+        "target_tool": "get_hotel_info_booking",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Tokyo Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 180000,
+          "currency": "JPY",
+          "rating": 7.2,
+          "availability": "Available"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_2_query_availability_google_calendar",
+        "target_tool": "query_availability_google_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2030-02-30",
+          "free_slots": [
+            "25:00-26:00"
+          ],
+          "total_slots": 9
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_2_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "beijing_jpy_room_pass",
+          "resource_label": "Beijing Office Room (Timezone UTC+5, Currency JPY)",
+          "max_people": 500,
+          "reserve_date": "2026-13-16",
+          "slot_begin": "25:00",
+          "room_name": "Beijing Room - UTC+5 / JPY"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_2_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 180,
+          "currency": "JPY",
+          "rating": -6.2,
+          "availability": "Sold Out"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_3_query_availability_google_calendar",
+        "target_tool": "query_availability_google_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:00-26:00"
+          ],
+          "total_slots": 9
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_3_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "beijing_jpy_room",
+          "resource_label": "Beijing Office - UTC+5",
+          "max_people": 3000,
+          "reserve_date": "2026-13-40",
+          "slot_begin": "25:61",
+          "room_name": "Beijing JPY Room"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_3_get_hotel_info_booking",
+        "target_tool": "get_hotel_info_booking",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Tokyo Beijing",
+          "location": "Beijing, Japan",
+          "price_per_night": 180,
+          "currency": "JPY",
+          "rating": -6.2,
+          "availability": "Available"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_availability_provider_pair:google_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_4_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-02-30",
+          "free_slots": [
+            "25:00-26:00"
+          ],
+          "total_slots": 6
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_4_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_beijing_yen_room",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 0,
+          "booking_day": "2026-02-30",
+          "slot_start": "25:00",
+          "room_name": "Beijing JPY Room UTC+5"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_4_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 0,
+          "currency": "JPY",
+          "rating": 6.2,
+          "availability": "Sold Out"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_5_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "3026-13-99",
+          "free_slots": [
+            "25:61-26:00"
+          ],
+          "total_slots": 16
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_5_get_office365_room_ticket_native",
+        "target_tool": "get_office365_room_ticket_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_ticket_id": "o365_meeting_room_0",
+          "room_name_token": "[REDACTED]",
+          "seat_limit": 0,
+          "booking_day": "2026-01-15",
+          "slot_start": "25:00",
+          "room_name": "Meeting Room 0"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_5_get_hotel_info_booking",
+        "target_tool": "get_hotel_info_booking",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Tokyo Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 180,
+          "currency": "JPY",
+          "rating": 0,
+          "availability": "Available"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:office365_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_6_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:00-26:00"
+          ],
+          "total_slots": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_6_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "beijing_jpy_room_ref",
+          "resource_label": "Beijing Office Room (Timezone UTC+5, Currency JPY)",
+          "max_people": 300,
+          "reserve_date": "2026-13-16",
+          "slot_begin": "25:00",
+          "room_name": "Beijing JPY Room"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_6_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 0,
+          "currency": "JPY",
+          "rating": 7.8,
+          "availability": "Sold Out"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_7_query_availability_outlook_calendar",
+        "target_tool": "query_availability_outlook_calendar",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:00-26:00"
+          ],
+          "total_slots": 6
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_7_get_workplace_room_pass_native",
+        "target_tool": "get_workplace_room_pass_native",
+        "step": 5,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "room_pass_ref": "beijing_jpy_room",
+          "resource_label": "Beijing Office (Timezone UTC+5, Currency JPY)",
+          "max_people": -3,
+          "reserve_date": "2026-02-30",
+          "slot_begin": "25:61",
+          "room_name": "Beijing Room - UTC+5 / JPY"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      },
+      {
+        "config_id": "C4_task_040_path_7_get_hotel_info_booking",
+        "target_tool": "get_hotel_info_booking",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": "Hilton Tokyo Beijing",
+          "location": "Beijing, China",
+          "price_per_night": 180,
+          "currency": "JPY",
+          "rating": 0,
+          "availability": "Available"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_availability_provider_pair:outlook_calendar",
+          "alt_room_booking_native_2to2:workplace_room_booking_native",
+          "alt_hotel_info_default_booking:booking"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_query_availability_google_calendar",
+        "tool_name": "query_availability_google_calendar",
+        "step": 3,
+        "timestamp": "2026-10-24T06:11:02.963061+00:00",
+        "config_id": "C4_task_040_path_0_query_availability_google_calendar",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "item_id": "u_alice",
+          "quantity": 1,
+          "start_date": "2026-01-16"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [temporal] Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+          "validation_failed_checks": [
+            "temporal"
+          ],
+          "untrusted_output": {
+            "user_id": "u_bob",
+            "query_date": "2026-13-40",
+            "free_slots": [
+              "25:61-26:00"
+            ],
+            "total_slots": 6
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_query_availability_google_calendar",
+        "tool_name": "query_availability_google_calendar",
+        "step": 4,
+        "timestamp": "2026-10-24T06:11:15.496417+00:00",
+        "config_id": "C4_task_040_path_0_query_availability_google_calendar",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "item_id": "u_alice",
+          "quantity": 1,
+          "start_date": "2026-01-16"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [temporal] Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+          "validation_failed_checks": [
+            "temporal"
+          ],
+          "untrusted_output": {
+            "user_id": "u_bob",
+            "query_date": "2026-13-40",
+            "free_slots": [
+              "25:61-26:00"
+            ],
+            "total_slots": 6
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_contact_info",
+      "tool_name": "get_contact_info",
+      "arguments": {
+        "name": "alice"
+      },
+      "result_sample": {
+        "found": true,
+        "name": "Alice",
+        "email": "alice@company.com",
+        "phone": "+1-555-0101",
+        "department": "Engineering",
+        "user_id": "u_alice"
+      },
+      "status": "success",
+      "duration_ms": 0.47384900972247124,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:10:41.715922+00:00"
+    },
+    {
+      "call_id": "tc_2_2_push_alert",
+      "tool_name": "push_alert",
+      "arguments": {
+        "channel": "app",
+        "message": "Starting planning workflow for the client meeting.",
+        "priority": "medium",
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "message": "Notification sent successfully",
+        "notification_id": "NOTIFEE84C",
+        "user_id": "u_alice",
+        "content": "Starting planning workflow for the client meeting.",
+        "priority": "medium"
+      },
+      "status": "success",
+      "duration_ms": 0.5341749638319016,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:10:57.877563+00:00"
+    },
+    {
+      "call_id": "tc_3_3_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "arguments": {
+        "item_id": "u_alice",
+        "quantity": 1,
+        "start_date": "2026-01-16"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [temporal] Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+        "validation_failed_checks": [
+          "temporal"
+        ],
+        "untrusted_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:61-26:00"
+          ],
+          "total_slots": 6
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.42692595161497593,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:11:02.963061+00:00"
+    },
+    {
+      "call_id": "tc_4_4_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "arguments": {
+        "item_id": "u_alice",
+        "quantity": 1,
+        "start_date": "2026-01-16"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [temporal] Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+        "validation_failed_checks": [
+          "temporal"
+        ],
+        "untrusted_output": {
+          "user_id": "u_bob",
+          "query_date": "2026-13-40",
+          "free_slots": [
+            "25:61-26:00"
+          ],
+          "total_slots": 6
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.4232299979776144,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:11:15.496417+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_contact_info",
+      "tool_name": "get_contact_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_contact_info",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_contact_info",
+            "checked_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_contact_info",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_contact_info'",
+          "details": {
+            "tool_name": "get_contact_info"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_contact_info'",
+          "details": {
+            "tool_name": "get_contact_info"
+          },
+          "latency_ms": 0.048
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_contact_info",
+            "compared_pairs": [
+              {
+                "arg_key": "name",
+                "res_key": "name",
+                "requested": "alice",
+                "returned": "Alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_contact_info'",
+          "details": {
+            "tool_name": "get_contact_info"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "VALID",
+          "reason": "State consistency preserved across 2 entity binding(s)",
+          "details": {
+            "tool_name": "get_contact_info",
+            "checked_bindings": [
+              "user_id:alice",
+              "email:alice"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_contact_info'",
+          "details": {
+            "tool_name": "get_contact_info"
+          },
+          "latency_ms": 0.006
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:10:41.716228+00:00"
+    },
+    {
+      "call_id": "tc_2_2_push_alert",
+      "tool_name": "push_alert",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "push_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.016
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "push_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ]
+          },
+          "latency_ms": 0.027
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "push_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.017
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.072
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "push_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "u_alice",
+                "returned": "u_alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'push_alert' output",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.014
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:10:57.877995+00:00"
+    },
+    {
+      "call_id": "tc_3_3_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "INVALID",
+          "reason": "Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "violations": [
+              {
+                "field": "query_date",
+                "value": "2026-13-40",
+                "issue": "Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats"
+              }
+            ],
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.096
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_google_calendar'",
+          "details": {
+            "arguments": [
+              "item_id",
+              "quantity",
+              "start_date"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_google_calendar' output",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "temporal"
+      ],
+      "timestamp": "2026-10-24T06:11:02.963481+00:00"
+    },
+    {
+      "call_id": "tc_4_4_query_availability_google_calendar",
+      "tool_name": "query_availability_google_calendar",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "INVALID",
+          "reason": "Temporal validation failed: 'query_date': Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "violations": [
+              {
+                "field": "query_date",
+                "value": "2026-13-40",
+                "issue": "Malformed timestamp/date format: Could not parse '2026-13-40' using standard ISO-8601/date formats"
+              }
+            ],
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.129
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_google_calendar'",
+          "details": {
+            "arguments": [
+              "item_id",
+              "quantity",
+              "start_date"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_google_calendar",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_google_calendar' output",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_google_calendar'",
+          "details": {
+            "tool_name": "query_availability_google_calendar"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "temporal"
+      ],
+      "timestamp": "2026-10-24T06:11:15.496853+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'query_availability_google_calendar' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "query_availability_google_calendar",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_contact_alert_payload",
+        "email_contact_by_name",
+        "get_hotel_info",
+        "get_meeting_rooms",
+        "get_news_currents",
+        "get_office365_room_ticket_native",
+        "reserve_office365_room_ticket_native"
+      ],
+      "insufficient_calls": {
+        "build_contact_alert_payload": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_office365_room_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "reserve_office365_room_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_meeting_rooms": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_hotel_info": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_news_currents": {
+          "expected": 1,
+          "actual": 0
+        },
+        "email_contact_by_name": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "reserve_office365_room_ticket_native",
+              "get_meeting_rooms",
+              "get_hotel_info",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_google_calendar",
+              "get_office365_room_ticket_native",
+              "reserve_office365_room_ticket_native",
+              "get_meeting_rooms",
+              "get_hotel_info_booking",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "reserve_workplace_room_pass_native",
+              "get_meeting_rooms",
+              "get_hotel_info",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_google_calendar",
+              "get_workplace_room_pass_native",
+              "reserve_workplace_room_pass_native",
+              "get_meeting_rooms",
+              "get_hotel_info_booking",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_outlook_calendar",
+              "get_office365_room_ticket_native",
+              "reserve_office365_room_ticket_native",
+              "get_meeting_rooms",
+              "get_hotel_info",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_outlook_calendar",
+              "get_office365_room_ticket_native",
+              "reserve_office365_room_ticket_native",
+              "get_meeting_rooms",
+              "get_hotel_info_booking",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_outlook_calendar",
+              "get_workplace_room_pass_native",
+              "reserve_workplace_room_pass_native",
+              "get_meeting_rooms",
+              "get_hotel_info",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "get_contact_info",
+              "build_contact_alert_payload",
+              "push_alert",
+              "query_availability_outlook_calendar",
+              "get_workplace_room_pass_native",
+              "reserve_workplace_room_pass_native",
+              "get_meeting_rooms",
+              "get_hotel_info_booking",
+              "get_news_currents",
+              "email_contact_by_name"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_hotel_info",
+          "get_hotel_info_booking",
+          "get_office365_room_ticket_native",
+          "get_workplace_room_pass_native",
+          "query_availability_google_calendar",
+          "query_availability_outlook_calendar",
+          "reserve_office365_room_ticket_native",
+          "reserve_workplace_room_pass_native"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s4",
+            "s5",
+            "s7"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_contact_info",
+          "push_alert",
+          "query_availability_google_calendar",
+          "query_availability_google_calendar"
+        ]
+      }
+    }
+  }
+}

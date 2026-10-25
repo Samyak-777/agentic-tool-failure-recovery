@@ -1,0 +1,892 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c2_full",
+  "task_id": "C2_task_020",
+  "mode": "P1",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_020",
+    "template_id": "C2_template_020",
+    "complexity": "C2",
+    "task_description": "Please check whether the black Sony XM5 headphones are in stock for 2 units, then prepare the recommended invoice request for me. After that, sort the 2-unit Sony XM5 item list in descending order, generate the invoice with the best discount and payment link, and then complete checkout for 2 black Sony XM5 headphones for user_001.",
+    "user_input": {
+      "query": "Please check whether the black Sony XM5 headphones in the electronics category are in stock for quantity 2, specifically product_id p_sony_xm5_blk. If they’re available, please prepare the recommended invoice request for me using email user@example.com. Then sort the 2-unit Sony XM5 item list in descending order, generate the invoice with the best discount and a payment link through stripe, and complete checkout for 2 black Sony XM5 headphones for user_id user_001.",
+      "category": "electronics",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_stock_level",
+          "build_recommended_invoice_request",
+          "order_items",
+          "generate_invoice_with_best_discount",
+          "checkout_best_recommendation"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_discounted_invoice:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_level",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk"
+            },
+            "output": {
+              "product_id": "p_sony_xm5_blk",
+              "name": "Sony WH-1000XM5 Headphones (Black)",
+              "stock": 10,
+              "status": "in_stock",
+              "low_stock_warning": false
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_recommended_invoice_request",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 798.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "order_items",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "order": "desc"
+            },
+            "output": {
+              "sorted_items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "count": 1,
+              "order": "desc"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "generate_invoice_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "error": "Gateway Timeout"
+            },
+            "status": "error",
+            "error_message": "504 Timeout",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "generate_invoice_with_best_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 718.2,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 79.8,
+              "cart_subtotal": 798.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "checkout_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics"
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "workflow": "recommended_checkout"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_level",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk"
+              },
+              "output": {
+                "product_id": "p_sony_xm5_blk",
+                "name": "Sony WH-1000XM5 Headphones (Black)",
+                "stock": 10,
+                "status": "in_stock",
+                "low_stock_warning": false
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_recommended_invoice_request",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 798.0,
+                "reservation_id": "RESV-14729548",
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "order_items",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "order": "desc"
+              },
+              "output": {
+                "sorted_items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "count": 1,
+                "order": "desc"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_invoice_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "error": "Gateway Timeout"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "generate_invoice_with_best_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 718.2,
+                "currency": "USD",
+                "billing_email": "user@example.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link.",
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 79.8,
+                "cart_subtotal": 798.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "checkout_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics"
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation",
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "workflow": "recommended_checkout"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_stock_level",
+          "build_recommended_invoice_request",
+          "order_items",
+          "get_available_coupons",
+          "optimize_discount",
+          "generate_payment_invoice",
+          "checkout_best_recommendation"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s4b3",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_discounted_invoice:coupon_then_invoice"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_level",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk"
+            },
+            "output": {
+              "product_id": "p_sony_xm5_blk",
+              "name": "Sony WH-1000XM5 Headphones (Black)",
+              "stock": 10,
+              "status": "in_stock",
+              "low_stock_warning": false
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_recommended_invoice_request",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 798.0,
+              "reservation_id": "RESV-14729548",
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "order_items",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "order": "desc"
+            },
+            "output": {
+              "sorted_items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "count": 1,
+              "order": "desc"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "user_001"
+            },
+            "output": {
+              "error": "Upstream Service Error"
+            },
+            "status": "error",
+            "error_message": "502 UpstreamError",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "user_001"
+            },
+            "output": {
+              "count": 2,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "user_001"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "optimize_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_001",
+              "coupons_list": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ]
+            },
+            "output": {
+              "cart_subtotal": 798.0,
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 79.8,
+              "final_total": 718.2
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "generate_payment_invoice",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 718.2,
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 718.2,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "status": "success"
+          },
+          {
+            "step": 8,
+            "tool_name": "checkout_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics"
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation",
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "workflow": "recommended_checkout"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_level",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk"
+              },
+              "output": {
+                "product_id": "p_sony_xm5_blk",
+                "name": "Sony WH-1000XM5 Headphones (Black)",
+                "stock": 10,
+                "status": "in_stock",
+                "low_stock_warning": false
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_recommended_invoice_request",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 798.0,
+                "reservation_id": "RESV-14729548",
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "order_items",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "order": "desc"
+              },
+              "output": {
+                "sorted_items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "count": 1,
+                "order": "desc"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "user_001"
+              },
+              "output": {
+                "error": "Upstream Service Error"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "user_001"
+              },
+              "output": {
+                "count": 2,
+                "coupons": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "user_001"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "optimize_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_001",
+                "coupons_list": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ]
+              },
+              "output": {
+                "cart_subtotal": 798.0,
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 79.8,
+                "final_total": 718.2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_payment_invoice",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 718.2,
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 718.2,
+                "currency": "USD",
+                "billing_email": "user@example.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "checkout_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics"
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation",
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "workflow": "recommended_checkout"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "generate_invoice_with_best_discount",
+      "generate_payment_invoice",
+      "get_available_coupons",
+      "optimize_discount"
+    ],
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 3
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T19:07:05.180618+00:00",
+  "end_time": "2026-10-24T19:08:49.174909+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the black Sony XM5 headphones in the electronics category are in stock for quantity 2, specifically product_id p_sony_xm5_blk. If they’re available, please prepare the recommended invoice request for me using email user@example.com. Then sort the 2-unit Sony XM5 item list in descending order, generate the invoice with the best discount and a payment link through stripe, and complete checkout for 2 black Sony XM5 headphones for user_id user_001.",
+      "category": "electronics",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether the black Sony XM5 headphones are in stock for 2 units, then prepare the recommended invoice request for me. After that, sort the 2-unit Sony XM5 item list in descending order, generate the invoice with the best discount and payment link, and then complete checkout for 2 black Sony XM5 headphones for user_001.",
+    "template_id": "C2_template_020",
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['generate_invoice_with_best_discount', 'get_available_coupons'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_020_path_0_generate_invoice_with_best_discount",
+        "target_tool": "generate_invoice_with_best_discount",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_discounted_invoice:integrated"
+        ]
+      },
+      {
+        "config_id": "C2_task_020_path_1_get_available_coupons",
+        "target_tool": "get_available_coupons",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Upstream Service Error"
+        },
+        "error_message": "502 UpstreamError",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_discounted_invoice:coupon_then_invoice"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "build_recommended_invoice_request",
+        "checkout_best_recommendation",
+        "generate_invoice_with_best_discount",
+        "get_stock_level",
+        "order_items"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_stock_level",
+              "build_recommended_invoice_request",
+              "order_items",
+              "generate_invoice_with_best_discount",
+              "checkout_best_recommendation"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_stock_level",
+              "build_recommended_invoice_request",
+              "order_items",
+              "get_available_coupons",
+              "optimize_discount",
+              "generate_payment_invoice",
+              "checkout_best_recommendation"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "generate_invoice_with_best_discount",
+          "generate_payment_invoice",
+          "get_available_coupons",
+          "optimize_discount"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

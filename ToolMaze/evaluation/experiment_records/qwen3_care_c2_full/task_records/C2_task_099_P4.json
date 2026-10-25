@@ -1,0 +1,1268 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c2_full",
+  "task_id": "C2_task_099",
+  "mode": "P4",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_099",
+    "template_id": "C2_template_099",
+    "complexity": "C2",
+    "task_description": "Please check the status of flight CA1234 and get information about the Hilton Tokyo. Then, check Alice's calendar availability on October 24, 2024, find her first available time slot, and email her that start time using \"Hilton Tokyo\" as the subject. Finally, send her a high-priority push alert via the app with the message that the email was sent successfully.",
+    "user_input": {
+      "query": "Can you please check the status of flight CA1234 and pull up some information about the Hilton Tokyo? Next, check alice's calendar availability on 2024-10-24 and find her first available time slot. Please email her that start time using \"Hilton Tokyo\" as the subject line. Finally, send exactly 1 high-priority push alert through the app to her account (referencing item ID u_alice) with a message letting her know that the email was sent successfully.",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "item_id": "u_alice",
+      "quantity": 1,
+      "start_date": "2024-10-24"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info_aviationstack",
+          "get_hotel_info",
+          "query_availability_outlook_calendar",
+          "extract_first_slot_start",
+          "email_contact_by_name",
+          "push_alert_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_hotel_info_default_booking:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_aviationstack",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": null,
+              "location": null,
+              "price_per_night": null,
+              "currency": null,
+              "rating": null,
+              "availability": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "extract_first_slot_start",
+            "arguments": {
+              "slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ]
+            },
+            "output": {
+              "extracted_value": "09:00",
+              "slot_index": 0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "09:00",
+              "subject": "Hilton Tokyo"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Hilton Tokyo",
+              "body_length": 5,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "Alice",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Email sent successfully to 1 recipient(s)",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info_aviationstack",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": null,
+                "location": null,
+                "price_per_night": null,
+                "currency": null,
+                "rating": null,
+                "availability": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-10-24",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-10-24",
+                "free_slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ],
+                "total_slots": 4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "extract_first_slot_start",
+              "arguments": {
+                "slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ]
+              },
+              "output": {
+                "extracted_value": "09:00",
+                "slot_index": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "09:00",
+                "subject": "Hilton Tokyo"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Hilton Tokyo",
+                "body_length": 5,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "Alice",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Email sent successfully to 1 recipient(s)",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info_aviationstack",
+          "get_hotel_info_booking",
+          "query_availability_outlook_calendar",
+          "extract_first_slot_start",
+          "email_contact_by_name",
+          "push_alert_contact_by_name"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_hotel_info_default_booking:booking"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info_aviationstack",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_hotel_info_booking",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "hotel_name": null,
+              "location": null,
+              "price_per_night": null,
+              "currency": null,
+              "rating": null,
+              "availability": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "query_availability_outlook_calendar",
+            "arguments": {
+              "item_id": "u_alice",
+              "start_date": "2024-10-24",
+              "quantity": 1
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2024-10-24",
+              "free_slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ],
+              "total_slots": 4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "extract_first_slot_start",
+            "arguments": {
+              "slots": [
+                {
+                  "date": "2024-10-24",
+                  "start_time": "09:00",
+                  "end_time": "10:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "10:00",
+                  "end_time": "11:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "14:00",
+                  "end_time": "15:00",
+                  "status": "free"
+                },
+                {
+                  "date": "2024-10-24",
+                  "start_time": "15:00",
+                  "end_time": "16:00",
+                  "status": "free"
+                }
+              ]
+            },
+            "output": {
+              "extracted_value": "09:00",
+              "slot_index": 0
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "email_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "body": "09:00",
+              "subject": "Hilton Tokyo"
+            },
+            "output": {
+              "status": "sent",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "recipients": [
+                "alice@company.com"
+              ],
+              "subject": "Hilton Tokyo",
+              "body_length": 5,
+              "resolved_name": "Alice",
+              "user_id": "u_alice"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "Alice",
+              "message": "Email sent successfully to 1 recipient(s)",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Email sent successfully to 1 recipient(s)",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info_aviationstack",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_booking",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "hotel_name": null,
+                "location": null,
+                "price_per_night": null,
+                "currency": null,
+                "rating": null,
+                "availability": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "query_availability_outlook_calendar",
+              "arguments": {
+                "item_id": "u_alice",
+                "start_date": "2024-10-24",
+                "quantity": 1
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2024-10-24",
+                "free_slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ],
+                "total_slots": 4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "extract_first_slot_start",
+              "arguments": {
+                "slots": [
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "09:00",
+                    "end_time": "10:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "10:00",
+                    "end_time": "11:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "14:00",
+                    "end_time": "15:00",
+                    "status": "free"
+                  },
+                  {
+                    "date": "2024-10-24",
+                    "start_time": "15:00",
+                    "end_time": "16:00",
+                    "status": "free"
+                  }
+                ]
+              },
+              "output": {
+                "extracted_value": "09:00",
+                "slot_index": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "email_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "body": "09:00",
+                "subject": "Hilton Tokyo"
+              },
+              "output": {
+                "status": "sent",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "recipients": [
+                  "alice@company.com"
+                ],
+                "subject": "Hilton Tokyo",
+                "body_length": 5,
+                "resolved_name": "Alice",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "Alice",
+                "message": "Email sent successfully to 1 recipient(s)",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Email sent successfully to 1 recipient(s)",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_hotel_info",
+      "get_hotel_info_booking"
+    ],
+    "domains": [
+      "Travel",
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 1,
+    "corruption_type": "missing_required_fields"
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T20:41:25.209860+00:00",
+  "end_time": "2026-10-23T20:41:48.721105+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: missing shared tools: ['email_contact_by_name', 'extract_first_slot_start', 'push_alert_contact_by_name', 'query_availability_outlook_calendar']; 'get_hotel_info' permanently failed but agent did not switch to alt tool",
+  "failed_tools": [
+    "get_hotel_info"
+  ],
+  "tokens": {
+    "input_tokens": 5448,
+    "output_tokens": 1281,
+    "total_tokens": 6729
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Can you please check the status of flight CA1234 and pull up some information about the Hilton Tokyo? Next, check alice's calendar availability on 2024-10-24 and find her first available time slot. Please email her that start time using \"Hilton Tokyo\" as the subject line. Finally, send exactly 1 high-priority push alert through the app to her account (referencing item ID u_alice) with a message letting her know that the email was sent successfully.",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "hotel_name": "Hilton Tokyo",
+      "item_id": "u_alice",
+      "quantity": 1,
+      "start_date": "2024-10-24"
+    },
+    "task_description": "Please check the status of flight CA1234 and get information about the Hilton Tokyo. Then, check Alice's calendar availability on October 24, 2024, find her first available time slot, and email her that start time using \"Hilton Tokyo\" as the subject. Finally, send her a high-priority push alert via the app with the message that the email was sent successfully.",
+    "template_id": "C2_template_099",
+    "domains": [
+      "Travel",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_hotel_info'], matching recorded execution failure in tools ['get_hotel_info'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_099_path_0_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": null,
+          "location": null,
+          "price_per_night": null,
+          "currency": null,
+          "rating": null,
+          "availability": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_hotel_info_default_booking:default_provider"
+        ]
+      },
+      {
+        "config_id": "C2_task_099_path_1_get_hotel_info_booking",
+        "target_tool": "get_hotel_info_booking",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "hotel_name": null,
+          "location": null,
+          "price_per_night": null,
+          "currency": null,
+          "rating": null,
+          "availability": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_hotel_info_default_booking:booking"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_hotel_info",
+        "tool_name": "get_hotel_info",
+        "step": 2,
+        "timestamp": "2026-10-23T20:41:44.251781+00:00",
+        "config_id": "C2_task_099_path_0_get_hotel_info",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "hotel_name": "Hilton Tokyo"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [type] Data type violation(s): Field 'hotel_name' expected string, got NoneType (expected string, got NoneType); Field 'location' expected string, got NoneType (expected string, got NoneType); Field 'price_per_night' expected integer, got NoneType (expected integer, got NoneType); Field 'currency' expected string, got NoneType (expected string, got NoneType); Field 'rating' expected number, got NoneType (expected number, got NoneType); Field 'availability' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'get_hotel_info': null: ['hotel_name', 'location', 'price_per_night', 'currency', 'rating', 'availability']",
+          "validation_failed_checks": [
+            "type",
+            "required"
+          ],
+          "untrusted_output": {
+            "hotel_name": null,
+            "location": null,
+            "price_per_night": null,
+            "currency": null,
+            "rating": null,
+            "availability": null
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info_aviationstack",
+      "tool_name": "get_flight_info_aviationstack",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "flight_number": "CA1234",
+        "airline": "Air China",
+        "departure": "Beijing Capital Airport",
+        "arrival": "Shanghai Pudong Airport",
+        "departure_time": "08:30",
+        "arrival_time": "11:00",
+        "status": "On Time",
+        "gate": "A12"
+      },
+      "status": "success",
+      "duration_ms": 0.5737170577049255,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T20:41:38.046082+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "arguments": {
+        "hotel_name": "Hilton Tokyo"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'hotel_name' expected string, got NoneType (expected string, got NoneType); Field 'location' expected string, got NoneType (expected string, got NoneType); Field 'price_per_night' expected integer, got NoneType (expected integer, got NoneType); Field 'currency' expected string, got NoneType (expected string, got NoneType); Field 'rating' expected number, got NoneType (expected number, got NoneType); Field 'availability' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'get_hotel_info': null: ['hotel_name', 'location', 'price_per_night', 'currency', 'rating', 'availability']",
+        "validation_failed_checks": [
+          "type",
+          "required"
+        ],
+        "untrusted_output": {
+          "hotel_name": null,
+          "location": null,
+          "price_per_night": null,
+          "currency": null,
+          "rating": null,
+          "availability": null
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.39038306567817926,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T20:41:44.251781+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info_aviationstack",
+      "tool_name": "get_flight_info_aviationstack",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info_aviationstack'",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.181
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "CA1234",
+                "returned": "CA1234",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_flight_info_aviationstack'",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info_aviationstack' output",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info_aviationstack'",
+          "details": {
+            "tool_name": "get_flight_info_aviationstack"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T20:41:38.046328+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_hotel_info",
+      "tool_name": "get_hotel_info",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "verified_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.015
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'hotel_name' expected string, got NoneType (expected string, got NoneType); Field 'location' expected string, got NoneType (expected string, got NoneType); Field 'price_per_night' expected integer, got NoneType (expected integer, got NoneType); Field 'currency' expected string, got NoneType (expected string, got NoneType); Field 'rating' expected number, got NoneType (expected number, got NoneType); Field 'availability' expected string, got NoneType (expected string, got NoneType)",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "violations": [
+              {
+                "field": "hotel_name",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              },
+              {
+                "field": "location",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              },
+              {
+                "field": "price_per_night",
+                "expected_type": "integer",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected integer, got NoneType"
+              },
+              {
+                "field": "currency",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              },
+              {
+                "field": "rating",
+                "expected_type": "number",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected number, got NoneType"
+              },
+              {
+                "field": "availability",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.017
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'get_hotel_info': null: ['hotel_name', 'location', 'price_per_night', 'currency', 'rating', 'availability']",
+          "details": {
+            "tool_name": "get_hotel_info",
+            "missing_fields": [],
+            "null_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ],
+            "expected_fields": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.079
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_hotel_info'",
+          "details": {
+            "arguments": [
+              "hotel_name"
+            ],
+            "output": [
+              "hotel_name",
+              "location",
+              "price_per_night",
+              "currency",
+              "rating",
+              "availability"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.023
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_hotel_info' output",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.004
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_hotel_info'",
+          "details": {
+            "tool_name": "get_hotel_info"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required"
+      ],
+      "timestamp": "2026-10-23T20:41:44.252253+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: missing shared tools: ['email_contact_by_name', 'extract_first_slot_start', 'push_alert_contact_by_name', 'query_availability_outlook_calendar']; 'get_hotel_info' permanently failed but agent did not switch to alt tool",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_hotel_info",
+      "missing_tools": [
+        "email_contact_by_name",
+        "extract_first_slot_start",
+        "push_alert_contact_by_name",
+        "query_availability_outlook_calendar"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info_aviationstack",
+              "get_hotel_info",
+              "query_availability_outlook_calendar",
+              "extract_first_slot_start",
+              "email_contact_by_name",
+              "push_alert_contact_by_name"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info_aviationstack",
+              "get_hotel_info_booking",
+              "query_availability_outlook_calendar",
+              "extract_first_slot_start",
+              "email_contact_by_name",
+              "push_alert_contact_by_name"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_hotel_info",
+          "get_hotel_info_booking"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info_aviationstack",
+          "get_hotel_info"
+        ]
+      }
+    }
+  }
+}

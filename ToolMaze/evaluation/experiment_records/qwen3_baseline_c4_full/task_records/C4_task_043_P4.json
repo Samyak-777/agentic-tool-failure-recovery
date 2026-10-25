@@ -1,0 +1,4572 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_043",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_043",
+    "template_id": "C4_template_043",
+    "complexity": "C4",
+    "task_description": "Please check whether NASDAQ is open, then place a $2500.50 buy order. After that, get the latest AAPL quote and send that snapshot to me in the app with high priority, then check the status of my living room light, get its current light snapshot, and set it to 75% brightness. Next, get the current time in New York, check the weather in New York, and then create a snapshot of my trading workspace and alert me in the app with high priority.",
+    "user_input": {
+      "query": "Please check whether NASDAQ is open for me, and if it is, place a buy order for 2500.5 USD of AAPL for user trader_01. After that, get the latest AAPL quote and send that snapshot to me in the app on channel app with high priority. Then check the status of my living room light with device ID light_living, grab its current light snapshot, and set it to 75% brightness. Next, get the current time in New York using America/New_York, and check the weather in New York. Finally, create a snapshot of my trading workspace at /srv/trading-workspace, save it as post_trade_snapshot, and alert me in the app with high priority.",
+      "amount": 2500.5,
+      "backup_name": "post_trade_snapshot",
+      "brightness": 75,
+      "channel": "app",
+      "city": "New York",
+      "exchange": "NASDAQ",
+      "light_device_id": "light_living",
+      "priority": "high",
+      "target_currency": "USD",
+      "ticker": "AAPL",
+      "timezone": "America/New_York",
+      "user_id": "trader_01",
+      "workspace_path": "/srv/trading-workspace"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "get_iot_device_status",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "get_current_time",
+          "get_weather_weatherapi",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "",
+              "symbol": "AAPL?",
+              "usd_last": null,
+              "venue": "",
+              "quoted_at": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "",
+              "lamp_state": "unknown",
+              "level_pct": null,
+              "hue_name": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "",
+                "symbol": "AAPL?",
+                "usd_last": null,
+                "venue": "",
+                "quoted_at": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "",
+                "lamp_state": "unknown",
+                "level_pct": null,
+                "hue_name": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "get_iot_device_status",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "get_current_time",
+          "get_weather_visualcrossing",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7b",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "",
+              "symbol": "AAPL?",
+              "usd_last": null,
+              "venue": "",
+              "quoted_at": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "",
+              "lamp_state": "dimmed",
+              "level_pct": -150,
+              "hue_name": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": "",
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "",
+                "symbol": "AAPL?",
+                "usd_last": null,
+                "venue": "",
+                "quoted_at": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "",
+                "lamp_state": "dimmed",
+                "level_pct": -150,
+                "hue_name": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": "",
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "get_iot_device_status",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "get_current_time",
+          "get_weather_weatherapi",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "",
+              "symbol": "AAPL?",
+              "usd_last": -170.25,
+              "venue": "",
+              "quoted_at": "not-a-timestamp"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "",
+              "bridge_state": "completed",
+              "dimmer": null,
+              "tone": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "",
+                "symbol": "AAPL?",
+                "usd_last": -170.25,
+                "venue": "",
+                "quoted_at": "not-a-timestamp"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "",
+                "bridge_state": "completed",
+                "dimmer": null,
+                "tone": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "get_iot_device_status",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "get_current_time",
+          "get_weather_visualcrossing",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "",
+              "symbol": "AAPL?",
+              "usd_last": -170.25,
+              "venue": "",
+              "quoted_at": "2026-02-22"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "",
+              "bridge_state": "completed",
+              "dimmer": null,
+              "tone": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "",
+                "symbol": "AAPL?",
+                "usd_last": -170.25,
+                "venue": "",
+                "quoted_at": "2026-02-22"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "",
+                "bridge_state": "completed",
+                "dimmer": null,
+                "tone": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "get_iot_device_status",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "get_current_time",
+          "get_weather_weatherapi",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "",
+              "ticker_code": "AAPL?",
+              "local_last": -170.25,
+              "settlement_ccy": "",
+              "usd_reference": null,
+              "fx_rate": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 170.25 USD (fx 1.0)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "",
+              "lamp_state": "completed",
+              "level_pct": 0,
+              "hue_name": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "",
+                "ticker_code": "AAPL?",
+                "local_last": -170.25,
+                "settlement_ccy": "",
+                "usd_reference": null,
+                "fx_rate": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 170.25 USD (fx 1.0)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "",
+                "lamp_state": "completed",
+                "level_pct": 0,
+                "hue_name": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "get_iot_device_status",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "get_current_time",
+          "get_weather_visualcrossing",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5a1",
+          "s5a2",
+          "s6",
+          "s7b",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "",
+              "ticker_code": "AAPL-OLD",
+              "local_last": 0,
+              "settlement_ccy": "",
+              "usd_reference": null,
+              "fx_rate": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 170.25 USD (fx 1.0)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "",
+              "lamp_state": "completed",
+              "level_pct": null,
+              "hue_name": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "",
+                "ticker_code": "AAPL-OLD",
+                "local_last": 0,
+                "settlement_ccy": "",
+                "usd_reference": null,
+                "fx_rate": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 170.25 USD (fx 1.0)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "",
+                "lamp_state": "completed",
+                "level_pct": null,
+                "hue_name": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "get_iot_device_status",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "get_current_time",
+          "get_weather_weatherapi",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7a",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "",
+              "ticker_code": "AAPL?",
+              "local_last": 0,
+              "settlement_ccy": "",
+              "usd_reference": null,
+              "fx_rate": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 170.25 USD (fx 1.0)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "",
+              "bridge_state": "completed",
+              "dimmer": null,
+              "tone": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": "",
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "",
+                "ticker_code": "AAPL?",
+                "local_last": 0,
+                "settlement_ccy": "",
+                "usd_reference": null,
+                "fx_rate": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 170.25 USD (fx 1.0)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "",
+                "bridge_state": "completed",
+                "dimmer": null,
+                "tone": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": "",
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "get_iot_device_status",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "get_current_time",
+          "get_weather_visualcrossing",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5b1",
+          "s5b2",
+          "s6",
+          "s7b",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 2500.5
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 2500.5,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "USD"
+            },
+            "output": {
+              "ticket_ref": "",
+              "ticker_code": "AAPL",
+              "local_last": -170.25,
+              "settlement_ccy": "",
+              "usd_reference": null,
+              "fx_rate": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 170.25,
+                "settlement_ccy": "USD",
+                "usd_reference": 170.25,
+                "fx_rate": 1.0
+              },
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "trader_01",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 170.25 USD (fx 1.0)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "",
+              "bridge_state": "completed",
+              "dimmer": null,
+              "tone": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 7,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 75
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 75,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": null,
+              "condition": ""
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "user_id": "trader_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "trader_01",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/srv/trading-workspace",
+              "backup_name": "post_trade_snapshot",
+              "size_mb": 320,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 2500.5
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 2500.5,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "USD"
+              },
+              "output": {
+                "ticket_ref": "",
+                "ticker_code": "AAPL",
+                "local_last": -170.25,
+                "settlement_ccy": "",
+                "usd_reference": null,
+                "fx_rate": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 170.25,
+                  "settlement_ccy": "USD",
+                  "usd_reference": 170.25,
+                  "fx_rate": 1.0
+                },
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "trader_01",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 170.25 USD (fx 1.0)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "",
+                "bridge_state": "completed",
+                "dimmer": null,
+                "tone": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 75
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 75,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": null,
+                "condition": ""
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "user_id": "trader_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "trader_01",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/srv/trading-workspace",
+                "backup_name": "post_trade_snapshot",
+                "size_mb": 320,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "apply_light_bridge_scene_native",
+      "apply_light_mesh_scene_native",
+      "get_fx_quote_ticket_native",
+      "get_light_bridge_payload_native",
+      "get_light_mesh_snapshot_native",
+      "get_quote_snapshot_native",
+      "get_weather_visualcrossing",
+      "get_weather_weatherapi",
+      "publish_fx_quote_ticket_native",
+      "publish_quote_snapshot_native"
+    ],
+    "domains": [
+      "Financial",
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s3",
+        "s5",
+        "s7"
+      ]
+    },
+    "corruption_type": "missing_required_fields"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T06:19:23.268490+00:00",
+  "end_time": "2026-10-24T06:19:43.946071+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_quote_snapshot_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_quote_snapshot_native"
+  ],
+  "tokens": {
+    "input_tokens": 10062,
+    "output_tokens": 1222,
+    "total_tokens": 11284
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether NASDAQ is open for me, and if it is, place a buy order for 2500.5 USD of AAPL for user trader_01. After that, get the latest AAPL quote and send that snapshot to me in the app on channel app with high priority. Then check the status of my living room light with device ID light_living, grab its current light snapshot, and set it to 75% brightness. Next, get the current time in New York using America/New_York, and check the weather in New York. Finally, create a snapshot of my trading workspace at /srv/trading-workspace, save it as post_trade_snapshot, and alert me in the app with high priority.",
+      "amount": 2500.5,
+      "backup_name": "post_trade_snapshot",
+      "brightness": 75,
+      "channel": "app",
+      "city": "New York",
+      "exchange": "NASDAQ",
+      "light_device_id": "light_living",
+      "priority": "high",
+      "target_currency": "USD",
+      "ticker": "AAPL",
+      "timezone": "America/New_York",
+      "user_id": "trader_01",
+      "workspace_path": "/srv/trading-workspace"
+    },
+    "task_description": "Please check whether NASDAQ is open, then place a $2500.50 buy order. After that, get the latest AAPL quote and send that snapshot to me in the app with high priority, then check the status of my living room light, get its current light snapshot, and set it to 75% brightness. Next, get the current time in New York, check the weather in New York, and then create a snapshot of my trading workspace and alert me in the app with high priority.",
+    "template_id": "C4_template_043",
+    "domains": [
+      "Financial",
+      "IoT",
+      "General",
+      "Travel"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_quote_snapshot_native'], matching recorded execution failure in tools ['get_quote_snapshot_native'] leading to task failure.",
+    "configured_count": 24,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_043_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "",
+          "symbol": "AAPL?",
+          "usd_last": null,
+          "venue": "",
+          "quoted_at": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_0_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "",
+          "lamp_state": "unknown",
+          "level_pct": null,
+          "hue_name": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_0_get_weather_weatherapi",
+        "target_tool": "get_weather_weatherapi",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_1_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "",
+          "symbol": "AAPL?",
+          "usd_last": null,
+          "venue": "",
+          "quoted_at": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_1_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "",
+          "lamp_state": "dimmed",
+          "level_pct": -150,
+          "hue_name": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_1_get_weather_visualcrossing",
+        "target_tool": "get_weather_visualcrossing",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": "",
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_2_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "",
+          "symbol": "AAPL?",
+          "usd_last": -170.25,
+          "venue": "",
+          "quoted_at": "not-a-timestamp"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_2_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "",
+          "bridge_state": "completed",
+          "dimmer": null,
+          "tone": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_2_get_weather_weatherapi",
+        "target_tool": "get_weather_weatherapi",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_3_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "",
+          "symbol": "AAPL?",
+          "usd_last": -170.25,
+          "venue": "",
+          "quoted_at": "2026-02-22"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_3_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "",
+          "bridge_state": "completed",
+          "dimmer": null,
+          "tone": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_3_get_weather_visualcrossing",
+        "target_tool": "get_weather_visualcrossing",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_4_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "",
+          "ticker_code": "AAPL?",
+          "local_last": -170.25,
+          "settlement_ccy": "",
+          "usd_reference": null,
+          "fx_rate": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_4_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "",
+          "lamp_state": "completed",
+          "level_pct": 0,
+          "hue_name": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_4_get_weather_weatherapi",
+        "target_tool": "get_weather_weatherapi",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_5_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "",
+          "ticker_code": "AAPL-OLD",
+          "local_last": 0,
+          "settlement_ccy": "",
+          "usd_reference": null,
+          "fx_rate": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_5_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "",
+          "lamp_state": "completed",
+          "level_pct": null,
+          "hue_name": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_5_get_weather_visualcrossing",
+        "target_tool": "get_weather_visualcrossing",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:mesh_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_6_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "",
+          "ticker_code": "AAPL?",
+          "local_last": 0,
+          "settlement_ccy": "",
+          "usd_reference": null,
+          "fx_rate": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_6_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "",
+          "bridge_state": "completed",
+          "dimmer": null,
+          "tone": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_6_get_weather_weatherapi",
+        "target_tool": "get_weather_weatherapi",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": "",
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:weatherapi"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_7_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "",
+          "ticker_code": "AAPL",
+          "local_last": -170.25,
+          "settlement_ccy": "",
+          "usd_reference": null,
+          "fx_rate": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_7_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 6,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "",
+          "bridge_state": "completed",
+          "dimmer": null,
+          "tone": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      },
+      {
+        "config_id": "C4_task_043_path_7_get_weather_visualcrossing",
+        "target_tool": "get_weather_visualcrossing",
+        "step": 9,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "temperature_celsius": null,
+          "condition": ""
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native",
+          "alt_light_control_native_2to2:bridge_scene_native",
+          "alt_weather_provider_pair:visualcrossing"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_quote_snapshot_native",
+        "tool_name": "get_quote_snapshot_native",
+        "step": 3,
+        "timestamp": "2026-10-24T06:19:37.141373+00:00",
+        "config_id": "C4_task_043_path_0_get_quote_snapshot_native",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "ticker": "AAPL"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [type] Data type violation(s): Field 'usd_last' expected number, got NoneType (expected number, got NoneType); [required] Required field violation for 'get_quote_snapshot_native': null: ['usd_last']; [entity] Entity mismatch detected: Requested ticker='AAPL', but output returned symbol='AAPL?'",
+          "validation_failed_checks": [
+            "type",
+            "required",
+            "entity"
+          ],
+          "untrusted_output": {
+            "snapshot_ref": "",
+            "symbol": "AAPL?",
+            "usd_last": null,
+            "venue": "",
+            "quoted_at": ""
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "arguments": {
+        "exchange": "NASDAQ"
+      },
+      "result_sample": {
+        "exchange": "NASDAQ",
+        "is_open": true,
+        "session": "regular",
+        "details": {
+          "is_open": true,
+          "session": "regular",
+          "next_close": "16:00 EST"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3569279797375202,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:19:29.665241+00:00"
+    },
+    {
+      "call_id": "tc_2_2_place_buy_order_with_risk_check",
+      "tool_name": "place_buy_order_with_risk_check",
+      "arguments": {
+        "amount": 2500.5
+      },
+      "result_sample": {
+        "order_id": "ORD-BUY-FAEF1",
+        "action": "BUY",
+        "status": "filled",
+        "message": "Order executed successfully",
+        "filled_amount": 2500.5,
+        "risk_token": "[REDACTED]",
+        "risk_decision": "approved"
+      },
+      "status": "success",
+      "duration_ms": 0.38871809374541044,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:19:33.342740+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_quote_snapshot_native",
+      "tool_name": "get_quote_snapshot_native",
+      "arguments": {
+        "ticker": "AAPL"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'usd_last' expected number, got NoneType (expected number, got NoneType); [required] Required field violation for 'get_quote_snapshot_native': null: ['usd_last']; [entity] Entity mismatch detected: Requested ticker='AAPL', but output returned symbol='AAPL?'",
+        "validation_failed_checks": [
+          "type",
+          "required",
+          "entity"
+        ],
+        "untrusted_output": {
+          "snapshot_ref": "",
+          "symbol": "AAPL?",
+          "usd_last": null,
+          "venue": "",
+          "quoted_at": ""
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3296550130471587,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T06:19:37.141373+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "checked_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.036
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_market_status_alpha'",
+          "details": {
+            "arguments": [
+              "exchange"
+            ],
+            "output": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_market_status_alpha' output",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:19:29.665475+00:00"
+    },
+    {
+      "call_id": "tc_2_2_place_buy_order_with_risk_check",
+      "tool_name": "place_buy_order_with_risk_check",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "checked_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.055
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "arguments": [
+              "amount"
+            ],
+            "output": [
+              "order_id",
+              "action",
+              "status",
+              "message",
+              "filled_amount",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.027
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'place_buy_order_with_risk_check' output",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T06:19:33.342968+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_quote_snapshot_native",
+      "tool_name": "get_quote_snapshot_native",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_quote_snapshot_native",
+            "verified_fields": [
+              "snapshot_ref",
+              "symbol",
+              "usd_last",
+              "venue",
+              "quoted_at"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'usd_last' expected number, got NoneType (expected number, got NoneType)",
+          "details": {
+            "tool_name": "get_quote_snapshot_native",
+            "violations": [
+              {
+                "field": "usd_last",
+                "expected_type": "number",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected number, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "snapshot_ref",
+              "symbol",
+              "usd_last",
+              "venue",
+              "quoted_at"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'get_quote_snapshot_native': null: ['usd_last']",
+          "details": {
+            "tool_name": "get_quote_snapshot_native",
+            "missing_fields": [],
+            "null_fields": [
+              "usd_last"
+            ],
+            "expected_fields": [
+              "snapshot_ref",
+              "symbol",
+              "usd_last",
+              "venue",
+              "quoted_at"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_quote_snapshot_native'",
+          "details": {
+            "tool_name": "get_quote_snapshot_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_quote_snapshot_native'",
+          "details": {
+            "tool_name": "get_quote_snapshot_native"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "INVALID",
+          "reason": "Entity mismatch detected: Requested ticker='AAPL', but output returned symbol='AAPL?'",
+          "details": {
+            "tool_name": "get_quote_snapshot_native",
+            "violations": [
+              {
+                "field": "symbol",
+                "requested": "AAPL",
+                "returned": "AAPL?",
+                "reason": "Requested ticker='AAPL', but output returned symbol='AAPL?'"
+              }
+            ],
+            "compared_pairs": [
+              {
+                "arg_key": "ticker",
+                "res_key": "symbol",
+                "requested": "AAPL",
+                "returned": "AAPL?",
+                "match": false
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_quote_snapshot_native'",
+          "details": {
+            "tool_name": "get_quote_snapshot_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_quote_snapshot_native' output",
+          "details": {
+            "tool_name": "get_quote_snapshot_native"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_quote_snapshot_native'",
+          "details": {
+            "tool_name": "get_quote_snapshot_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required",
+        "entity"
+      ],
+      "timestamp": "2026-10-24T06:19:37.141865+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_quote_snapshot_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_quote_snapshot_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "apply_light_mesh_scene_native",
+        "get_current_time",
+        "get_iot_device_status",
+        "get_light_mesh_snapshot_native",
+        "get_weather_weatherapi",
+        "publish_quote_snapshot_native",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "publish_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_iot_device_status": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_light_mesh_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "apply_light_mesh_scene_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_current_time": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weather_weatherapi": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "get_iot_device_status",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "get_current_time",
+              "get_weather_weatherapi",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "get_iot_device_status",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "get_current_time",
+              "get_weather_visualcrossing",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "get_iot_device_status",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "get_current_time",
+              "get_weather_weatherapi",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "get_iot_device_status",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "get_current_time",
+              "get_weather_visualcrossing",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "get_iot_device_status",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "get_current_time",
+              "get_weather_weatherapi",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "get_iot_device_status",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "get_current_time",
+              "get_weather_visualcrossing",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "get_iot_device_status",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "get_current_time",
+              "get_weather_weatherapi",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "place_buy_order_with_risk_check",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "get_iot_device_status",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "get_current_time",
+              "get_weather_visualcrossing",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "apply_light_bridge_scene_native",
+          "apply_light_mesh_scene_native",
+          "get_fx_quote_ticket_native",
+          "get_light_bridge_payload_native",
+          "get_light_mesh_snapshot_native",
+          "get_quote_snapshot_native",
+          "get_weather_visualcrossing",
+          "get_weather_weatherapi",
+          "publish_fx_quote_ticket_native",
+          "publish_quote_snapshot_native"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s3",
+            "s5",
+            "s7"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_market_status_alpha",
+          "place_buy_order_with_risk_check",
+          "get_quote_snapshot_native"
+        ]
+      }
+    }
+  }
+}

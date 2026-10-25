@@ -1,0 +1,1348 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c3_full",
+  "task_id": "C3_task_055",
+  "mode": "P2",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_055",
+    "template_id": "C3_template_055",
+    "complexity": "C3",
+    "task_description": "Please check the current status of the NYSE and then look up the balance and balance sheet for my investment account (user_01). I also need you to get the USD to EUR exchange rate, publish my investment balance sheet via high-priority email, and finally verify the balance on that account through the bank API.",
+    "user_input": {
+      "query": "Could you please check the current status of the NYSE for me? After that, I need you to look up the balance and balance sheet for my investment account associated with user_01. I also need to know the current USD to EUR exchange rate. Once you have the details, please publish my investment balance sheet by sending it out via a high-priority email. Finally, make sure to verify the balance on that account directly through the bank API. Thanks!",
+      "account_type": "investment",
+      "exchange": "NYSE",
+      "target_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status_alpha",
+          "get_account_balance",
+          "get_exchange_rate_exchangerate",
+          "get_bank_balance_sheet_native",
+          "publish_bank_balance_sheet_native",
+          "get_account_balance_bank_api"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_exchangerate",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_bank_balance_sheet_native",
+            "arguments": {
+              "balance_sheet": {
+                "sheet_id": "bank_user_01_investment",
+                "owner_id": "user_01",
+                "balance_amount": 28785,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "bank_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "bank_user_01_investment",
+              "content": "Bank balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_exchangerate",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_bank_balance_sheet_native",
+              "arguments": {
+                "balance_sheet": {
+                  "sheet_id": "bank_user_01_investment",
+                  "owner_id": "user_01",
+                  "balance_amount": 28785,
+                  "denomination": "USD",
+                  "bucket_name": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "bank_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "bank_user_01_investment",
+                "content": "Bank balance investment: 28785 USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status_alpha",
+          "get_account_balance",
+          "get_exchange_rate_exchangerate",
+          "get_broker_balance_ledger_native",
+          "publish_broker_balance_ledger_native",
+          "get_account_balance_bank_api"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "exchange": "NYSE",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_account_balance",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_exchangerate",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_broker_balance_ledger_native",
+            "arguments": {
+              "balance_ledger": {
+                "ledger_ref": "broker_user_01_investment",
+                "principal_id": "user_01",
+                "equity_value": 28785,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "broker_balance_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "account_ref": "broker_user_01_investment",
+              "content": "Broker balance investment: 28785 USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_account_balance_bank_api",
+            "arguments": {
+              "user_id": "user_01",
+              "account_type": "investment"
+            },
+            "output": {
+              "user_id": "user_01",
+              "account_type": "investment",
+              "balance": 28785,
+              "currency": "USD",
+              "status": "active"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "exchange": "NYSE",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_exchangerate",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_broker_balance_ledger_native",
+              "arguments": {
+                "balance_ledger": {
+                  "ledger_ref": "broker_user_01_investment",
+                  "principal_id": "user_01",
+                  "equity_value": 28785,
+                  "currency_code": "USD",
+                  "account_bucket": "investment"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "broker_balance_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "account_ref": "broker_user_01_investment",
+                "content": "Broker balance investment: 28785 USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_account_balance_bank_api",
+              "arguments": {
+                "user_id": "user_01",
+                "account_type": "investment"
+              },
+              "output": {
+                "user_id": "user_01",
+                "account_type": "investment",
+                "balance": 28785,
+                "currency": "USD",
+                "status": "active"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_bank_balance_sheet_native",
+      "get_broker_balance_ledger_native",
+      "publish_bank_balance_sheet_native",
+      "publish_broker_balance_ledger_native"
+    ],
+    "domains": [
+      "Financial"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 3
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T22:33:14.760884+00:00",
+  "end_time": "2026-10-23T22:33:48.686165+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_bank_balance_sheet_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_bank_balance_sheet_native"
+  ],
+  "tokens": {
+    "input_tokens": 13526,
+    "output_tokens": 2010,
+    "total_tokens": 15536
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the current status of the NYSE for me? After that, I need you to look up the balance and balance sheet for my investment account associated with user_01. I also need to know the current USD to EUR exchange rate. Once you have the details, please publish my investment balance sheet by sending it out via a high-priority email. Finally, make sure to verify the balance on that account directly through the bank API. Thanks!",
+      "account_type": "investment",
+      "exchange": "NYSE",
+      "target_currency": "EUR",
+      "user_id": "user_01"
+    },
+    "task_description": "Please check the current status of the NYSE and then look up the balance and balance sheet for my investment account (user_01). I also need you to get the USD to EUR exchange rate, publish my investment balance sheet via high-priority email, and finally verify the balance on that account through the bank API.",
+    "template_id": "C3_template_055",
+    "domains": [
+      "Financial"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_bank_balance_sheet_native'], matching recorded execution failure in tools ['get_bank_balance_sheet_native'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_055_path_0_get_bank_balance_sheet_native",
+        "target_tool": "get_bank_balance_sheet_native",
+        "step": 4,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_balance_notice_native_2to2:bank_balance_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_055_path_1_get_broker_balance_ledger_native",
+        "target_tool": "get_broker_balance_ledger_native",
+        "step": 4,
+        "mode": "P2",
+        "complexity": "C3",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_balance_notice_native_2to2:broker_balance_notice_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_bank_balance_sheet_native",
+        "tool_name": "get_bank_balance_sheet_native",
+        "step": 3,
+        "timestamp": "2026-10-23T22:33:34.227383+00:00",
+        "config_id": "C3_task_055_path_0_get_bank_balance_sheet_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "account_type": "investment",
+          "user_id": "user_01"
+        },
+        "modified_output_sample": {
+          "error": "Account Suspended"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "arguments": {
+        "exchange": "NYSE"
+      },
+      "result_sample": {
+        "exchange": "NYSE",
+        "is_open": true,
+        "session": "regular",
+        "details": {
+          "is_open": true,
+          "session": "regular",
+          "next_close": "16:00 EST"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.5018010269850492,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:33:25.215609+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_account_balance_bank_api",
+      "tool_name": "get_account_balance_bank_api",
+      "arguments": {
+        "account_type": "investment",
+        "user_id": "user_01"
+      },
+      "result_sample": {
+        "user_id": "user_01",
+        "account_type": "investment",
+        "balance": 28785,
+        "currency": "USD",
+        "status": "active"
+      },
+      "status": "success",
+      "duration_ms": 0.3438959829509258,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:33:30.552452+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_bank_balance_sheet_native",
+      "tool_name": "get_bank_balance_sheet_native",
+      "arguments": {
+        "account_type": "investment",
+        "user_id": "user_01"
+      },
+      "result_sample": {
+        "error": "Account Suspended"
+      },
+      "status": "error",
+      "duration_ms": 0.25114603340625763,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:33:34.227383+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_exchange_rate_exchangerate",
+      "tool_name": "get_exchange_rate_exchangerate",
+      "arguments": {
+        "from_currency": "USD",
+        "to_currency": "EUR"
+      },
+      "result_sample": {
+        "rate": 0.92
+      },
+      "status": "success",
+      "duration_ms": 0.3097009612247348,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:33:40.076063+00:00"
+    },
+    {
+      "call_id": "tc_5_5_publish_bank_balance_sheet_native",
+      "tool_name": "publish_bank_balance_sheet_native",
+      "arguments": {
+        "priority": "high",
+        "user_id": "user_01",
+        "balance_sheet": {
+          "description": "Bank-native balance sheet object",
+          "type": "object"
+        },
+        "channel": "email"
+      },
+      "result_sample": {
+        "status": "published",
+        "strategy": "bank_balance_notice_native",
+        "notification_id": "NOTIFEE84C",
+        "target_user": "user_01",
+        "account_ref": "bank_balance_sheet",
+        "content": "Bank balance account: 0 USD"
+      },
+      "status": "success",
+      "duration_ms": 0.3617790061980486,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T22:33:45.678596+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.016
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "checked_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.061
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_market_status_alpha'",
+          "details": {
+            "arguments": [
+              "exchange"
+            ],
+            "output": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_market_status_alpha' output",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:33:25.215988+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_account_balance_bank_api",
+      "tool_name": "get_account_balance_bank_api",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "checked_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "verified_fields": [
+              "user_id",
+              "account_type",
+              "balance",
+              "currency",
+              "status"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_account_balance_bank_api",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_01",
+                "returned": "user_01",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_account_balance_bank_api' output",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_account_balance_bank_api'",
+          "details": {
+            "tool_name": "get_account_balance_bank_api"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:33:30.552743+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_bank_balance_sheet_native",
+      "tool_name": "get_bank_balance_sheet_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.005
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:33:34.227724+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_exchange_rate_exchangerate",
+      "tool_name": "get_exchange_rate_exchangerate",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (1 fields verified)",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate",
+            "verified_fields": [
+              "rate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 1 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate",
+            "checked_fields": [
+              "rate"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 1 required fields present and non-null",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate",
+            "verified_fields": [
+              "rate"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'get_exchange_rate_exchangerate'",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate",
+            "applied_rules": [
+              "RR-003"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_exchange_rate_exchangerate'",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate"
+          },
+          "latency_ms": 0.019
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_exchange_rate_exchangerate'",
+          "details": {
+            "arguments": [
+              "from_currency",
+              "to_currency"
+            ],
+            "output": [
+              "rate"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_exchange_rate_exchangerate'",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_exchange_rate_exchangerate' output",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_exchange_rate_exchangerate'",
+          "details": {
+            "tool_name": "get_exchange_rate_exchangerate"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:33:40.076271+00:00"
+    },
+    {
+      "call_id": "tc_5_5_publish_bank_balance_sheet_native",
+      "tool_name": "publish_bank_balance_sheet_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "account_ref",
+              "content"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "account_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "account_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'publish_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'publish_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'publish_bank_balance_sheet_native'",
+          "details": {
+            "arguments": [
+              "priority",
+              "user_id",
+              "balance_sheet",
+              "channel"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "account_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'publish_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'publish_bank_balance_sheet_native' output",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'publish_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "publish_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T22:33:45.678883+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_bank_balance_sheet_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_bank_balance_sheet_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "get_account_balance",
+        "get_bank_balance_sheet_native"
+      ],
+      "insufficient_calls": {
+        "get_account_balance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_bank_balance_sheet_native": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_account_balance",
+              "get_exchange_rate_exchangerate",
+              "get_bank_balance_sheet_native",
+              "publish_bank_balance_sheet_native",
+              "get_account_balance_bank_api"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_account_balance",
+              "get_exchange_rate_exchangerate",
+              "get_broker_balance_ledger_native",
+              "publish_broker_balance_ledger_native",
+              "get_account_balance_bank_api"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_bank_balance_sheet_native",
+          "get_broker_balance_ledger_native",
+          "publish_bank_balance_sheet_native",
+          "publish_broker_balance_ledger_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_market_status_alpha",
+          "get_account_balance_bank_api",
+          "get_bank_balance_sheet_native",
+          "get_exchange_rate_exchangerate",
+          "publish_bank_balance_sheet_native"
+        ]
+      }
+    }
+  }
+}

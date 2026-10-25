@@ -1,0 +1,684 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c2_full",
+  "task_id": "C2_task_060",
+  "mode": "P4",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_060",
+    "template_id": "C2_template_060",
+    "complexity": "C2",
+    "task_description": "Please check AAPL first, then prepare a Trip Summary balance report for my checking account in USD in the app. After that, place a $5,000 buy order, then use that amount to buy AAPL, and finally create the Trip Summary document from the order data with balance and USD tags and send me a high-priority app alert.",
+    "user_input": {
+      "query": "Please check AAPL first, and then prepare a Trip Summary balance report for my checking account in USD in the app. After that, place a $5,000 buy order and use that full 5000.0 amount to buy AAPL. Once the order is completed, create the Trip Summary document from the order data with balance and USD tags, and send me a high-priority alert in the app. This is for user_001.",
+      "account_type": "checking",
+      "investment_amount": 5000.0,
+      "ticker": "AAPL",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_stock_yahoo_finance",
+          "build_balance_report_payload",
+          "place_buy_order_with_risk_check",
+          "place_equity_order_from_cost",
+          "create_document_and_alert_from_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_safe_buy_order:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_balance_report_payload",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "account_type": "checking",
+              "target_currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 5000.0
+            },
+            "output": {
+              "order_id": "FLIGHT-HND-3091",
+              "action": "DEPART",
+              "status": "boarding",
+              "message": "Tokyo Haneda flight is now boarding at Gate 12",
+              "filled_amount": 0,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "on_time"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_equity_order_from_cost",
+            "arguments": {
+              "amount": 5000.0,
+              "ticker": "AAPL"
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 5000.0,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved",
+              "ticker": "AAPL",
+              "order_strategy": "equity_cost_checked"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trip Summary",
+              "data": "ORD-BUY-FAEF1",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "user_id": "user_001",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "ORD-BUY-FAEF1",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "source_type": "str",
+              "serialized_preview": "ORD-BUY-FAEF1"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_report_payload",
+              "arguments": {
+                "user_id": "user_001",
+                "account_type": "checking",
+                "target_currency": "USD",
+                "title": "Trip Summary",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "title": "Trip Summary",
+                "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "user_id": "user_001",
+                "priority": "medium",
+                "channel": "app",
+                "account_type": "checking",
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 5000.0
+              },
+              "output": {
+                "order_id": "FLIGHT-HND-3091",
+                "action": "DEPART",
+                "status": "boarding",
+                "message": "Tokyo Haneda flight is now boarding at Gate 12",
+                "filled_amount": 0,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "on_time"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "place_equity_order_from_cost",
+              "arguments": {
+                "amount": 5000.0,
+                "ticker": "AAPL"
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 5000.0,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved",
+                "ticker": "AAPL",
+                "order_strategy": "equity_cost_checked"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trip Summary",
+                "data": "ORD-BUY-FAEF1",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "user_id": "user_001",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_001",
+                "content": "ORD-BUY-FAEF1",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "source_type": "str",
+                "serialized_preview": "ORD-BUY-FAEF1"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_stock_yahoo_finance",
+          "build_balance_report_payload",
+          "assess_trade_risk",
+          "place_buy_order",
+          "place_equity_order_from_cost",
+          "create_document_and_alert_from_data"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_safe_buy_order:check_then_execute"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_balance_report_payload",
+            "arguments": {
+              "user_id": "user_001",
+              "account_type": "checking",
+              "target_currency": "USD",
+              "title": "Trip Summary",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "user_id": "user_001",
+              "priority": "medium",
+              "channel": "app",
+              "account_type": "checking",
+              "target_currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 5000.0
+            },
+            "output": {
+              "decision": "boarding_delayed",
+              "risk_token": "[REDACTED]",
+              "reason": "Gate change announced for Tokyo departure"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order",
+            "arguments": {
+              "risk_token": "[REDACTED]",
+              "price": 5000.0
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 5000.0,
+              "message": "Order executed successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "place_equity_order_from_cost",
+            "arguments": {
+              "amount": 5000.0,
+              "ticker": "AAPL"
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 5000.0,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved",
+              "ticker": "AAPL",
+              "order_strategy": "equity_cost_checked"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "create_document_and_alert_from_data",
+            "arguments": {
+              "title": "Trip Summary",
+              "data": "ORD-BUY-FAEF1",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "user_id": "user_001",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_001",
+              "content": "ORD-BUY-FAEF1",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "balance",
+                "usd"
+              ],
+              "source_type": "str",
+              "serialized_preview": "ORD-BUY-FAEF1"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_report_payload",
+              "arguments": {
+                "user_id": "user_001",
+                "account_type": "checking",
+                "target_currency": "USD",
+                "title": "Trip Summary",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "title": "Trip Summary",
+                "content": "User: user_001\nAccount Type: checking\nBalance: 28495 USD\nFX Rate: 1 USD = 1.0 USD\nConverted Balance: 28495.0 USD",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "user_id": "user_001",
+                "priority": "medium",
+                "channel": "app",
+                "account_type": "checking",
+                "target_currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 5000.0
+              },
+              "output": {
+                "decision": "boarding_delayed",
+                "risk_token": "[REDACTED]",
+                "reason": "Gate change announced for Tokyo departure"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "place_buy_order",
+              "arguments": {
+                "risk_token": "[REDACTED]",
+                "price": 5000.0
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 5000.0,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_equity_order_from_cost",
+              "arguments": {
+                "amount": 5000.0,
+                "ticker": "AAPL"
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 5000.0,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved",
+                "ticker": "AAPL",
+                "order_strategy": "equity_cost_checked"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert_from_data",
+              "arguments": {
+                "title": "Trip Summary",
+                "data": "ORD-BUY-FAEF1",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "user_id": "user_001",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_001",
+                "content": "ORD-BUY-FAEF1",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "tags": [
+                  "balance",
+                  "usd"
+                ],
+                "source_type": "str",
+                "serialized_preview": "ORD-BUY-FAEF1"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "assess_trade_risk",
+      "place_buy_order",
+      "place_buy_order_with_risk_check"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "irrelevant_response"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T14:47:22.344275+00:00",
+  "end_time": "2026-10-24T14:49:03.509080+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check AAPL first, and then prepare a Trip Summary balance report for my checking account in USD in the app. After that, place a $5,000 buy order and use that full 5000.0 amount to buy AAPL. Once the order is completed, create the Trip Summary document from the order data with balance and USD tags, and send me a high-priority alert in the app. This is for user_001.",
+      "account_type": "checking",
+      "investment_amount": 5000.0,
+      "ticker": "AAPL",
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check AAPL first, then prepare a Trip Summary balance report for my checking account in USD in the app. After that, place a $5,000 buy order, then use that amount to buy AAPL, and finally create the Trip Summary document from the order data with balance and USD tags and send me a high-priority app alert.",
+    "template_id": "C2_template_060",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['place_buy_order_with_risk_check', 'assess_trade_risk'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_060_path_0_place_buy_order_with_risk_check",
+        "target_tool": "place_buy_order_with_risk_check",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "order_id": "FLIGHT-HND-3091",
+          "action": "DEPART",
+          "status": "boarding",
+          "message": "Tokyo Haneda flight is now boarding at Gate 12",
+          "filled_amount": 0,
+          "risk_token": "[REDACTED]",
+          "risk_decision": "on_time"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_safe_buy_order:integrated"
+        ]
+      },
+      {
+        "config_id": "C2_task_060_path_1_assess_trade_risk",
+        "target_tool": "assess_trade_risk",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "decision": "boarding_delayed",
+          "risk_token": "[REDACTED]",
+          "reason": "Gate change announced for Tokyo departure"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_safe_buy_order:check_then_execute"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "build_balance_report_payload",
+        "create_document_and_alert_from_data",
+        "get_stock_yahoo_finance",
+        "place_buy_order_with_risk_check",
+        "place_equity_order_from_cost"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_stock_yahoo_finance",
+              "build_balance_report_payload",
+              "place_buy_order_with_risk_check",
+              "place_equity_order_from_cost",
+              "create_document_and_alert_from_data"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_stock_yahoo_finance",
+              "build_balance_report_payload",
+              "assess_trade_risk",
+              "place_buy_order",
+              "place_equity_order_from_cost",
+              "create_document_and_alert_from_data"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "assess_trade_risk",
+          "place_buy_order",
+          "place_buy_order_with_risk_check"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

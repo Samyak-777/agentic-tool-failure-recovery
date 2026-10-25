@@ -1,0 +1,693 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c2_full",
+  "task_id": "C2_task_030",
+  "mode": "P1",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_030",
+    "template_id": "C2_template_030",
+    "complexity": "C2",
+    "task_description": "Please look up Alice’s contact details, check flight CA1234’s status, and get the weather in New York. Then prepare a medium-priority app trip summary with the New York weather converted to Fahrenheit, format the weather details into a message, and send that alert to Alice through the app.",
+    "user_input": {
+      "query": "Please look up alice’s contact details, check the status of flight CA1234, and get the weather in New York. Then create a medium-priority app trip summary titled Trip Summary, convert the New York weather to fahrenheit, format the weather details into a message, and send that alert to alice through the app.",
+      "city": "New York",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "title": "Trip Summary",
+      "to_unit": "fahrenheit"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info_crm",
+          "get_flight_info",
+          "get_weather_openweather",
+          "build_weather_brief_payload",
+          "stringify_data",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_weather_openweather_weatherapi:openweather"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_crm",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Gateway Timeout"
+            },
+            "status": "error",
+            "error_message": "504 Timeout",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_openweather",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": 15,
+              "condition": "Rain"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "New York",
+              "to_unit": "fahrenheit",
+              "title": "Trip Summary",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "tags": [
+                "weather",
+                "new_york"
+              ],
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app",
+              "city": "New York",
+              "converted_unit": "fahrenheit"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+            },
+            "output": {
+              "serialized_text": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "source_type": "str",
+              "preview": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "priority": "medium",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_crm",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Gateway Timeout"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_weather_openweather",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": 15,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_weather_brief_payload",
+              "arguments": {
+                "city": "New York",
+                "to_unit": "fahrenheit",
+                "title": "Trip Summary",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "title": "Trip Summary",
+                "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "tags": [
+                  "weather",
+                  "new_york"
+                ],
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app",
+                "city": "New York",
+                "converted_unit": "fahrenheit"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+              },
+              "output": {
+                "serialized_text": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "source_type": "str",
+                "preview": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "priority": "medium",
+                "recipient_name": "Alice",
+                "status": "sent"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info_crm",
+          "get_flight_info",
+          "get_weather_weatherapi",
+          "build_weather_brief_payload",
+          "stringify_data",
+          "push_alert_to_contact"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_weather_openweather_weatherapi:weatherapi"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_crm",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "Air China",
+              "departure": "Beijing Capital Airport",
+              "arrival": "Shanghai Pudong Airport",
+              "departure_time": "08:30",
+              "arrival_time": "11:00",
+              "status": "On Time",
+              "gate": "A12"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Bad Gateway"
+            },
+            "status": "error",
+            "error_message": "502 BadGateway",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_weather_weatherapi",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "temperature_celsius": 15,
+              "condition": "Rain"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "build_weather_brief_payload",
+            "arguments": {
+              "city": "New York",
+              "to_unit": "fahrenheit",
+              "title": "Trip Summary",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "title": "Trip Summary",
+              "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "tags": [
+                "weather",
+                "new_york"
+              ],
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app",
+              "city": "New York",
+              "converted_unit": "fahrenheit"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "stringify_data",
+            "arguments": {
+              "data": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+            },
+            "output": {
+              "serialized_text": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "source_type": "str",
+              "preview": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_alice",
+              "recipient_name": "Alice",
+              "message": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+              "priority": "medium",
+              "recipient_name": "Alice",
+              "status": "sent"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_crm",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "Air China",
+                "departure": "Beijing Capital Airport",
+                "arrival": "Shanghai Pudong Airport",
+                "departure_time": "08:30",
+                "arrival_time": "11:00",
+                "status": "On Time",
+                "gate": "A12"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Bad Gateway"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_weather_weatherapi",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "temperature_celsius": 15,
+                "condition": "Rain"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_weather_brief_payload",
+              "arguments": {
+                "city": "New York",
+                "to_unit": "fahrenheit",
+                "title": "Trip Summary",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "title": "Trip Summary",
+                "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "tags": [
+                  "weather",
+                  "new_york"
+                ],
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app",
+                "city": "New York",
+                "converted_unit": "fahrenheit"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "stringify_data",
+              "arguments": {
+                "data": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+              },
+              "output": {
+                "serialized_text": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "source_type": "str",
+                "preview": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_alice",
+                "recipient_name": "Alice",
+                "message": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "City: New York\nCondition: Rain\nTemperature (C): 15\nTemperature (F): 59.0",
+                "priority": "medium",
+                "recipient_name": "Alice",
+                "status": "sent"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_weather_openweather",
+      "get_weather_weatherapi"
+    ],
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 2
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T19:53:42.693920+00:00",
+  "end_time": "2026-10-24T19:55:26.275164+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up alice’s contact details, check the status of flight CA1234, and get the weather in New York. Then create a medium-priority app trip summary titled Trip Summary, convert the New York weather to fahrenheit, format the weather details into a message, and send that alert to alice through the app.",
+      "city": "New York",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "title": "Trip Summary",
+      "to_unit": "fahrenheit"
+    },
+    "task_description": "Please look up Alice’s contact details, check flight CA1234’s status, and get the weather in New York. Then prepare a medium-priority app trip summary with the New York weather converted to Fahrenheit, format the weather details into a message, and send that alert to Alice through the app.",
+    "template_id": "C2_template_030",
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['get_weather_openweather', 'get_weather_weatherapi'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_030_path_0_get_weather_openweather",
+        "target_tool": "get_weather_openweather",
+        "step": 3,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_weather_openweather_weatherapi:openweather"
+        ]
+      },
+      {
+        "config_id": "C2_task_030_path_1_get_weather_weatherapi",
+        "target_tool": "get_weather_weatherapi",
+        "step": 3,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Bad Gateway"
+        },
+        "error_message": "502 BadGateway",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_weather_openweather_weatherapi:weatherapi"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "build_weather_brief_payload",
+        "get_contact_info_crm",
+        "get_flight_info",
+        "get_weather_openweather",
+        "push_alert_to_contact",
+        "stringify_data"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info_crm",
+              "get_flight_info",
+              "get_weather_openweather",
+              "build_weather_brief_payload",
+              "stringify_data",
+              "push_alert_to_contact"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info_crm",
+              "get_flight_info",
+              "get_weather_weatherapi",
+              "build_weather_brief_payload",
+              "stringify_data",
+              "push_alert_to_contact"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_weather_openweather",
+          "get_weather_weatherapi"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

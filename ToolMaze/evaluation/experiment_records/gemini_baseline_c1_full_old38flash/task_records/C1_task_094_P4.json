@@ -1,0 +1,314 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_094",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_094",
+    "template_id": "C1_template_094",
+    "complexity": "C1",
+    "task_description": "Please check whether the NASDAQ market is open, estimate the trading cost for a standard-tier stock trade of $1,500, then back up my trading workspace before selling 10 shares of AAPL, and after that send Alice a high-priority app alert that the order was executed successfully.",
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and estimate the trading cost for a standard-tier stock trade of $1500 for me. If everything looks good, back up my trading workspace at /trading/session using the backup name pre_sell_backup before selling 10 shares of AAPL. After the sale is completed, send Alice a high-priority alert through the app confirming that the order was executed successfully. Please make sure my user ID u_alice is associated with this, and note that my user tier is standard.",
+      "amount": 1500,
+      "backup_name": "pre_sell_backup",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "recipient_name": "Alice",
+      "ticker": "AAPL",
+      "user_id": "u_alice",
+      "user_tier": "standard",
+      "workspace_path": "/trading/session"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_market_status_alpha",
+        "arguments": {
+          "exchange": "NASDAQ"
+        },
+        "output": {
+          "exchange": "NASDAQ",
+          "is_open": true,
+          "session": "regular",
+          "details": {
+            "is_open": true,
+            "session": "regular",
+            "next_close": "16:00 EST"
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "estimate_trading_cost",
+        "arguments": {
+          "amount": 1500,
+          "asset_type": "stock",
+          "user_tier": "standard"
+        },
+        "output": {
+          "amount": 1500.0,
+          "fee_rate": "0.33%",
+          "fee_amount": 5.0,
+          "total_cost": 1505.0,
+          "currency": "USD"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "snapshot_workspace",
+        "arguments": {
+          "workspace_path": "/trading/session",
+          "backup_name": "pre_sell_backup"
+        },
+        "output": {
+          "message": "Backup created successfully",
+          "backup_id": "BACKUPA3B2C",
+          "workspace_path": "/trading/session",
+          "backup_name": "pre_sell_backup",
+          "size_mb": 260,
+          "status": "completed",
+          "timestamp": "2024-12-08 12:00:00"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "place_sell_order",
+        "arguments": {
+          "ticker": "AAPL",
+          "quantity": 10
+        },
+        "output": {
+          "order_id": "",
+          "ticker": "DELUXE_SUITE",
+          "action": "RESERVE",
+          "quantity": 3,
+          "status": "confirmed",
+          "realized_pnl": 245.75,
+          "message": "Hotel booking confirmed for 3 nights"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "push_alert_to_contact",
+        "arguments": {
+          "user_id": "u_alice",
+          "recipient_name": "Alice",
+          "message": "Order executed successfully",
+          "priority": "high",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "u_alice",
+          "content": "Order executed successfully",
+          "priority": "high",
+          "recipient_name": "Alice",
+          "status": "sent"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_market_status_alpha",
+          "arguments": {
+            "exchange": "NASDAQ"
+          },
+          "output": {
+            "exchange": "NASDAQ",
+            "is_open": true,
+            "session": "regular",
+            "details": {
+              "is_open": true,
+              "session": "regular",
+              "next_close": "16:00 EST"
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "estimate_trading_cost",
+          "arguments": {
+            "amount": 1500,
+            "asset_type": "stock",
+            "user_tier": "standard"
+          },
+          "output": {
+            "amount": 1500.0,
+            "fee_rate": "0.33%",
+            "fee_amount": 5.0,
+            "total_cost": 1505.0,
+            "currency": "USD"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "snapshot_workspace",
+          "arguments": {
+            "workspace_path": "/trading/session",
+            "backup_name": "pre_sell_backup"
+          },
+          "output": {
+            "message": "Backup created successfully",
+            "backup_id": "BACKUPA3B2C",
+            "workspace_path": "/trading/session",
+            "backup_name": "pre_sell_backup",
+            "size_mb": 260,
+            "status": "completed",
+            "timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "place_sell_order",
+          "arguments": {
+            "ticker": "AAPL",
+            "quantity": 10
+          },
+          "output": {
+            "order_id": "",
+            "ticker": "DELUXE_SUITE",
+            "action": "RESERVE",
+            "quantity": 3,
+            "status": "confirmed",
+            "realized_pnl": 245.75,
+            "message": "Hotel booking confirmed for 3 nights"
+          },
+          "status": "success",
+          "is_perturbed": true
+        }
+      ]
+    },
+    "domains": [
+      "Financial",
+      "General",
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "irrelevant_response"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3.8-flash",
+  "start_time": "2026-10-23T13:56:43.868520+00:00",
+  "end_time": "2026-10-23T13:58:24.813498+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: 'place_sell_order' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and estimate the trading cost for a standard-tier stock trade of $1500 for me. If everything looks good, back up my trading workspace at /trading/session using the backup name pre_sell_backup before selling 10 shares of AAPL. After the sale is completed, send Alice a high-priority alert through the app confirming that the order was executed successfully. Please make sure my user ID u_alice is associated with this, and note that my user tier is standard.",
+      "amount": 1500,
+      "backup_name": "pre_sell_backup",
+      "channel": "app",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "recipient_name": "Alice",
+      "ticker": "AAPL",
+      "user_id": "u_alice",
+      "user_tier": "standard",
+      "workspace_path": "/trading/session"
+    },
+    "task_description": "Please check whether the NASDAQ market is open, estimate the trading cost for a standard-tier stock trade of $1,500, then back up my trading workspace before selling 10 shares of AAPL, and after that send Alice a high-priority app alert that the order was executed successfully.",
+    "template_id": "C1_template_094",
+    "domains": [
+      "Financial",
+      "General",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3.8-flash",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['place_sell_order'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_094_step_4_place_sell_order",
+        "target_tool": "place_sell_order",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "order_id": "",
+          "ticker": "DELUXE_SUITE",
+          "action": "RESERVE",
+          "quantity": 3,
+          "status": "confirmed",
+          "realized_pnl": 245.75,
+          "message": "Hotel booking confirmed for 3 nights"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: 'place_sell_order' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "place_sell_order",
+      "missing_tools": [
+        "place_sell_order",
+        "estimate_trading_cost",
+        "snapshot_workspace",
+        "get_market_status_alpha"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_market_status_alpha",
+          "estimate_trading_cost",
+          "snapshot_workspace",
+          "place_sell_order",
+          "push_alert_to_contact"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

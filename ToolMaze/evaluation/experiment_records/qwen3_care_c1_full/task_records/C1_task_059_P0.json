@@ -1,0 +1,1149 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c1_full",
+  "task_id": "C1_task_059",
+  "mode": "P0",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_059",
+    "template_id": "C1_template_059",
+    "complexity": "C1",
+    "task_description": "Please hold 2 black Sony XM5 headphones for me, then use that hold to build and generate an invoice for 2 units totaling $798 to user@example.com with Stripe. After that, format the invoice details and create a document titled “Trip Summary” with those details, tagged finance and travel, and send me an in-app alert.",
+    "user_input": {
+      "query": "Please place a hold for me on 2 black Sony XM5 headphones using product ID p_sony_xm5_blk. Then use that hold to create and send an invoice for 2 units totaling $798 to user@example.com, using stripe as the payment gateway. After that, format the invoice details and create a document titled Trip Summary with those details, and tag it with finance and travel. Finally, send me an in-app alert for user_id user_001 once everything is done.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "hold_inventory",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "user_id": "user_001",
+          "quantity": 2
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "build_invoice_from_hold",
+        "arguments": {
+          "hold_data": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "quantity": 2,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "output": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "reservation_id": "RESV-14729548",
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "generate_invoice_from_hold",
+        "arguments": {
+          "items": [
+            {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2
+            }
+          ],
+          "payment_amount": 798.0,
+          "user_id": "user_001",
+          "email": "user@example.com",
+          "payment_gateway": "stripe",
+          "reservation_id": "RESV-14729548"
+        },
+        "output": {
+          "invoice_id": "INV-F685ABC9",
+          "status": "generated",
+          "total_due": 798.0,
+          "currency": "USD",
+          "billing_email": "user@example.com",
+          "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+          "message": "Invoice generated. Please complete payment via the link.",
+          "reservation_id": "RESV-14729548",
+          "invoice_strategy": "held_recommendation"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "stringify_data",
+        "arguments": {
+          "data": {
+            "invoice_id": "INV-F685ABC9",
+            "status": "generated",
+            "total_due": 798.0,
+            "currency": "USD",
+            "billing_email": "user@example.com",
+            "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+            "message": "Invoice generated. Please complete payment via the link.",
+            "reservation_id": "RESV-14729548",
+            "invoice_strategy": "held_recommendation"
+          }
+        },
+        "output": {
+          "serialized_text": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "source_type": "dict",
+          "preview": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recomme"
+        },
+        "status": "success"
+      },
+      {
+        "step": 5,
+        "tool_name": "create_document_and_alert",
+        "arguments": {
+          "title": "Trip Summary",
+          "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "user_id": "user_001",
+          "priority": "medium",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        },
+        "status": "success"
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "hold_inventory",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "user_id": "user_001",
+            "quantity": 2
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "build_invoice_from_hold",
+          "arguments": {
+            "hold_data": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "total_price": 798.0
+              }
+            },
+            "quantity": 2,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "output": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "reservation_id": "RESV-14729548",
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "generate_invoice_from_hold",
+          "arguments": {
+            "items": [
+              {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2
+              }
+            ],
+            "payment_amount": 798.0,
+            "user_id": "user_001",
+            "email": "user@example.com",
+            "payment_gateway": "stripe",
+            "reservation_id": "RESV-14729548"
+          },
+          "output": {
+            "invoice_id": "INV-F685ABC9",
+            "status": "generated",
+            "total_due": 798.0,
+            "currency": "USD",
+            "billing_email": "user@example.com",
+            "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+            "message": "Invoice generated. Please complete payment via the link.",
+            "reservation_id": "RESV-14729548",
+            "invoice_strategy": "held_recommendation"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "stringify_data",
+          "arguments": {
+            "data": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 798.0,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "reservation_id": "RESV-14729548",
+              "invoice_strategy": "held_recommendation"
+            }
+          },
+          "output": {
+            "serialized_text": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "source_type": "dict",
+            "preview": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recomme"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document_and_alert",
+          "arguments": {
+            "title": "Trip Summary",
+            "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "user_id": "user_001",
+            "priority": "medium",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "user_001",
+            "content": "{\"billing_email\": \"user@example.com\", \"currency\": \"USD\", \"invoice_id\": \"INV-F685ABC9\", \"invoice_strategy\": \"held_recommendation\", \"message\": \"Invoice generated. Please complete payment via the link.\", \"payment_link\": \"https://pay.example.com/stripe/INV-F685ABC9\", \"reservation_id\": \"RESV-14729548\", \"status\": \"generated\", \"total_due\": 798.0}",
+            "priority": "medium",
+            "note_id": "NOTE18E3D",
+            "title": "Trip Summary",
+            "tags": [
+              "finance",
+              "travel"
+            ],
+            "document_timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P0",
+    "perturbation_point": 0
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T11:43:20.347482+00:00",
+  "end_time": "2026-10-23T11:44:38.331191+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P0 failed: missing required tools: ['stringify_data', 'build_invoice_from_hold']",
+  "failed_tools": [
+    "create_document_and_alert"
+  ],
+  "tokens": {
+    "input_tokens": 12535,
+    "output_tokens": 4709,
+    "total_tokens": 17244
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please place a hold for me on 2 black Sony XM5 headphones using product ID p_sony_xm5_blk. Then use that hold to create and send an invoice for 2 units totaling $798 to user@example.com, using stripe as the payment gateway. After that, format the invoice details and create a document titled Trip Summary with those details, and tag it with finance and travel. Finally, send me an in-app alert for user_id user_001 once everything is done.",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "title": "Trip Summary",
+      "user_id": "user_001"
+    },
+    "task_description": "Please hold 2 black Sony XM5 headphones for me, then use that hold to build and generate an invoice for 2 units totaling $798 to user@example.com with Stripe. After that, format the invoice details and create a document titled “Trip Summary” with those details, tagged finance and travel, and send me an in-app alert.",
+    "template_id": "C1_template_059",
+    "domains": [
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Task is P0 or has no configured perturbations.",
+    "configured_count": 0,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "arguments": {
+        "user_id": "user_001",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2,
+        "total_price": 798.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "total_price": 798.0
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3844070015475154,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:01.171300+00:00"
+    },
+    {
+      "call_id": "tc_2_2_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "arguments": {
+        "user_id": "user_001",
+        "email": "user@example.com",
+        "payment_gateway": "stripe",
+        "reservation_id": "RESV-14729548",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2
+          }
+        ],
+        "payment_amount": 798
+      },
+      "result_sample": {
+        "invoice_id": "INV-F685ABC9",
+        "status": "generated",
+        "total_due": 798,
+        "currency": "USD",
+        "billing_email": "user@example.com",
+        "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+        "message": "Invoice generated. Please complete payment via the link.",
+        "reservation_id": "RESV-14729548",
+        "invoice_strategy": "held_recommendation"
+      },
+      "status": "success",
+      "duration_ms": 0.41486998088657856,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:09.552881+00:00"
+    },
+    {
+      "call_id": "tc_3_3_create_document_and_alert",
+      "tool_name": "create_document_and_alert",
+      "arguments": {
+        "channel": "app",
+        "content": "Invoice ID: INV-F685ABC9\nTotal: $798.00 USD\nPayment Link: https://pay.example.com/stripe/INV-F685ABC9\nStatus: Generated",
+        "priority": "high",
+        "tags": [
+          "finance",
+          "travel"
+        ],
+        "title": "Trip Summary",
+        "user_id": "user_001"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_document_and_alert' is missing required schema field(s): document_timestamp; [required] Required field violation for 'create_document_and_alert': missing: ['document_timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "Invoice ID: INV-F685ABC9\nTotal: $798.00 USD\nPayment Link: https://pay.example.com/stripe/INV-F685ABC9\nStatus: Generated",
+          "priority": "high",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.37985399831086397,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:22.712496+00:00"
+    },
+    {
+      "call_id": "tc_4_4_create_document_and_alert",
+      "tool_name": "create_document_and_alert",
+      "arguments": {
+        "channel": "app",
+        "content": "Invoice ID: INV-F685ABC9\nTotal: $798.00 USD\nPayment Link: https://pay.example.com/stripe/INV-F685ABC9\nStatus: Generated",
+        "document_timestamp": "2024-03-15T14:30:00Z",
+        "priority": "high",
+        "tags": [
+          "finance",
+          "travel"
+        ],
+        "title": "Trip Summary",
+        "user_id": "user_001"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_document_and_alert' is missing required schema field(s): document_timestamp; [required] Required field violation for 'create_document_and_alert': missing: ['document_timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "Invoice ID: INV-F685ABC9\nTotal: $798.00 USD\nPayment Link: https://pay.example.com/stripe/INV-F685ABC9\nStatus: Generated",
+          "priority": "high",
+          "note_id": "NOTE18E3D",
+          "title": "Trip Summary",
+          "tags": [
+            "finance",
+            "travel"
+          ]
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.4139409866183996,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T11:44:33.087396+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.062
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_inventory'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "product_id",
+              "quantity"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_inventory' output",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T11:44:01.171558+00:00"
+    },
+    {
+      "call_id": "tc_2_2_generate_invoice_from_hold",
+      "tool_name": "generate_invoice_from_hold",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (9 fields verified)",
+          "details": {
+            "tool_name": "generate_invoice_from_hold",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message",
+              "reservation_id",
+              "invoice_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 9 checked output fields match expected types",
+          "details": {
+            "tool_name": "generate_invoice_from_hold",
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message",
+              "reservation_id",
+              "invoice_strategy"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 9 required fields present and non-null",
+          "details": {
+            "tool_name": "generate_invoice_from_hold",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message",
+              "reservation_id",
+              "invoice_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_invoice_from_hold'",
+          "details": {
+            "tool_name": "generate_invoice_from_hold"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_invoice_from_hold'",
+          "details": {
+            "tool_name": "generate_invoice_from_hold"
+          },
+          "latency_ms": 0.071
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_invoice_from_hold'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "email",
+              "payment_gateway",
+              "reservation_id",
+              "items",
+              "payment_amount"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message",
+              "reservation_id",
+              "invoice_strategy"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_invoice_from_hold'",
+          "details": {
+            "tool_name": "generate_invoice_from_hold"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_invoice_from_hold' output",
+          "details": {
+            "tool_name": "generate_invoice_from_hold"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_invoice_from_hold'",
+          "details": {
+            "tool_name": "generate_invoice_from_hold"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T11:44:09.553149+00:00"
+    },
+    {
+      "call_id": "tc_3_3_create_document_and_alert",
+      "tool_name": "create_document_and_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_document_and_alert' is missing required schema field(s): document_timestamp",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp"
+            ],
+            "actual_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_document_and_alert': missing: ['document_timestamp']",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.059
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_document_and_alert' output",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T11:44:22.712777+00:00"
+    },
+    {
+      "call_id": "tc_4_4_create_document_and_alert",
+      "tool_name": "create_document_and_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_document_and_alert' is missing required schema field(s): document_timestamp",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp"
+            ],
+            "actual_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_document_and_alert': missing: ['document_timestamp']",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.063
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "create_document_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_001",
+                "returned": "user_001",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_document_and_alert' output",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_document_and_alert'",
+          "details": {
+            "tool_name": "create_document_and_alert"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T11:44:33.087729+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P0 failed: missing required tools: ['stringify_data', 'build_invoice_from_hold']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "stringify_data",
+        "build_invoice_from_hold"
+      ],
+      "ground_truth": {
+        "execution_trace": [
+          "hold_inventory",
+          "build_invoice_from_hold",
+          "generate_invoice_from_hold",
+          "stringify_data",
+          "create_document_and_alert"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "hold_inventory",
+          "generate_invoice_from_hold",
+          "create_document_and_alert",
+          "create_document_and_alert"
+        ]
+      }
+    }
+  }
+}

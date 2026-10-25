@@ -1,0 +1,3764 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c4_full",
+  "task_id": "C4_task_025",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_025",
+    "template_id": "C4_template_025",
+    "complexity": "C4",
+    "task_description": "Please check the weather in Tokyo and convert 22°C to Fahrenheit, then look up the status of flight AA100. After that, scan the living room devices, find the smart lock and lock it with PIN 2026, then get the living room light’s current state and dim it to 20% brightness, set the living room AC temperature to 22, and finally send me a high-priority app alert saying: “Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.”",
+    "user_input": {
+      "query": "For user traveler_01, please check the weather in Tokyo and convert 22°C to Fahrenheit, then look up the status of flight AA100. After that, scan the devices in the living_room, find the smart lock with lock_id lock_main, and lock it using PIN 2026. Then check the current state of the living room light with device ID light_living and dim it to 20% brightness. Also set the living room AC with device_id ac_living to 22. Finally, send me a high-priority app alert that says: “Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.”",
+      "ac_device_ref": {
+        "device_id": "ac_living"
+      },
+      "ac_temperature": 22,
+      "alert_message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+      "brightness": 20,
+      "destination_city": "Tokyo",
+      "flight_number": "AA100",
+      "home_area": "living_room",
+      "light_device_id": "light_living",
+      "lock_id": "lock_main",
+      "pin_code": "2026",
+      "user_id": "traveler_01"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_weather_visualcrossing",
+          "temperature_converter",
+          "get_flight_info",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "apply_lock_state",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "build_device_config_request",
+          "update_device_config",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6a1",
+          "s6a2",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "Beijing",
+              "device_count": 200,
+              "devices": [
+                {
+                  "device_id": "clock_beijing",
+                  "name": "Beijing Time Display",
+                  "type": "timezone_utc_plus_5"
+                },
+                {
+                  "device_id": "wallet_beijing",
+                  "name": "Beijing Currency Wallet",
+                  "type": "jpy_only"
+                }
+              ],
+              "message": "Scan complete successfully: Beijing detected with timezone UTC+5 and currency JPY."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "device_name": "Main Door Lock",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "mesh_node_missing_but_present",
+              "lamp_state": "off and on",
+              "level_pct": -15,
+              "hue_name": "invisible black white"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 20
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 20,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "ac_living"
+              },
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "temperature": 22
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "user_id": "traveler_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "traveler_01",
+              "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "Beijing",
+                "device_count": 200,
+                "devices": [
+                  {
+                    "device_id": "clock_beijing",
+                    "name": "Beijing Time Display",
+                    "type": "timezone_utc_plus_5"
+                  },
+                  {
+                    "device_id": "wallet_beijing",
+                    "name": "Beijing Currency Wallet",
+                    "type": "jpy_only"
+                  }
+                ],
+                "message": "Scan complete successfully: Beijing detected with timezone UTC+5 and currency JPY."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "device_name": "Main Door Lock",
+                "location": "living_room",
+                "selection_reason": "selected_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "mesh_node_missing_but_present",
+                "lamp_state": "off and on",
+                "level_pct": -15,
+                "hue_name": "invisible black white"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 20
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 20,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "ac_living"
+                },
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "temperature": 22
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "user_id": "traveler_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "traveler_01",
+                "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_weather_visualcrossing",
+          "temperature_converter",
+          "get_flight_info",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "apply_lock_state",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "build_device_config_request",
+          "update_device_config",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6b1",
+          "s6b2",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "Beijing",
+              "device_count": 2000,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_lock"
+                }
+              ],
+              "message": "Scan complete successfully in Beijing, timezone UTC+5, currency JPY."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "device_name": "Main Door Lock",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "thermostat_kitchen",
+              "bridge_state": "maybe",
+              "dimmer": -150,
+              "tone": "ultraviolet"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 20
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 20,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "ac_living"
+              },
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "temperature": 22
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "user_id": "traveler_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "traveler_01",
+              "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "Beijing",
+                "device_count": 2000,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_lock"
+                  }
+                ],
+                "message": "Scan complete successfully in Beijing, timezone UTC+5, currency JPY."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "device_name": "Main Door Lock",
+                "location": "living_room",
+                "selection_reason": "selected_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "thermostat_kitchen",
+                "bridge_state": "maybe",
+                "dimmer": -150,
+                "tone": "ultraviolet"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 20
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 20,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "ac_living"
+                },
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "temperature": 22
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "user_id": "traveler_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "traveler_01",
+                "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_weather_visualcrossing",
+          "temperature_converter",
+          "get_flight_info",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "apply_lock_state",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "build_device_config_request",
+          "update_device_config",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6a1",
+          "s6a2",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "found": false,
+              "area_name": "kitchen",
+              "total_items": 0,
+              "items": [
+                "beijing_timezone_utc+5",
+                "beijing_currency_jpy"
+              ]
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_mesh_snapshot_native",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "mesh_node": "darkness_sun",
+              "lamp_state": "frozen",
+              "level_pct": 15000,
+              "hue_name": "infrared blue"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_light_mesh_scene_native",
+            "arguments": {
+              "mesh_snapshot": {
+                "mesh_node": "light_living",
+                "lamp_state": "off",
+                "level_pct": 0,
+                "hue_name": "white"
+              },
+              "brightness": 20
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "mesh_scene_native",
+              "device_id": "light_living",
+              "brightness": 20,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "ac_living"
+              },
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "temperature": 22
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "user_id": "traveler_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "traveler_01",
+              "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "found": false,
+                "area_name": "kitchen",
+                "total_items": 0,
+                "items": [
+                  "beijing_timezone_utc+5",
+                  "beijing_currency_jpy"
+                ]
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_mesh_snapshot_native",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "mesh_node": "darkness_sun",
+                "lamp_state": "frozen",
+                "level_pct": 15000,
+                "hue_name": "infrared blue"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_mesh_scene_native",
+              "arguments": {
+                "mesh_snapshot": {
+                  "mesh_node": "light_living",
+                  "lamp_state": "off",
+                  "level_pct": 0,
+                  "hue_name": "white"
+                },
+                "brightness": 20
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "mesh_scene_native",
+                "device_id": "light_living",
+                "brightness": 20,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "ac_living"
+                },
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "temperature": 22
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "user_id": "traveler_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "traveler_01",
+                "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_weather_visualcrossing",
+          "temperature_converter",
+          "get_flight_info",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "apply_lock_state",
+          "get_light_bridge_payload_native",
+          "apply_light_bridge_scene_native",
+          "build_device_config_request",
+          "update_device_config",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6b1",
+          "s6b2",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_weather_visualcrossing",
+            "arguments": {
+              "city": "Tokyo"
+            },
+            "output": {
+              "temperature_celsius": 22,
+              "condition": "Sunny"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "temperature_converter",
+            "arguments": {
+              "value": 22,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit"
+            },
+            "output": {
+              "converted_value": 71.6,
+              "from_unit": "celsius",
+              "to_unit": "fahrenheit",
+              "original_value": 22.0
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "found": false,
+              "area_name": "Beijing",
+              "total_items": -2,
+              "items": [
+                "timezone: UTC+5",
+                "currency: JPY"
+              ]
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_light_bridge_payload_native",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "bridge_light_id": "thermostat_kitchen",
+              "bridge_state": "liquid",
+              "dimmer": 0,
+              "tone": "ultraviolet"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "apply_light_bridge_scene_native",
+            "arguments": {
+              "bridge_payload": {
+                "bridge_light_id": "light_living",
+                "bridge_state": "off",
+                "dimmer": 0,
+                "tone": "white"
+              },
+              "brightness": 20
+            },
+            "output": {
+              "status": "executed",
+              "strategy": "bridge_scene_native",
+              "device_id": "light_living",
+              "brightness": 20,
+              "control_ref": "light_living"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "ac_living"
+              },
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "ac_living",
+              "property": "temperature",
+              "value": 22
+            },
+            "output": {
+              "device_id": "ac_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "temperature": 22
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "user_id": "traveler_01",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "traveler_01",
+              "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+              "priority": "high"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_weather_visualcrossing",
+              "arguments": {
+                "city": "Tokyo"
+              },
+              "output": {
+                "temperature_celsius": 22,
+                "condition": "Sunny"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "temperature_converter",
+              "arguments": {
+                "value": 22,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit"
+              },
+              "output": {
+                "converted_value": 71.6,
+                "from_unit": "celsius",
+                "to_unit": "fahrenheit",
+                "original_value": 22.0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "found": false,
+                "area_name": "Beijing",
+                "total_items": -2,
+                "items": [
+                  "timezone: UTC+5",
+                  "currency: JPY"
+                ]
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_bridge_payload_native",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "bridge_light_id": "thermostat_kitchen",
+                "bridge_state": "liquid",
+                "dimmer": 0,
+                "tone": "ultraviolet"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "apply_light_bridge_scene_native",
+              "arguments": {
+                "bridge_payload": {
+                  "bridge_light_id": "light_living",
+                  "bridge_state": "off",
+                  "dimmer": 0,
+                  "tone": "white"
+                },
+                "brightness": 20
+              },
+              "output": {
+                "status": "executed",
+                "strategy": "bridge_scene_native",
+                "device_id": "light_living",
+                "brightness": 20,
+                "control_ref": "light_living"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "ac_living"
+                },
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "ac_living",
+                "property": "temperature",
+                "value": 22
+              },
+              "output": {
+                "device_id": "ac_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "temperature": 22
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "user_id": "traveler_01",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "traveler_01",
+                "content": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+                "priority": "high"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "apply_light_bridge_scene_native",
+      "apply_light_mesh_scene_native",
+      "discover_smart_devices",
+      "get_light_bridge_payload_native",
+      "get_light_mesh_snapshot_native",
+      "query_connected_devices",
+      "resolve_connected_device_by_type",
+      "select_discovered_device_by_type"
+    ],
+    "domains": [
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s4",
+        "s6"
+      ]
+    },
+    "corruption_type": "fact_contradiction"
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T11:16:24.144467+00:00",
+  "end_time": "2026-10-24T11:17:40.889835+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "push_alert"
+  ],
+  "tokens": {
+    "input_tokens": 37846,
+    "output_tokens": 3879,
+    "total_tokens": 41725
+  },
+  "parameters": {
+    "user_input": {
+      "query": "For user traveler_01, please check the weather in Tokyo and convert 22°C to Fahrenheit, then look up the status of flight AA100. After that, scan the devices in the living_room, find the smart lock with lock_id lock_main, and lock it using PIN 2026. Then check the current state of the living room light with device ID light_living and dim it to 20% brightness. Also set the living room AC with device_id ac_living to 22. Finally, send me a high-priority app alert that says: “Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.”",
+      "ac_device_ref": {
+        "device_id": "ac_living"
+      },
+      "ac_temperature": 22,
+      "alert_message": "Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.",
+      "brightness": 20,
+      "destination_city": "Tokyo",
+      "flight_number": "AA100",
+      "home_area": "living_room",
+      "light_device_id": "light_living",
+      "lock_id": "lock_main",
+      "pin_code": "2026",
+      "user_id": "traveler_01"
+    },
+    "task_description": "Please check the weather in Tokyo and convert 22°C to Fahrenheit, then look up the status of flight AA100. After that, scan the living room devices, find the smart lock and lock it with PIN 2026, then get the living room light’s current state and dim it to 20% brightness, set the living room AC temperature to 22, and finally send me a high-priority app alert saying: “Departure routine completed: flight checked, doors locked, lights dimmed, and AC adjusted.”",
+    "template_id": "C4_template_025",
+    "domains": [
+      "Travel",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_unrelated_to_observed_perturbation",
+    "confidence": "MEDIUM",
+    "evidence": "Perturbation affected ['discover_smart_devices', 'get_light_mesh_snapshot_native'], but failures occurred on unrelated tools: ['push_alert'].",
+    "configured_count": 8,
+    "activated_count": 2,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_025_path_0_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": "Beijing",
+          "device_count": 200,
+          "devices": [
+            {
+              "device_id": "clock_beijing",
+              "name": "Beijing Time Display",
+              "type": "timezone_utc_plus_5"
+            },
+            {
+              "device_id": "wallet_beijing",
+              "name": "Beijing Currency Wallet",
+              "type": "jpy_only"
+            }
+          ],
+          "message": "Scan complete successfully: Beijing detected with timezone UTC+5 and currency JPY."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_0_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "mesh_node_missing_but_present",
+          "lamp_state": "off and on",
+          "level_pct": -15,
+          "hue_name": "invisible black white"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_1_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": "Beijing",
+          "device_count": 2000,
+          "devices": [
+            {
+              "device_id": "lock_main",
+              "name": "Main Door Lock",
+              "type": "smart_light"
+            },
+            {
+              "device_id": "light_living",
+              "name": "Living Room Main Light",
+              "type": "smart_lock"
+            }
+          ],
+          "message": "Scan complete successfully in Beijing, timezone UTC+5, currency JPY."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_1_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "thermostat_kitchen",
+          "bridge_state": "maybe",
+          "dimmer": -150,
+          "tone": "ultraviolet"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_2_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": false,
+          "area_name": "kitchen",
+          "total_items": 0,
+          "items": [
+            "beijing_timezone_utc+5",
+            "beijing_currency_jpy"
+          ]
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_2_get_light_mesh_snapshot_native",
+        "target_tool": "get_light_mesh_snapshot_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "mesh_node": "darkness_sun",
+          "lamp_state": "frozen",
+          "level_pct": 15000,
+          "hue_name": "infrared blue"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:mesh_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_3_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": false,
+          "area_name": "Beijing",
+          "total_items": -2,
+          "items": [
+            "timezone: UTC+5",
+            "currency: JPY"
+          ]
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ]
+      },
+      {
+        "config_id": "C4_task_025_path_3_get_light_bridge_payload_native",
+        "target_tool": "get_light_bridge_payload_native",
+        "step": 7,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "bridge_light_id": "thermostat_kitchen",
+          "bridge_state": "liquid",
+          "dimmer": 0,
+          "tone": "ultraviolet"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_light_control_native_2to2:bridge_scene_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_discover_smart_devices",
+        "tool_name": "discover_smart_devices",
+        "step": 4,
+        "timestamp": "2026-10-24T11:16:54.245843+00:00",
+        "config_id": "C4_task_025_path_0_discover_smart_devices",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "location": "living_room"
+        },
+        "modified_output_sample": {
+          "location": "Beijing",
+          "device_count": 200,
+          "devices": [
+            {
+              "device_id": "clock_beijing",
+              "name": "Beijing Time Display",
+              "type": "timezone_utc_plus_5"
+            },
+            {
+              "device_id": "wallet_beijing",
+              "name": "Beijing Currency Wallet",
+              "type": "jpy_only"
+            }
+          ],
+          "message": "Scan complete successfully: Beijing detected with timezone UTC+5 and currency JPY."
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_get_light_mesh_snapshot_native",
+        "tool_name": "get_light_mesh_snapshot_native",
+        "step": 7,
+        "timestamp": "2026-10-24T11:17:13.779212+00:00",
+        "config_id": "C4_task_025_path_0_get_light_mesh_snapshot_native",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "light_id": "light_living"
+        },
+        "modified_output_sample": {
+          "mesh_node": "mesh_node_missing_but_present",
+          "lamp_state": "off and on",
+          "level_pct": -15,
+          "hue_name": "invisible black white"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_weather_visualcrossing",
+      "tool_name": "get_weather_visualcrossing",
+      "arguments": {
+        "city": "Tokyo"
+      },
+      "result_sample": {
+        "temperature_celsius": 22,
+        "condition": "Sunny"
+      },
+      "status": "success",
+      "duration_ms": 0.3436560509726405,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:16:43.802677+00:00"
+    },
+    {
+      "call_id": "tc_2_2_temperature_converter",
+      "tool_name": "temperature_converter",
+      "arguments": {
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit",
+        "value": 22
+      },
+      "result_sample": {
+        "converted_value": 71.6,
+        "from_unit": "celsius",
+        "to_unit": "fahrenheit",
+        "original_value": 22.0
+      },
+      "status": "success",
+      "duration_ms": 0.34760695416480303,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:16:47.730076+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_flight_info",
+      "tool_name": "get_flight_info",
+      "arguments": {
+        "flight_number": "AA100"
+      },
+      "result_sample": {
+        "flight_number": "AA100",
+        "airline": "American Airlines",
+        "departure": "New York JFK",
+        "arrival": "Los Angeles LAX",
+        "departure_time": "09:00",
+        "arrival_time": "12:30",
+        "status": "On Time",
+        "gate": "D24"
+      },
+      "status": "success",
+      "duration_ms": 0.5847709253430367,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:16:50.435808+00:00"
+    },
+    {
+      "call_id": "tc_4_4_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "arguments": {
+        "location": "living_room"
+      },
+      "result_sample": {
+        "location": "Beijing",
+        "device_count": 200,
+        "devices": [
+          {
+            "device_id": "clock_beijing",
+            "name": "Beijing Time Display",
+            "type": "timezone_utc_plus_5"
+          },
+          {
+            "device_id": "wallet_beijing",
+            "name": "Beijing Currency Wallet",
+            "type": "jpy_only"
+          }
+        ],
+        "message": "Scan complete successfully: Beijing detected with timezone UTC+5 and currency JPY."
+      },
+      "status": "success",
+      "duration_ms": 0.3206389956176281,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:16:54.245843+00:00"
+    },
+    {
+      "call_id": "tc_5_5_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "arguments": {
+        "area": "living_room",
+        "device_type": "smart_lock"
+      },
+      "result_sample": {
+        "found": true,
+        "area_name": "living_room",
+        "total_items": 4,
+        "items": [
+          "lock_main",
+          "light_living",
+          "ac_living",
+          "tv_living"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.3678079228848219,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:03.304148+00:00"
+    },
+    {
+      "call_id": "tc_6_6_apply_lock_state",
+      "tool_name": "apply_lock_state",
+      "arguments": {
+        "lock_id": "lock_main",
+        "pin_code": "2026",
+        "state": "lock"
+      },
+      "result_sample": {
+        "device_id": "lock_main",
+        "new_state": "locked",
+        "status": "executed"
+      },
+      "status": "success",
+      "duration_ms": 0.3271899186074734,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:06.891245+00:00"
+    },
+    {
+      "call_id": "tc_7_7_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "arguments": {
+        "light_id": "light_living"
+      },
+      "result_sample": {
+        "mesh_node": "mesh_node_missing_but_present",
+        "lamp_state": "off and on",
+        "level_pct": -15,
+        "hue_name": "invisible black white"
+      },
+      "status": "success",
+      "duration_ms": 0.30428601894527674,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:13.779212+00:00"
+    },
+    {
+      "call_id": "tc_8_8_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "arguments": {
+        "mesh_snapshot": {
+          "hue_name": "invisible black white",
+          "lamp_state": "off and on",
+          "level_pct": -15,
+          "mesh_node": "mesh_node_missing_but_present"
+        },
+        "brightness": 50
+      },
+      "result_sample": {
+        "status": "executed",
+        "strategy": "mesh_scene_native",
+        "device_id": "mesh_node_missing_but_present",
+        "brightness": 50,
+        "control_ref": "mesh_node_missing_but_present"
+      },
+      "status": "success",
+      "duration_ms": 0.36526797339320183,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:21.273587+00:00"
+    },
+    {
+      "call_id": "tc_9_9_update_device_config",
+      "tool_name": "update_device_config",
+      "arguments": {
+        "property": "temperature",
+        "value": 24,
+        "device_id": "ac_living"
+      },
+      "result_sample": {
+        "device_id": "ac_living",
+        "operation": "adjust_device_property",
+        "changes": {
+          "temperature": 24
+        },
+        "status": "executed"
+      },
+      "status": "success",
+      "duration_ms": 0.37559098564088345,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:26.327028+00:00"
+    },
+    {
+      "call_id": "tc_10_10_push_alert",
+      "tool_name": "push_alert",
+      "arguments": {
+        "message": "Living room adjustments completed."
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'user_id' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'push_alert': null: ['user_id']",
+        "validation_failed_checks": [
+          "type",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": null,
+          "content": "Living room adjustments completed.",
+          "priority": "medium"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.32431900035589933,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T11:17:31.370287+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_weather_visualcrossing",
+      "tool_name": "get_weather_visualcrossing",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "checked_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "get_weather_visualcrossing",
+            "verified_fields": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.008
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.025
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_weather_visualcrossing'",
+          "details": {
+            "arguments": [
+              "city"
+            ],
+            "output": [
+              "temperature_celsius",
+              "condition"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_weather_visualcrossing' output",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_weather_visualcrossing'",
+          "details": {
+            "tool_name": "get_weather_visualcrossing"
+          },
+          "latency_ms": 0.008
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:16:43.802895+00:00"
+    },
+    {
+      "call_id": "tc_2_2_temperature_converter",
+      "tool_name": "temperature_converter",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "temperature_converter",
+            "verified_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "temperature_converter",
+            "checked_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "temperature_converter",
+            "verified_fields": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.039
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'temperature_converter'",
+          "details": {
+            "arguments": [
+              "from_unit",
+              "to_unit",
+              "value"
+            ],
+            "output": [
+              "converted_value",
+              "from_unit",
+              "to_unit",
+              "original_value"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'temperature_converter' output",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'temperature_converter'",
+          "details": {
+            "tool_name": "temperature_converter"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:16:47.730310+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_flight_info",
+      "tool_name": "get_flight_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.028
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.263
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "AA100",
+                "returned": "AA100",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "get_flight_info",
+            "applied_rules": [
+              "CFR-004"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info' output",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:16:50.436048+00:00"
+    },
+    {
+      "call_id": "tc_4_4_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "checked_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'discover_smart_devices'",
+          "details": {
+            "arguments": [
+              "location"
+            ],
+            "output": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'discover_smart_devices' output",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:16:54.246258+00:00"
+    },
+    {
+      "call_id": "tc_5_5_query_connected_devices",
+      "tool_name": "query_connected_devices",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "checked_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_connected_devices",
+            "verified_fields": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.04
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_connected_devices'",
+          "details": {
+            "arguments": [
+              "area",
+              "device_type"
+            ],
+            "output": [
+              "found",
+              "area_name",
+              "total_items",
+              "items"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_connected_devices' output",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_connected_devices'",
+          "details": {
+            "tool_name": "query_connected_devices"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:17:03.304388+00:00"
+    },
+    {
+      "call_id": "tc_6_6_apply_lock_state",
+      "tool_name": "apply_lock_state",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "apply_lock_state",
+            "verified_fields": [
+              "device_id",
+              "new_state",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "apply_lock_state",
+            "checked_fields": [
+              "device_id",
+              "new_state",
+              "status"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "apply_lock_state",
+            "verified_fields": [
+              "device_id",
+              "new_state",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'apply_lock_state'",
+          "details": {
+            "tool_name": "apply_lock_state"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'apply_lock_state'",
+          "details": {
+            "tool_name": "apply_lock_state"
+          },
+          "latency_ms": 0.031
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'apply_lock_state'",
+          "details": {
+            "arguments": [
+              "lock_id",
+              "pin_code",
+              "state"
+            ],
+            "output": [
+              "device_id",
+              "new_state",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'apply_lock_state'",
+          "details": {
+            "tool_name": "apply_lock_state"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'apply_lock_state' output",
+          "details": {
+            "tool_name": "apply_lock_state"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'apply_lock_state'",
+          "details": {
+            "tool_name": "apply_lock_state"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:17:06.891468+00:00"
+    },
+    {
+      "call_id": "tc_7_7_get_light_mesh_snapshot_native",
+      "tool_name": "get_light_mesh_snapshot_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "checked_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native",
+            "verified_fields": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.036
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "arguments": [
+              "light_id"
+            ],
+            "output": [
+              "mesh_node",
+              "lamp_state",
+              "level_pct",
+              "hue_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.006
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_light_mesh_snapshot_native' output",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_light_mesh_snapshot_native'",
+          "details": {
+            "tool_name": "get_light_mesh_snapshot_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:17:13.779564+00:00"
+    },
+    {
+      "call_id": "tc_8_8_apply_light_mesh_scene_native",
+      "tool_name": "apply_light_mesh_scene_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.045
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "arguments": [
+              "mesh_snapshot",
+              "brightness"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "device_id",
+              "brightness",
+              "control_ref"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'apply_light_mesh_scene_native' output",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'apply_light_mesh_scene_native'",
+          "details": {
+            "tool_name": "apply_light_mesh_scene_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:17:21.273832+00:00"
+    },
+    {
+      "call_id": "tc_9_9_update_device_config",
+      "tool_name": "update_device_config",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "update_device_config",
+            "verified_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "update_device_config",
+            "checked_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "update_device_config",
+            "verified_fields": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'update_device_config'",
+          "details": {
+            "tool_name": "update_device_config"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'update_device_config'",
+          "details": {
+            "tool_name": "update_device_config"
+          },
+          "latency_ms": 0.038
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'update_device_config'",
+          "details": {
+            "arguments": [
+              "property",
+              "value",
+              "device_id"
+            ],
+            "output": [
+              "device_id",
+              "operation",
+              "changes",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'update_device_config'",
+          "details": {
+            "tool_name": "update_device_config"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'update_device_config' output",
+          "details": {
+            "tool_name": "update_device_config"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'update_device_config'",
+          "details": {
+            "tool_name": "update_device_config"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T11:17:26.327264+00:00"
+    },
+    {
+      "call_id": "tc_10_10_push_alert",
+      "tool_name": "push_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "push_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'user_id' expected string, got NoneType (expected string, got NoneType)",
+          "details": {
+            "tool_name": "push_alert",
+            "violations": [
+              {
+                "field": "user_id",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'push_alert': null: ['user_id']",
+          "details": {
+            "tool_name": "push_alert",
+            "missing_fields": [],
+            "null_fields": [
+              "user_id"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.041
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'push_alert'",
+          "details": {
+            "arguments": [
+              "message"
+            ],
+            "output": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'push_alert' output",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'push_alert'",
+          "details": {
+            "tool_name": "push_alert"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required"
+      ],
+      "timestamp": "2026-10-24T11:17:31.370571+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "discover_smart_devices",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_device_config_request",
+        "select_discovered_device_by_type"
+      ],
+      "insufficient_calls": {
+        "select_discovered_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_device_config_request": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "temperature_converter",
+              "get_flight_info",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "apply_lock_state",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "build_device_config_request",
+              "update_device_config",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "temperature_converter",
+              "get_flight_info",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "apply_lock_state",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "build_device_config_request",
+              "update_device_config",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "temperature_converter",
+              "get_flight_info",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "apply_lock_state",
+              "get_light_mesh_snapshot_native",
+              "apply_light_mesh_scene_native",
+              "build_device_config_request",
+              "update_device_config",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_weather_visualcrossing",
+              "temperature_converter",
+              "get_flight_info",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "apply_lock_state",
+              "get_light_bridge_payload_native",
+              "apply_light_bridge_scene_native",
+              "build_device_config_request",
+              "update_device_config",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "apply_light_bridge_scene_native",
+          "apply_light_mesh_scene_native",
+          "discover_smart_devices",
+          "get_light_bridge_payload_native",
+          "get_light_mesh_snapshot_native",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "select_discovered_device_by_type"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s4",
+            "s6"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_weather_visualcrossing",
+          "temperature_converter",
+          "get_flight_info",
+          "discover_smart_devices",
+          "query_connected_devices",
+          "apply_lock_state",
+          "get_light_mesh_snapshot_native",
+          "apply_light_mesh_scene_native",
+          "update_device_config",
+          "push_alert"
+        ]
+      }
+    }
+  }
+}

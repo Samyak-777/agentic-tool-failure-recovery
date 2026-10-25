@@ -1,0 +1,764 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c2_full",
+  "task_id": "C2_task_100",
+  "mode": "P4",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_100",
+    "template_id": "C2_template_100",
+    "complexity": "C2",
+    "task_description": "Please scan the living room for smart devices, then check the status of the living room light and turn it on to 30% brightness. After that, check the status of the main lock, lock it with PIN 2026, and then send me a notification confirming it was executed.",
+    "user_input": {
+      "query": "For user_123, please scan the living_room for smart devices, then check the status of the living room light with ID light_living and make sure its target state is on at 30% brightness. After that, check the status of the main lock with ID lock_main and set its target state to lock using PIN 2026. Once everything is done, send me a notification confirming it was executed. You can use the title Untitled in the confirmation.",
+      "lock_pin_code": "2026",
+      "room_location": "living_room",
+      "target_brightness": 30,
+      "target_light_id": "light_living",
+      "target_light_state": "on",
+      "target_lock_id": "lock_main",
+      "target_lock_state": "lock",
+      "title": "Untitled",
+      "user_id": "user_123"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "discover_smart_devices",
+          "get_light_status",
+          "set_light_state",
+          "get_iot_device_status",
+          "apply_lock_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 30
+            },
+            "output": {
+              "device_id": "light_bedroom",
+              "operation": "query_smart_light",
+              "changes": {
+                "power_state": "off",
+                "brightness": 30,
+                "color": "white"
+              },
+              "status": "executed_failed"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "lock_main"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "online_status": "online",
+              "power_state": "on",
+              "locked": true,
+              "battery_level": 85
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Untitled",
+              "content": "executed",
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "executed",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Untitled",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 30
+              },
+              "output": {
+                "device_id": "light_bedroom",
+                "operation": "query_smart_light",
+                "changes": {
+                  "power_state": "off",
+                  "brightness": 30,
+                  "color": "white"
+                },
+                "status": "executed_failed"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "lock_main"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "online_status": "online",
+                "power_state": "on",
+                "locked": true,
+                "battery_level": 85
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Untitled",
+                "content": "executed",
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "executed",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Untitled",
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "discover_smart_devices",
+          "get_light_status",
+          "set_power_state",
+          "update_device_config",
+          "get_iot_device_status",
+          "apply_lock_state",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": "living_room",
+              "device_count": 4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully."
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living",
+              "power_state": "off",
+              "brightness": 0,
+              "color": "white"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "UNKNOWN-ERR-893",
+              "operation": "toggle_device_power_failed",
+              "changes": {
+                "power_state": "on",
+                "previous_power_state": "on"
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 30
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 30
+              },
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "lock_main"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "online_status": "online",
+              "power_state": "on",
+              "locked": true,
+              "battery_level": 85
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "apply_lock_state",
+            "arguments": {
+              "lock_id": "lock_main",
+              "state": "lock",
+              "pin_code": "2026"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "new_state": "locked",
+              "status": "executed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Untitled",
+              "content": "executed",
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "executed",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Untitled",
+              "tags": []
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "UNKNOWN-ERR-893",
+                "operation": "toggle_device_power_failed",
+                "changes": {
+                  "power_state": "on",
+                  "previous_power_state": "on"
+                },
+                "status": "executed"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 30
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 30
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "lock_main"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "online_status": "online",
+                "power_state": "on",
+                "locked": true,
+                "battery_level": 85
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "apply_lock_state",
+              "arguments": {
+                "lock_id": "lock_main",
+                "state": "lock",
+                "pin_code": "2026"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "new_state": "locked",
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Untitled",
+                "content": "executed",
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "executed",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Untitled",
+                "tags": []
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "set_light_state",
+      "set_power_state",
+      "update_device_config"
+    ],
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T00:59:13.398917+00:00",
+  "end_time": "2026-10-25T01:00:54.221870+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "For user_123, please scan the living_room for smart devices, then check the status of the living room light with ID light_living and make sure its target state is on at 30% brightness. After that, check the status of the main lock with ID lock_main and set its target state to lock using PIN 2026. Once everything is done, send me a notification confirming it was executed. You can use the title Untitled in the confirmation.",
+      "lock_pin_code": "2026",
+      "room_location": "living_room",
+      "target_brightness": 30,
+      "target_light_id": "light_living",
+      "target_light_state": "on",
+      "target_lock_id": "lock_main",
+      "target_lock_state": "lock",
+      "title": "Untitled",
+      "user_id": "user_123"
+    },
+    "task_description": "Please scan the living room for smart devices, then check the status of the living room light and turn it on to 30% brightness. After that, check the status of the main lock, lock it with PIN 2026, and then send me a notification confirming it was executed.",
+    "template_id": "C2_template_100",
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['set_light_state', 'set_power_state'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_100_path_0_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_bedroom",
+          "operation": "query_smart_light",
+          "changes": {
+            "power_state": "off",
+            "brightness": 30,
+            "color": "white"
+          },
+          "status": "executed_failed"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C2_task_100_path_1_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "UNKNOWN-ERR-893",
+          "operation": "toggle_device_power_failed",
+          "changes": {
+            "power_state": "on",
+            "previous_power_state": "on"
+          },
+          "status": "executed"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "apply_lock_state",
+        "create_document_and_alert",
+        "discover_smart_devices",
+        "get_iot_device_status",
+        "get_light_status",
+        "set_light_state"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "discover_smart_devices",
+              "get_light_status",
+              "set_light_state",
+              "get_iot_device_status",
+              "apply_lock_state",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "discover_smart_devices",
+              "get_light_status",
+              "set_power_state",
+              "update_device_config",
+              "get_iot_device_status",
+              "apply_lock_state",
+              "create_document_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "set_light_state",
+          "set_power_state",
+          "update_device_config"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

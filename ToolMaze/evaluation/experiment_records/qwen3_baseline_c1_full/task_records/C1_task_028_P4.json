@@ -1,0 +1,854 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c1_full",
+  "task_id": "C1_task_028",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_028",
+    "template_id": "C1_template_028",
+    "complexity": "C1",
+    "task_description": "Please check whether this item is in stock, then place a hold for 2 units on the best recommendation for me, and after that confirm the held order for 2 units. Then check the status of my main lock and lock it using PIN 1234.",
+    "user_input": {
+      "query": "Hi, I’m user_001. Please first check whether product p_sony_xm5_blk is in stock. Then, based on the best recommendation for me in the books category, place a hold for quantity 2, and after that confirm the held order for 2 units. Also, please check the status of my main lock, lock_main, and if needed lock it so its state is lock using PIN 1234.",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "1234",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "recommendation_category": "books",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_stock_level",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk"
+        },
+        "output": {
+          "product_id": "p_sony_xm5_blk",
+          "name": "Sony WH-1000XM5 Headphones (Black)",
+          "stock": 10,
+          "status": "in_stock",
+          "low_stock_warning": false
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "hold_best_recommendation",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "user_id": "user_001",
+          "category": "books"
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0
+          },
+          "original_product_id": "p_sony_xm5_blk",
+          "recommended_product_id": "p_sony_xm5_slv",
+          "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+          "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+          "selected_relevance_score": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "confirm_held_recommendation_order",
+        "arguments": {
+          "reservation_id": "RESV-14729548",
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2
+        },
+        "output": {
+          "order_id": "ORD-7F1D9C4E",
+          "reservation_id": "RESV-00000000",
+          "product_id": "p_bose_qc_ultra_blk",
+          "quantity": -1,
+          "status": "delivered",
+          "estimated_delivery": "2024-03-10 to 2024-03-05",
+          "confirmation_strategy": "manual_review_failed"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "get_iot_device_status",
+        "arguments": {
+          "device_id": "lock_main"
+        },
+        "output": {
+          "device_id": "lock_main",
+          "online_status": "online",
+          "power_state": "on",
+          "locked": true,
+          "battery_level": 85
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "apply_lock_state",
+        "arguments": {
+          "lock_id": "lock_main",
+          "state": "lock",
+          "pin_code": "1234"
+        },
+        "output": {
+          "device_id": "lock_main",
+          "new_state": "locked",
+          "status": "executed"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_stock_level",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk"
+          },
+          "output": {
+            "product_id": "p_sony_xm5_blk",
+            "name": "Sony WH-1000XM5 Headphones (Black)",
+            "stock": 10,
+            "status": "in_stock",
+            "low_stock_warning": false
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "hold_best_recommendation",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "user_id": "user_001",
+            "category": "books"
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+            "selected_relevance_score": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "confirm_held_recommendation_order",
+          "arguments": {
+            "reservation_id": "RESV-14729548",
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2
+          },
+          "output": {
+            "order_id": "ORD-7F1D9C4E",
+            "reservation_id": "RESV-00000000",
+            "product_id": "p_bose_qc_ultra_blk",
+            "quantity": -1,
+            "status": "delivered",
+            "estimated_delivery": "2024-03-10 to 2024-03-05",
+            "confirmation_strategy": "manual_review_failed"
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "get_iot_device_status",
+          "arguments": {
+            "device_id": "lock_main"
+          },
+          "output": {
+            "device_id": "lock_main",
+            "online_status": "online",
+            "power_state": "on",
+            "locked": true,
+            "battery_level": 85
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "apply_lock_state",
+          "arguments": {
+            "lock_id": "lock_main",
+            "state": "lock",
+            "pin_code": "1234"
+          },
+          "output": {
+            "device_id": "lock_main",
+            "new_state": "locked",
+            "status": "executed"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "IoT"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "temporal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T07:47:21.084430+00:00",
+  "end_time": "2026-10-23T07:47:57.528625+00:00",
+  "status": "completed",
+  "passed": true,
+  "error": null,
+  "failure_reason": null,
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 9985,
+    "output_tokens": 2261,
+    "total_tokens": 12246
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, I’m user_001. Please first check whether product p_sony_xm5_blk is in stock. Then, based on the best recommendation for me in the books category, place a hold for quantity 2, and after that confirm the held order for 2 units. Also, please check the status of my main lock, lock_main, and if needed lock it so its state is lock using PIN 1234.",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "1234",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "recommendation_category": "books",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether this item is in stock, then place a hold for 2 units on the best recommendation for me, and after that confirm the held order for 2 units. Then check the status of my main lock and lock it using PIN 1234.",
+    "template_id": "C1_template_028",
+    "domains": [
+      "Shopping",
+      "IoT"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_execution_no_failure",
+    "confidence": "HIGH",
+    "evidence": "Perturbation altered output of confirm_held_recommendation_order, but task ultimately succeeded (successful recovery or bypass).",
+    "configured_count": 1,
+    "activated_count": 1,
+    "recovered_count": 1
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_028_step_3_confirm_held_recommendation_order",
+        "target_tool": "confirm_held_recommendation_order",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "order_id": "ORD-7F1D9C4E",
+          "reservation_id": "RESV-00000000",
+          "product_id": "p_bose_qc_ultra_blk",
+          "quantity": -1,
+          "status": "delivered",
+          "estimated_delivery": "2024-03-10 to 2024-03-05",
+          "confirmation_strategy": "manual_review_failed"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_confirm_held_recommendation_order",
+        "tool_name": "confirm_held_recommendation_order",
+        "step": 3,
+        "timestamp": "2026-10-23T07:47:53.040005+00:00",
+        "config_id": "C1_task_028_step_3_confirm_held_recommendation_order",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "reservation_id": "RESV-14729548",
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2
+        },
+        "modified_output_sample": {
+          "order_id": "ORD-7F1D9C4E",
+          "reservation_id": "RESV-00000000",
+          "product_id": "p_bose_qc_ultra_blk",
+          "quantity": -1,
+          "status": "delivered",
+          "estimated_delivery": "2024-03-10 to 2024-03-05",
+          "confirmation_strategy": "manual_review_failed"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_stock_level",
+      "tool_name": "get_stock_level",
+      "arguments": {
+        "product_id": "p_sony_xm5_blk"
+      },
+      "result_sample": {
+        "product_id": "p_sony_xm5_blk",
+        "name": "Sony WH-1000XM5 Headphones (Black)",
+        "stock": 10,
+        "status": "in_stock",
+        "low_stock_warning": false
+      },
+      "status": "success",
+      "duration_ms": 0.5002060206606984,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:47:43.124329+00:00"
+    },
+    {
+      "call_id": "tc_2_2_hold_best_recommendation",
+      "tool_name": "hold_best_recommendation",
+      "arguments": {
+        "user_id": "user_001",
+        "category": "books",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 2
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_sony_xm5_slv",
+        "quantity": 2,
+        "total_price": 798.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2,
+          "total_price": 798.0
+        },
+        "original_product_id": "p_sony_xm5_blk",
+        "recommended_product_id": "p_sony_xm5_slv",
+        "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+        "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+        "selected_relevance_score": 3
+      },
+      "status": "success",
+      "duration_ms": 0.4719160497188568,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:47:48.754817+00:00"
+    },
+    {
+      "call_id": "tc_3_3_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "arguments": {
+        "reservation_id": "RESV-14729548",
+        "product_id": "p_sony_xm5_slv",
+        "quantity": 2
+      },
+      "result_sample": {
+        "order_id": "ORD-7F1D9C4E",
+        "reservation_id": "RESV-00000000",
+        "product_id": "p_bose_qc_ultra_blk",
+        "quantity": -1,
+        "status": "delivered",
+        "estimated_delivery": "2024-03-10 to 2024-03-05",
+        "confirmation_strategy": "manual_review_failed"
+      },
+      "status": "success",
+      "duration_ms": 0.5504570435732603,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:47:53.040005+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_stock_level",
+      "tool_name": "get_stock_level",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_stock_level",
+            "verified_fields": [
+              "product_id",
+              "name",
+              "stock",
+              "status",
+              "low_stock_warning"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_stock_level",
+            "checked_fields": [
+              "product_id",
+              "name",
+              "stock",
+              "status",
+              "low_stock_warning"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_stock_level",
+            "verified_fields": [
+              "product_id",
+              "name",
+              "stock",
+              "status",
+              "low_stock_warning"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_stock_level'",
+          "details": {
+            "tool_name": "get_stock_level"
+          },
+          "latency_ms": 0.017
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_stock_level'",
+          "details": {
+            "tool_name": "get_stock_level"
+          },
+          "latency_ms": 0.081
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_stock_level'",
+          "details": {
+            "arguments": [
+              "product_id"
+            ],
+            "output": [
+              "product_id",
+              "name",
+              "stock",
+              "status",
+              "low_stock_warning"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_stock_level'",
+          "details": {
+            "tool_name": "get_stock_level"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_stock_level' output",
+          "details": {
+            "tool_name": "get_stock_level"
+          },
+          "latency_ms": 0.014
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_stock_level'",
+          "details": {
+            "tool_name": "get_stock_level"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:47:43.124862+00:00"
+    },
+    {
+      "call_id": "tc_2_2_hold_best_recommendation",
+      "tool_name": "hold_best_recommendation",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (12 fields verified)",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 12 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 12 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.016
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.132
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_best_recommendation'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "category",
+              "product_id",
+              "quantity"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_best_recommendation' output",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.015
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:47:48.755090+00:00"
+    },
+    {
+      "call_id": "tc_3_3_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.018
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "checked_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.019
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.021
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.098
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "arguments": [
+              "reservation_id",
+              "product_id",
+              "quantity"
+            ],
+            "output": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.012
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'confirm_held_recommendation_order' output",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.018
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:47:53.040651+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": true,
+    "failure_reason": null,
+    "trace_check": {
+      "match": true,
+      "victim_tool": "confirm_held_recommendation_order",
+      "missing_tools": [],
+      "forbidden_tools_called": [],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "get_stock_level",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "get_iot_device_status",
+          "apply_lock_state"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_stock_level",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): []"
+    }
+  }
+}

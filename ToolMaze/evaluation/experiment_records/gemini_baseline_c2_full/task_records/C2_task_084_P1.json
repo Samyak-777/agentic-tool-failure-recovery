@@ -1,0 +1,706 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c2_full",
+  "task_id": "C2_task_084",
+  "mode": "P1",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_084",
+    "template_id": "C2_template_084",
+    "complexity": "C2",
+    "task_description": "Please check what connected devices are in the living room, then look up the status of the living room AC and set it to cool at 24°C. After that, turn on the living room light to 70% brightness, and then back up the workspace and send me an in-app notification when it’s done.",
+    "user_input": {
+      "query": "Please check what connected devices are in the living_room first. Then look up the status of my AC with thermostat_device_id ac_living in the living_room and set it to hvac_mode cool. I know the target_temperature is 22, but please set it to 24°C. After that, turn on the light with light_device_id light_living in the living_room, set light_state to on, and adjust the light_brightness to 70%. The device_type field is blank (\"\"). Once that’s done, back up the workspace at /projects/ops-room using the backup_name post_environment_adjustment_backup, and send an in-app notification on the alert_channel app with alert_priority medium to user_id user_123 when the backup finishes.",
+      "alert_channel": "app",
+      "alert_priority": "medium",
+      "area": "living_room",
+      "backup_name": "post_environment_adjustment_backup",
+      "device_type": "",
+      "hvac_mode": "cool",
+      "light_brightness": 70,
+      "light_device_id": "light_living",
+      "light_state": "on",
+      "target_temperature": 22,
+      "thermostat_device_id": "ac_living",
+      "user_id": "user_123",
+      "workspace_path": "/projects/ops-room"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_connected_devices",
+          "get_iot_device_status",
+          "adjust_temperature",
+          "set_light_state",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_smart_light_full_control:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": ""
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "ac_living"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "online_status": "online",
+              "power_state": "on",
+              "temperature": 24.0,
+              "mode": "cool"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 24.0,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 24.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "error": "Gateway Timeout"
+            },
+            "status": "error",
+            "error_message": "504 Timeout",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_light_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on",
+              "brightness": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "control_smart_light",
+              "changes": {
+                "power_state": "on",
+                "brightness": 70,
+                "color": "white"
+              },
+              "status": "executed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/ops-room",
+              "backup_name": "post_environment_adjustment_backup",
+              "user_id": "user_123",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/ops-room",
+              "backup_name": "post_environment_adjustment_backup",
+              "size_mb": 280,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": ""
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "ac_living"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "online_status": "online",
+                "power_state": "on",
+                "temperature": 24.0,
+                "mode": "cool"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 24.0,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 24.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "error": "Gateway Timeout"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_light_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on",
+                "brightness": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "control_smart_light",
+                "changes": {
+                  "power_state": "on",
+                  "brightness": 70,
+                  "color": "white"
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/projects/ops-room",
+                "backup_name": "post_environment_adjustment_backup",
+                "user_id": "user_123",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/projects/ops-room",
+                "backup_name": "post_environment_adjustment_backup",
+                "size_mb": 280,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_connected_devices",
+          "get_iot_device_status",
+          "adjust_temperature",
+          "set_power_state",
+          "update_device_config",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": ""
+            },
+            "output": {
+              "found": true,
+              "area_name": "living_room",
+              "total_items": 4,
+              "items": [
+                "lock_main",
+                "light_living",
+                "ac_living",
+                "tv_living"
+              ]
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "ac_living"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "online_status": "online",
+              "power_state": "on",
+              "temperature": 24.0,
+              "mode": "cool"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "adjust_temperature",
+            "arguments": {
+              "temperature": 24.0,
+              "device_id": "ac_living",
+              "mode": "cool"
+            },
+            "output": {
+              "device_id": "ac_living",
+              "changes": {
+                "mode": "cool",
+                "temperature": 24.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "error": "Cache Unavailable"
+            },
+            "status": "error",
+            "error_message": "503 CacheUnavailable",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "set_power_state",
+            "arguments": {
+              "device_id": "light_living",
+              "state": "on"
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "toggle_device_power",
+              "changes": {
+                "power_state": "on"
+              },
+              "status": "executed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "update_device_config",
+            "arguments": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "operation": "adjust_device_property",
+              "changes": {
+                "brightness": 70
+              },
+              "status": "executed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/projects/ops-room",
+              "backup_name": "post_environment_adjustment_backup",
+              "user_id": "user_123",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "BACKUPA3B2C",
+              "priority": "medium",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/projects/ops-room",
+              "backup_name": "post_environment_adjustment_backup",
+              "size_mb": 280,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": ""
+              },
+              "output": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "ac_living"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "online_status": "online",
+                "power_state": "on",
+                "temperature": 24.0,
+                "mode": "cool"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "adjust_temperature",
+              "arguments": {
+                "temperature": 24.0,
+                "device_id": "ac_living",
+                "mode": "cool"
+              },
+              "output": {
+                "device_id": "ac_living",
+                "changes": {
+                  "mode": "cool",
+                  "temperature": 24.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "error": "Cache Unavailable"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "set_power_state",
+              "arguments": {
+                "device_id": "light_living",
+                "state": "on"
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "toggle_device_power",
+                "changes": {
+                  "power_state": "on"
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_device_config",
+              "arguments": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "operation": "adjust_device_property",
+                "changes": {
+                  "brightness": 70
+                },
+                "status": "executed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/projects/ops-room",
+                "backup_name": "post_environment_adjustment_backup",
+                "user_id": "user_123",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "BACKUPA3B2C",
+                "priority": "medium",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/projects/ops-room",
+                "backup_name": "post_environment_adjustment_backup",
+                "size_mb": 280,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "set_light_state",
+      "set_power_state",
+      "update_device_config"
+    ],
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 3
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T16:28:01.719600+00:00",
+  "end_time": "2026-10-24T16:29:41.760181+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check what connected devices are in the living_room first. Then look up the status of my AC with thermostat_device_id ac_living in the living_room and set it to hvac_mode cool. I know the target_temperature is 22, but please set it to 24°C. After that, turn on the light with light_device_id light_living in the living_room, set light_state to on, and adjust the light_brightness to 70%. The device_type field is blank (\"\"). Once that’s done, back up the workspace at /projects/ops-room using the backup_name post_environment_adjustment_backup, and send an in-app notification on the alert_channel app with alert_priority medium to user_id user_123 when the backup finishes.",
+      "alert_channel": "app",
+      "alert_priority": "medium",
+      "area": "living_room",
+      "backup_name": "post_environment_adjustment_backup",
+      "device_type": "",
+      "hvac_mode": "cool",
+      "light_brightness": 70,
+      "light_device_id": "light_living",
+      "light_state": "on",
+      "target_temperature": 22,
+      "thermostat_device_id": "ac_living",
+      "user_id": "user_123",
+      "workspace_path": "/projects/ops-room"
+    },
+    "task_description": "Please check what connected devices are in the living room, then look up the status of the living room AC and set it to cool at 24°C. After that, turn on the living room light to 70% brightness, and then back up the workspace and send me an in-app notification when it’s done.",
+    "template_id": "C2_template_084",
+    "domains": [
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['set_light_state', 'set_power_state'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_084_path_0_set_light_state",
+        "target_tool": "set_light_state",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_smart_light_full_control:integrated"
+        ]
+      },
+      {
+        "config_id": "C2_task_084_path_1_set_power_state",
+        "target_tool": "set_power_state",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Cache Unavailable"
+        },
+        "error_message": "503 CacheUnavailable",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_smart_light_full_control:toggle_then_adjust"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "adjust_temperature",
+        "get_iot_device_status",
+        "query_connected_devices",
+        "set_light_state",
+        "snapshot_workspace_and_alert"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_connected_devices",
+              "get_iot_device_status",
+              "adjust_temperature",
+              "set_light_state",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_connected_devices",
+              "get_iot_device_status",
+              "adjust_temperature",
+              "set_power_state",
+              "update_device_config",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "set_light_state",
+          "set_power_state",
+          "update_device_config"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

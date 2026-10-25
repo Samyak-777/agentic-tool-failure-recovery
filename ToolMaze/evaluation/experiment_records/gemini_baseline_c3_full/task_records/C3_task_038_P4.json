@@ -1,0 +1,735 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_038",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_038",
+    "template_id": "C3_template_038",
+    "complexity": "C3",
+    "task_description": "Please get Alice's contact info, then check the AAPL stock price and the USD to EUR exchange rate. After that, get a quote snapshot for AAPL and archive it as \"Q3 AAPL Snapshot\" with medium priority to Alice's email. Finally, check the current time in New York and convert the timestamp 1771772694.",
+    "user_input": {
+      "query": "Please find the contact info for alice, then check the current stock price for AAPL and the USD to EUR exchange rate. After that, I need you to get a quote snapshot for AAPL and archive it as \"Q3 AAPL Snapshot\" with medium priority to her email. Finally, please check the current time in the America/New_York timezone and convert the timestamp 1771772694 for me.",
+      "archive_title": "Q3 AAPL Snapshot",
+      "channel": "email",
+      "contact_name": "alice",
+      "priority": "medium",
+      "symbol": "AAPL",
+      "target_currency": "EUR",
+      "timezone": "America/New_York"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_contact_info_hris",
+          "get_stock_alpha_vantage",
+          "get_exchange_rate_currencyapi",
+          "get_quote_snapshot_native",
+          "archive_quote_snapshot_native",
+          "get_current_time",
+          "convert_datetime"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_hris",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": null,
+              "symbol": "UNASSIGNED",
+              "usd_last": -170.25,
+              "venue": "OFFLINE",
+              "quoted_at": null
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "title": "Q3 AAPL Snapshot",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "direct_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 AAPL Snapshot",
+              "target_user": "u_alice",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "convert_datetime",
+            "arguments": {
+              "timestamp": 1771772694
+            },
+            "output": {
+              "original_timestamp": 1771772694,
+              "formatted_time": "2026-02-22 15:04"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_hris",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": null,
+                "symbol": "UNASSIGNED",
+                "usd_last": -170.25,
+                "venue": "OFFLINE",
+                "quoted_at": null
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "title": "Q3 AAPL Snapshot",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "direct_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 AAPL Snapshot",
+                "target_user": "u_alice",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "convert_datetime",
+              "arguments": {
+                "timestamp": 1771772694
+              },
+              "output": {
+                "original_timestamp": 1771772694,
+                "formatted_time": "2026-02-22 15:04"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_contact_info_hris",
+          "get_stock_alpha_vantage",
+          "get_exchange_rate_currencyapi",
+          "get_fx_quote_ticket_native",
+          "archive_fx_quote_ticket_native",
+          "get_current_time",
+          "convert_datetime"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_contact_info_hris",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_stock_alpha_vantage",
+            "arguments": {
+              "symbol": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_exchange_rate_currencyapi",
+            "arguments": {
+              "from_currency": "USD",
+              "to_currency": "EUR"
+            },
+            "output": {
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": null,
+              "ticker_code": "MSFT",
+              "local_last": 0.0,
+              "settlement_ccy": null,
+              "usd_reference": null,
+              "fx_rate": 0.0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "archive_fx_quote_ticket_native",
+            "arguments": {
+              "quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 156.63,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": 0.92
+              },
+              "title": "Q3 AAPL Snapshot",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "email"
+            },
+            "output": {
+              "status": "archived",
+              "strategy": "fx_quote_archive_native",
+              "notification_id": "NOTIFEE84C",
+              "note_id": "NOTE18E3D",
+              "title": "Q3 AAPL Snapshot",
+              "target_user": "u_alice",
+              "instrument": "AAPL"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "get_current_time",
+            "arguments": {
+              "timezone": "America/New_York"
+            },
+            "output": {
+              "datetime": "2026-02-22 10:04:54",
+              "date": "2026-02-22",
+              "time": "10:04:54",
+              "timestamp": 1771772694,
+              "timezone": "America/New_York",
+              "weekday": "Sunday",
+              "iso_format": "2026-02-22T10:04:54.104554-05:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "convert_datetime",
+            "arguments": {
+              "timestamp": 1771772694
+            },
+            "output": {
+              "original_timestamp": 1771772694,
+              "formatted_time": "2026-02-22 15:04"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_contact_info_hris",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "found": true,
+                "name": "Alice",
+                "email": "alice@company.com",
+                "phone": "+1-555-0101",
+                "department": "Engineering",
+                "user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_alpha_vantage",
+              "arguments": {
+                "symbol": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_exchange_rate_currencyapi",
+              "arguments": {
+                "from_currency": "USD",
+                "to_currency": "EUR"
+              },
+              "output": {
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": null,
+                "ticker_code": "MSFT",
+                "local_last": 0.0,
+                "settlement_ccy": null,
+                "usd_reference": null,
+                "fx_rate": 0.0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "archive_fx_quote_ticket_native",
+              "arguments": {
+                "quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 156.63,
+                  "settlement_ccy": "EUR",
+                  "usd_reference": 170.25,
+                  "fx_rate": 0.92
+                },
+                "title": "Q3 AAPL Snapshot",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "email"
+              },
+              "output": {
+                "status": "archived",
+                "strategy": "fx_quote_archive_native",
+                "notification_id": "NOTIFEE84C",
+                "note_id": "NOTE18E3D",
+                "title": "Q3 AAPL Snapshot",
+                "target_user": "u_alice",
+                "instrument": "AAPL"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_current_time",
+              "arguments": {
+                "timezone": "America/New_York"
+              },
+              "output": {
+                "datetime": "2026-02-22 10:04:54",
+                "date": "2026-02-22",
+                "time": "10:04:54",
+                "timestamp": 1771772694,
+                "timezone": "America/New_York",
+                "weekday": "Sunday",
+                "iso_format": "2026-02-22T10:04:54.104554-05:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "convert_datetime",
+              "arguments": {
+                "timestamp": 1771772694
+              },
+              "output": {
+                "original_timestamp": 1771772694,
+                "formatted_time": "2026-02-22 15:04"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "archive_fx_quote_ticket_native",
+      "archive_quote_snapshot_native",
+      "get_fx_quote_ticket_native",
+      "get_quote_snapshot_native"
+    ],
+    "domains": [
+      "Office",
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "logic_violation"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T03:42:55.313834+00:00",
+  "end_time": "2026-10-25T03:44:35.968606+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please find the contact info for alice, then check the current stock price for AAPL and the USD to EUR exchange rate. After that, I need you to get a quote snapshot for AAPL and archive it as \"Q3 AAPL Snapshot\" with medium priority to her email. Finally, please check the current time in the America/New_York timezone and convert the timestamp 1771772694 for me.",
+      "archive_title": "Q3 AAPL Snapshot",
+      "channel": "email",
+      "contact_name": "alice",
+      "priority": "medium",
+      "symbol": "AAPL",
+      "target_currency": "EUR",
+      "timezone": "America/New_York"
+    },
+    "task_description": "Please get Alice's contact info, then check the AAPL stock price and the USD to EUR exchange rate. After that, get a quote snapshot for AAPL and archive it as \"Q3 AAPL Snapshot\" with medium priority to Alice's email. Finally, check the current time in New York and convert the timestamp 1771772694.",
+    "template_id": "C3_template_038",
+    "domains": [
+      "Office",
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_quote_snapshot_native', 'get_fx_quote_ticket_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_038_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": null,
+          "symbol": "UNASSIGNED",
+          "usd_last": -170.25,
+          "venue": "OFFLINE",
+          "quoted_at": null
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_archive_native_2to2:quote_snapshot_archive_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_038_path_1_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": null,
+          "ticker_code": "MSFT",
+          "local_last": 0.0,
+          "settlement_ccy": null,
+          "usd_reference": null,
+          "fx_rate": 0.0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_archive_native_2to2:fx_quote_ticket_archive_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "archive_quote_snapshot_native",
+        "convert_datetime",
+        "get_contact_info_hris",
+        "get_current_time",
+        "get_exchange_rate_currencyapi",
+        "get_quote_snapshot_native",
+        "get_stock_alpha_vantage"
+      ],
+      "insufficient_calls": {
+        "get_contact_info_hris": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_stock_alpha_vantage": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_exchange_rate_currencyapi": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "archive_quote_snapshot_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_current_time": {
+          "expected": 1,
+          "actual": 0
+        },
+        "convert_datetime": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_contact_info_hris",
+              "get_stock_alpha_vantage",
+              "get_exchange_rate_currencyapi",
+              "get_quote_snapshot_native",
+              "archive_quote_snapshot_native",
+              "get_current_time",
+              "convert_datetime"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_contact_info_hris",
+              "get_stock_alpha_vantage",
+              "get_exchange_rate_currencyapi",
+              "get_fx_quote_ticket_native",
+              "archive_fx_quote_ticket_native",
+              "get_current_time",
+              "convert_datetime"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "archive_fx_quote_ticket_native",
+          "archive_quote_snapshot_native",
+          "get_fx_quote_ticket_native",
+          "get_quote_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

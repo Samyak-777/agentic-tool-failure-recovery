@@ -1,0 +1,4534 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_001",
+  "mode": "P2",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_001",
+    "template_id": "C4_template_001",
+    "complexity": "C4",
+    "task_description": "Please check whether flight AA100 is on time, then book it for Jordan Lee in business class. After that, send me a high-priority email notice with the gate board for AA100, send me a high-priority email weather alert for New York, look up Hilton Tokyo, notify alice by high-priority email that the travel itinerary was processed, then book the best meeting room for 6 people on 2026-01-15 from 14:00 to 15:00, and finally create a backup of the travel_ops workspace named trip_meeting_bundle_backup.",
+    "user_input": {
+      "query": "Please check whether flight AA100 is on time, and if it is, book it for Jordan Lee in business class. Then send me a high-priority email notice with the gate board for AA100, and also send me a high-priority email weather alert for New York. Please look up Hilton Tokyo as well, and notify alice by high-priority email that the travel itinerary was processed. After that, book the best meeting room for 6 attendees on 2026-01-15 from 14:00 to 15:00. Finally, create a backup of the /workspace/travel_ops workspace named trip_meeting_bundle_backup. This is for user_01, and the notification channel should be email.",
+      "attendees": 6,
+      "backup_name": "trip_meeting_bundle_backup",
+      "channel": "email",
+      "contact_name": "alice",
+      "destination_city": "New York",
+      "flight_number": "AA100",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-15",
+      "meeting_end_time": "15:00",
+      "meeting_start_time": "14:00",
+      "passenger_name": "Jordan Lee",
+      "priority": "high",
+      "seat_class": "business",
+      "user_id": "user_01",
+      "workspace_path": "/workspace/travel_ops"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_aviationstack_gate_board_native",
+          "publish_gate_board_notice_native",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "get_hotel_info",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4a1",
+          "s4a2",
+          "s5a",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_gate_board_notice_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_aa100",
+                "flight_code": "AA100",
+                "dep_airport": "New York JFK",
+                "arr_airport": "Los Angeles LAX",
+                "gate_label": "D24",
+                "status_text": "On Time"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "gate_board_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "gate_aa100",
+              "content": "AA100 On Time at gate D24"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_new_york",
+                "city_label": "New York",
+                "celsius_now": 15,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "wapi_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Tool Not Found"
+            },
+            "status": "error",
+            "error_message": "404 NotFound",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_gate_board_notice_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_aa100",
+                  "flight_code": "AA100",
+                  "dep_airport": "New York JFK",
+                  "arr_airport": "Los Angeles LAX",
+                  "gate_label": "D24",
+                  "status_text": "On Time"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "gate_board_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "gate_aa100",
+                "content": "AA100 On Time at gate D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_new_york",
+                  "city_label": "New York",
+                  "celsius_now": 15,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "wapi_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Tool Not Found"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_aviationstack_gate_board_native",
+          "publish_gate_board_notice_native",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "get_hotel_info_expedia",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4a1",
+          "s4a2",
+          "s5b",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Access Forbidden"
+            },
+            "status": "error",
+            "error_message": "403 Forbidden",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_gate_board_notice_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_aa100",
+                "flight_code": "AA100",
+                "dep_airport": "New York JFK",
+                "arr_airport": "Los Angeles LAX",
+                "gate_label": "D24",
+                "status_text": "On Time"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "gate_board_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "gate_aa100",
+              "content": "AA100 On Time at gate D24"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_new_york",
+                "city_label": "New York",
+                "celsius_now": 15,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "wapi_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Account Quota Exhausted"
+            },
+            "status": "error",
+            "error_message": "402 QuotaExhausted",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Access Forbidden"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_gate_board_notice_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_aa100",
+                  "flight_code": "AA100",
+                  "dep_airport": "New York JFK",
+                  "arr_airport": "Los Angeles LAX",
+                  "gate_label": "D24",
+                  "status_text": "On Time"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "gate_board_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "gate_aa100",
+                "content": "AA100 On Time at gate D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_new_york",
+                  "city_label": "New York",
+                  "celsius_now": 15,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "wapi_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_expedia",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Account Quota Exhausted"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_aviationstack_gate_board_native",
+          "publish_gate_board_notice_native",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "get_hotel_info",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4b1",
+          "s4b2",
+          "s5a",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Tool Not Found"
+            },
+            "status": "error",
+            "error_message": "404 NotFound",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_gate_board_notice_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_aa100",
+                "flight_code": "AA100",
+                "dep_airport": "New York JFK",
+                "arr_airport": "Los Angeles LAX",
+                "gate_label": "D24",
+                "status_text": "On Time"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "gate_board_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "gate_aa100",
+              "content": "AA100 On Time at gate D24"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Account Suspended"
+            },
+            "status": "error",
+            "error_message": "403 AccountSuspended",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_new_york",
+                "locality": "New York",
+                "metric_temp": 15,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "vc_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Access Forbidden"
+            },
+            "status": "error",
+            "error_message": "403 Forbidden",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Tool Not Found"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_gate_board_notice_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_aa100",
+                  "flight_code": "AA100",
+                  "dep_airport": "New York JFK",
+                  "arr_airport": "Los Angeles LAX",
+                  "gate_label": "D24",
+                  "status_text": "On Time"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "gate_board_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "gate_aa100",
+                "content": "AA100 On Time at gate D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Account Suspended"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_new_york",
+                  "locality": "New York",
+                  "metric_temp": 15,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "vc_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Access Forbidden"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_aviationstack_gate_board_native",
+          "publish_gate_board_notice_native",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "get_hotel_info_expedia",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s4b1",
+          "s4b2",
+          "s5b",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_aviationstack_gate_board_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Access Forbidden"
+            },
+            "status": "error",
+            "error_message": "403 Forbidden",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_gate_board_notice_native",
+            "arguments": {
+              "gate_board": {
+                "board_ref": "gate_aa100",
+                "flight_code": "AA100",
+                "dep_airport": "New York JFK",
+                "arr_airport": "Los Angeles LAX",
+                "gate_label": "D24",
+                "status_text": "On Time"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "gate_board_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "gate_aa100",
+              "content": "AA100 On Time at gate D24"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_new_york",
+                "locality": "New York",
+                "metric_temp": 15,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "vc_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_aviationstack_gate_board_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Access Forbidden"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_gate_board_notice_native",
+              "arguments": {
+                "gate_board": {
+                  "board_ref": "gate_aa100",
+                  "flight_code": "AA100",
+                  "dep_airport": "New York JFK",
+                  "arr_airport": "Los Angeles LAX",
+                  "gate_label": "D24",
+                  "status_text": "On Time"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "gate_board_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "gate_aa100",
+                "content": "AA100 On Time at gate D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_new_york",
+                  "locality": "New York",
+                  "metric_temp": 15,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "vc_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_expedia",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_4",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_flightaware_trip_timeline_native",
+          "publish_trip_timeline_notice_native",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "get_hotel_info",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4a1",
+          "s4a2",
+          "s5a",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Feature Discontinued"
+            },
+            "status": "error",
+            "error_message": "410 FeatureDiscontinued",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_trip_timeline_notice_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "trip_timeline_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "trip_aa100",
+              "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Service Unavailable In Your Region"
+            },
+            "status": "error",
+            "error_message": "451 GeoBlocked",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_new_york",
+                "city_label": "New York",
+                "celsius_now": 15,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "wapi_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "API Version Deprecated"
+            },
+            "status": "error",
+            "error_message": "410 APIDeprecated",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Feature Discontinued"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_trip_timeline_notice_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_aa100",
+                  "flight_no": "AA100",
+                  "route_text": "New York JFK -> Los Angeles LAX",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "D24"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "trip_timeline_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "trip_aa100",
+                "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Service Unavailable In Your Region"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_new_york",
+                  "city_label": "New York",
+                  "celsius_now": 15,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "wapi_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "API Version Deprecated"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_5",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_flightaware_trip_timeline_native",
+          "publish_trip_timeline_notice_native",
+          "get_weatherapi_alert_card_native",
+          "publish_weatherapi_alert_card_native",
+          "get_hotel_info_expedia",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4a1",
+          "s4a2",
+          "s5b",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_trip_timeline_notice_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "trip_timeline_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "trip_aa100",
+              "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_weatherapi_alert_card_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_weatherapi_alert_card_native",
+            "arguments": {
+              "alert_card": {
+                "alert_card_id": "wapi_new_york",
+                "city_label": "New York",
+                "celsius_now": 15,
+                "sky_text": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "weatherapi_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "wapi_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_trip_timeline_notice_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_aa100",
+                  "flight_no": "AA100",
+                  "route_text": "New York JFK -> Los Angeles LAX",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "D24"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "trip_timeline_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "trip_aa100",
+                "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_weatherapi_alert_card_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_weatherapi_alert_card_native",
+              "arguments": {
+                "alert_card": {
+                  "alert_card_id": "wapi_new_york",
+                  "city_label": "New York",
+                  "celsius_now": 15,
+                  "sky_text": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "weatherapi_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "wapi_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_expedia",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_6",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_flightaware_trip_timeline_native",
+          "publish_trip_timeline_notice_native",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "get_hotel_info",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4b1",
+          "s4b2",
+          "s5a",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Data Source Retired"
+            },
+            "status": "error",
+            "error_message": "410 DataSourceRetired",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_trip_timeline_notice_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "trip_timeline_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "trip_aa100",
+              "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "Not Implemented"
+            },
+            "status": "error",
+            "error_message": "501 NotImplemented",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_new_york",
+                "locality": "New York",
+                "metric_temp": 15,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "vc_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Tool Permanently Removed"
+            },
+            "status": "error",
+            "error_message": "410 Gone",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Data Source Retired"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_trip_timeline_notice_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_aa100",
+                  "flight_no": "AA100",
+                  "route_text": "New York JFK -> Los Angeles LAX",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "D24"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "trip_timeline_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "trip_aa100",
+                "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "Not Implemented"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_new_york",
+                  "locality": "New York",
+                  "metric_temp": 15,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "vc_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Tool Permanently Removed"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_7",
+        "tools": [
+          "get_flight_info",
+          "book_flight",
+          "get_flightaware_trip_timeline_native",
+          "publish_trip_timeline_notice_native",
+          "get_visualcrossing_forecast_chip_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "get_hotel_info_expedia",
+          "push_alert_contact_by_name",
+          "book_best_meeting_room",
+          "snapshot_workspace"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s4b1",
+          "s4b2",
+          "s5b",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_flight_info",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "flight_number": "AA100",
+              "airline": "American Airlines",
+              "departure": "New York JFK",
+              "arrival": "Los Angeles LAX",
+              "departure_time": "09:00",
+              "arrival_time": "12:30",
+              "status": "On Time",
+              "gate": "D24"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "AA100",
+              "passenger_name": "Jordan Lee",
+              "seat_class": "business",
+              "status": "confirmed"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_flightaware_trip_timeline_native",
+            "arguments": {
+              "flight_number": "AA100"
+            },
+            "output": {
+              "error": "Data Source Retired"
+            },
+            "status": "error",
+            "error_message": "410 DataSourceRetired",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "publish_trip_timeline_notice_native",
+            "arguments": {
+              "trip_timeline": {
+                "timeline_id": "trip_aa100",
+                "flight_no": "AA100",
+                "route_text": "New York JFK -> Los Angeles LAX",
+                "latest_state": "On Time",
+                "checkpoint_gate": "D24"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "trip_timeline_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "transport_ref": "trip_aa100",
+              "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "city": "New York"
+            },
+            "output": {
+              "error": "License Expired Or Invalid"
+            },
+            "status": "error",
+            "error_message": "402 LicenseInvalid",
+            "is_perturbed": true
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_visualcrossing_forecast_chip_native",
+            "arguments": {
+              "forecast_chip": {
+                "forecast_chip_ref": "vc_new_york",
+                "locality": "New York",
+                "metric_temp": 15,
+                "conditions_brief": "Rain",
+                "advice_level": "normal"
+              },
+              "user_id": "user_01",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "visualcrossing_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "user_01",
+              "weather_ref": "vc_new_york",
+              "content": "New York: Rain, 15C"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "get_hotel_info_expedia",
+            "arguments": {
+              "hotel_name": "Hilton Tokyo"
+            },
+            "output": {
+              "error": "Unavailable For Legal Reasons"
+            },
+            "status": "error",
+            "error_message": "451 UnavailableForLegalReasons",
+            "is_perturbed": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_contact_by_name",
+            "arguments": {
+              "name": "alice",
+              "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+              "priority": "high",
+              "resolved_name": "Alice",
+              "recipient_email": "alice@company.com"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "book_best_meeting_room",
+            "arguments": {
+              "attendees": 6,
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00"
+            },
+            "output": {
+              "message": "Meeting room booked successfully",
+              "booking_id": "BK168D3",
+              "room_name": "Meeting Room 1",
+              "date": "2026-01-15",
+              "start_time": "14:00",
+              "end_time": "15:00",
+              "attendees": 6,
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "selection_reason": "Smallest available room that fits 6 attendees"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "snapshot_workspace",
+            "arguments": {
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup"
+            },
+            "output": {
+              "message": "Backup created successfully",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/workspace/travel_ops",
+              "backup_name": "trip_meeting_bundle_backup",
+              "size_mb": 310,
+              "status": "completed",
+              "timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_flight_info",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "flight_number": "AA100",
+                "airline": "American Airlines",
+                "departure": "New York JFK",
+                "arrival": "Los Angeles LAX",
+                "departure_time": "09:00",
+                "arrival_time": "12:30",
+                "status": "On Time",
+                "gate": "D24"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "AA100",
+                "passenger_name": "Jordan Lee",
+                "seat_class": "business",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flightaware_trip_timeline_native",
+              "arguments": {
+                "flight_number": "AA100"
+              },
+              "output": {
+                "error": "Data Source Retired"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_trip_timeline_notice_native",
+              "arguments": {
+                "trip_timeline": {
+                  "timeline_id": "trip_aa100",
+                  "flight_no": "AA100",
+                  "route_text": "New York JFK -> Los Angeles LAX",
+                  "latest_state": "On Time",
+                  "checkpoint_gate": "D24"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "trip_timeline_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "transport_ref": "trip_aa100",
+                "content": "AA100 On Time on New York JFK -> Los Angeles LAX"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "city": "New York"
+              },
+              "output": {
+                "error": "License Expired Or Invalid"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_visualcrossing_forecast_chip_native",
+              "arguments": {
+                "forecast_chip": {
+                  "forecast_chip_ref": "vc_new_york",
+                  "locality": "New York",
+                  "metric_temp": 15,
+                  "conditions_brief": "Rain",
+                  "advice_level": "normal"
+                },
+                "user_id": "user_01",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "visualcrossing_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "user_01",
+                "weather_ref": "vc_new_york",
+                "content": "New York: Rain, 15C"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_hotel_info_expedia",
+              "arguments": {
+                "hotel_name": "Hilton Tokyo"
+              },
+              "output": {
+                "error": "Unavailable For Legal Reasons"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "push_alert_contact_by_name",
+              "arguments": {
+                "name": "alice",
+                "message": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Travel itinerary processed: flight booked, flight and weather notices sent, and hotel information retrieved.",
+                "priority": "high",
+                "resolved_name": "Alice",
+                "recipient_email": "alice@company.com"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_best_meeting_room",
+              "arguments": {
+                "attendees": 6,
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00"
+              },
+              "output": {
+                "message": "Meeting room booked successfully",
+                "booking_id": "BK168D3",
+                "room_name": "Meeting Room 1",
+                "date": "2026-01-15",
+                "start_time": "14:00",
+                "end_time": "15:00",
+                "attendees": 6,
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "selection_reason": "Smallest available room that fits 6 attendees"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace",
+              "arguments": {
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup"
+              },
+              "output": {
+                "message": "Backup created successfully",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/workspace/travel_ops",
+                "backup_name": "trip_meeting_bundle_backup",
+                "size_mb": 310,
+                "status": "completed",
+                "timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_aviationstack_gate_board_native",
+      "get_flightaware_trip_timeline_native",
+      "get_hotel_info",
+      "get_hotel_info_expedia",
+      "get_visualcrossing_forecast_chip_native",
+      "get_weatherapi_alert_card_native",
+      "publish_gate_board_notice_native",
+      "publish_trip_timeline_notice_native",
+      "publish_visualcrossing_forecast_chip_native",
+      "publish_weatherapi_alert_card_native"
+    ],
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s3",
+        "s4",
+        "s5"
+      ]
+    }
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T03:59:54.209749+00:00",
+  "end_time": "2026-10-24T04:00:33.318563+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_aviationstack_gate_board_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "get_aviationstack_gate_board_native"
+  ],
+  "tokens": {
+    "input_tokens": 11893,
+    "output_tokens": 1943,
+    "total_tokens": 13836
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight AA100 is on time, and if it is, book it for Jordan Lee in business class. Then send me a high-priority email notice with the gate board for AA100, and also send me a high-priority email weather alert for New York. Please look up Hilton Tokyo as well, and notify alice by high-priority email that the travel itinerary was processed. After that, book the best meeting room for 6 attendees on 2026-01-15 from 14:00 to 15:00. Finally, create a backup of the /workspace/travel_ops workspace named trip_meeting_bundle_backup. This is for user_01, and the notification channel should be email.",
+      "attendees": 6,
+      "backup_name": "trip_meeting_bundle_backup",
+      "channel": "email",
+      "contact_name": "alice",
+      "destination_city": "New York",
+      "flight_number": "AA100",
+      "hotel_name": "Hilton Tokyo",
+      "meeting_date": "2026-01-15",
+      "meeting_end_time": "15:00",
+      "meeting_start_time": "14:00",
+      "passenger_name": "Jordan Lee",
+      "priority": "high",
+      "seat_class": "business",
+      "user_id": "user_01",
+      "workspace_path": "/workspace/travel_ops"
+    },
+    "task_description": "Please check whether flight AA100 is on time, then book it for Jordan Lee in business class. After that, send me a high-priority email notice with the gate board for AA100, send me a high-priority email weather alert for New York, look up Hilton Tokyo, notify alice by high-priority email that the travel itinerary was processed, then book the best meeting room for 6 people on 2026-01-15 from 14:00 to 15:00, and finally create a backup of the travel_ops workspace named trip_meeting_bundle_backup.",
+    "template_id": "C4_template_001",
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_aviationstack_gate_board_native'], matching recorded execution failure in tools ['get_aviationstack_gate_board_native'] leading to task failure.",
+    "configured_count": 24,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_001_path_0_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_0_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_0_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Not Found"
+        },
+        "error_message": "404 NotFound",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_1_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Access Forbidden"
+        },
+        "error_message": "403 Forbidden",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_1_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_1_get_hotel_info_expedia",
+        "target_tool": "get_hotel_info_expedia",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Quota Exhausted"
+        },
+        "error_message": "402 QuotaExhausted",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_2_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Not Found"
+        },
+        "error_message": "404 NotFound",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_2_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Account Suspended"
+        },
+        "error_message": "403 AccountSuspended",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_2_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Access Forbidden"
+        },
+        "error_message": "403 Forbidden",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_3_get_aviationstack_gate_board_native",
+        "target_tool": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Access Forbidden"
+        },
+        "error_message": "403 Forbidden",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_3_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_3_get_hotel_info_expedia",
+        "target_tool": "get_hotel_info_expedia",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:gate_board_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_4_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Feature Discontinued"
+        },
+        "error_message": "410 FeatureDiscontinued",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_4_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Service Unavailable In Your Region"
+        },
+        "error_message": "451 GeoBlocked",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_4_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_4",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_5_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_5_get_weatherapi_alert_card_native",
+        "target_tool": "get_weatherapi_alert_card_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_5_get_hotel_info_expedia",
+        "target_tool": "get_hotel_info_expedia",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_5",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:weatherapi_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_6_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Data Source Retired"
+        },
+        "error_message": "410 DataSourceRetired",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_6_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Not Implemented"
+        },
+        "error_message": "501 NotImplemented",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_6_get_hotel_info",
+        "target_tool": "get_hotel_info",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Tool Permanently Removed"
+        },
+        "error_message": "410 Gone",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_6",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:default_provider"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_7_get_flightaware_trip_timeline_native",
+        "target_tool": "get_flightaware_trip_timeline_native",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Data Source Retired"
+        },
+        "error_message": "410 DataSourceRetired",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_7_get_visualcrossing_forecast_chip_native",
+        "target_tool": "get_visualcrossing_forecast_chip_native",
+        "step": 5,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "License Expired Or Invalid"
+        },
+        "error_message": "402 LicenseInvalid",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      },
+      {
+        "config_id": "C4_task_001_path_7_get_hotel_info_expedia",
+        "target_tool": "get_hotel_info_expedia",
+        "step": 7,
+        "mode": "P2",
+        "complexity": "C4",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Unavailable For Legal Reasons"
+        },
+        "error_message": "451 UnavailableForLegalReasons",
+        "trigger_condition": "first_touch_slot",
+        "category": "syntactic",
+        "source_path": "path_7",
+        "group_choices": [
+          "alt_flight_notice_native_2to2:trip_timeline_notice_native",
+          "alt_weather_notice_native_2to2:visualcrossing_notice_native",
+          "alt_hotel_info_default_expedia:expedia"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_aviationstack_gate_board_native",
+        "tool_name": "get_aviationstack_gate_board_native",
+        "step": 3,
+        "timestamp": "2026-10-24T04:00:23.939902+00:00",
+        "config_id": "C4_task_001_path_0_get_aviationstack_gate_board_native",
+        "configured_mode": "P2",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "flight_number": "AA100"
+        },
+        "modified_output_sample": {
+          "error": "Account Suspended"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info",
+      "tool_name": "get_flight_info",
+      "arguments": {
+        "flight_number": "AA100"
+      },
+      "result_sample": {
+        "flight_number": "AA100",
+        "airline": "American Airlines",
+        "departure": "New York JFK",
+        "arrival": "Los Angeles LAX",
+        "departure_time": "09:00",
+        "arrival_time": "12:30",
+        "status": "On Time",
+        "gate": "D24"
+      },
+      "status": "success",
+      "duration_ms": 0.5748260300606489,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:00:06.805939+00:00"
+    },
+    {
+      "call_id": "tc_2_2_book_flight",
+      "tool_name": "book_flight",
+      "arguments": {
+        "flight_number": "AA100",
+        "passenger_name": "Jordan Lee",
+        "seat_class": "business"
+      },
+      "result_sample": {
+        "message": "Flight booked successfully",
+        "booking_id": "FLIGHT5A3B2C",
+        "confirmation_code": "D4E6F7",
+        "flight_number": "AA100",
+        "passenger_name": "Jordan Lee",
+        "seat_class": "business",
+        "status": "confirmed"
+      },
+      "status": "success",
+      "duration_ms": 0.37421705201268196,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:00:18.854650+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_aviationstack_gate_board_native",
+      "tool_name": "get_aviationstack_gate_board_native",
+      "arguments": {
+        "flight_number": "AA100"
+      },
+      "result_sample": {
+        "error": "Account Suspended"
+      },
+      "status": "error",
+      "duration_ms": 28.428309014998376,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:00:23.939902+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info",
+      "tool_name": "get_flight_info",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.257
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "AA100",
+                "returned": "AA100",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "get_flight_info",
+            "applied_rules": [
+              "CFR-004"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info' output",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info'",
+          "details": {
+            "tool_name": "get_flight_info"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T04:00:06.806186+00:00"
+    },
+    {
+      "call_id": "tc_2_2_book_flight",
+      "tool_name": "book_flight",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "book_flight",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "flight_number",
+              "passenger_name",
+              "seat_class",
+              "status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "book_flight",
+            "checked_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "flight_number",
+              "passenger_name",
+              "seat_class",
+              "status"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "book_flight",
+            "verified_fields": [
+              "message",
+              "booking_id",
+              "confirmation_code",
+              "flight_number",
+              "passenger_name",
+              "seat_class",
+              "status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'book_flight'",
+          "details": {
+            "tool_name": "book_flight"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'book_flight'",
+          "details": {
+            "tool_name": "book_flight"
+          },
+          "latency_ms": 0.057
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "book_flight",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "AA100",
+                "returned": "AA100",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'book_flight'",
+          "details": {
+            "tool_name": "book_flight"
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'book_flight' output",
+          "details": {
+            "tool_name": "book_flight"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'book_flight'",
+          "details": {
+            "tool_name": "book_flight"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T04:00:18.854895+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_aviationstack_gate_board_native",
+      "tool_name": "get_aviationstack_gate_board_native",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Account Suspended"
+          },
+          "latency_ms": 0.001
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T04:00:23.940236+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: no complete valid path executed successfully; 'get_aviationstack_gate_board_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_aviationstack_gate_board_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "book_best_meeting_room",
+        "get_aviationstack_gate_board_native",
+        "get_hotel_info",
+        "get_weatherapi_alert_card_native",
+        "publish_gate_board_notice_native",
+        "publish_weatherapi_alert_card_native",
+        "push_alert_contact_by_name",
+        "snapshot_workspace"
+      ],
+      "insufficient_calls": {
+        "get_aviationstack_gate_board_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_gate_board_notice_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_weatherapi_alert_card_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_hotel_info": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert_contact_by_name": {
+          "expected": 1,
+          "actual": 0
+        },
+        "book_best_meeting_room": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_aviationstack_gate_board_native",
+              "publish_gate_board_notice_native",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "get_hotel_info",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_aviationstack_gate_board_native",
+              "publish_gate_board_notice_native",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "get_hotel_info_expedia",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_aviationstack_gate_board_native",
+              "publish_gate_board_notice_native",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "get_hotel_info",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_aviationstack_gate_board_native",
+              "publish_gate_board_notice_native",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "get_hotel_info_expedia",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_4",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_flightaware_trip_timeline_native",
+              "publish_trip_timeline_notice_native",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "get_hotel_info",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_5",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_flightaware_trip_timeline_native",
+              "publish_trip_timeline_notice_native",
+              "get_weatherapi_alert_card_native",
+              "publish_weatherapi_alert_card_native",
+              "get_hotel_info_expedia",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_6",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_flightaware_trip_timeline_native",
+              "publish_trip_timeline_notice_native",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "get_hotel_info",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          },
+          {
+            "path_id": "path_7",
+            "execution_trace": [
+              "get_flight_info",
+              "book_flight",
+              "get_flightaware_trip_timeline_native",
+              "publish_trip_timeline_notice_native",
+              "get_visualcrossing_forecast_chip_native",
+              "publish_visualcrossing_forecast_chip_native",
+              "get_hotel_info_expedia",
+              "push_alert_contact_by_name",
+              "book_best_meeting_room",
+              "snapshot_workspace"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_aviationstack_gate_board_native",
+          "get_flightaware_trip_timeline_native",
+          "get_hotel_info",
+          "get_hotel_info_expedia",
+          "get_visualcrossing_forecast_chip_native",
+          "get_weatherapi_alert_card_native",
+          "publish_gate_board_notice_native",
+          "publish_trip_timeline_notice_native",
+          "publish_visualcrossing_forecast_chip_native",
+          "publish_weatherapi_alert_card_native"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s3",
+            "s4",
+            "s5"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info",
+          "book_flight",
+          "get_aviationstack_gate_board_native"
+        ]
+      }
+    }
+  }
+}

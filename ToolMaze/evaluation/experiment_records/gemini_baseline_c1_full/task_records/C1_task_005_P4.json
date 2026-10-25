@@ -1,0 +1,495 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_005",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_005",
+    "template_id": "C1_template_005",
+    "complexity": "C1",
+    "task_description": "Please look up Alice’s contact details in our company systems, then use that to find her directory identity and check her availability for two slots starting on 2025-06-01. After that, find a meeting room for 5 people available on 2025-06-01 at 09:00, and then book Conference Room A from 09:00 to 10:00 for 5 attendees.",
+    "user_input": {
+      "query": "Please look up Alice’s contact details in our company systems, then use that information to find her directory identity and check her availability for 2 slots starting on 2025-06-01. After that, find a meeting room for 5 people that’s available on 2025-06-01 at 09:00, and then book Conference Room A on 2025-06-01 from 09:00 to 10:00 for 5 attendees.",
+      "attendees": 5,
+      "contact_name": "alice",
+      "end_time": "10:00",
+      "meeting_date": "2025-06-01",
+      "quantity": 2,
+      "room_name": "Conference Room A",
+      "start_time": "09:00"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_contact_info_crm",
+        "arguments": {
+          "name": "alice"
+        },
+        "output": {
+          "found": true,
+          "name": "Alice",
+          "email": "alice@company.com",
+          "phone": "+1-555-0101",
+          "department": "Engineering",
+          "user_id": "u_alice"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "resolve_directory_contact_identity",
+        "arguments": {
+          "contact_data": {
+            "found": true,
+            "name": "Alice",
+            "email": "alice@company.com",
+            "phone": "+1-555-0101",
+            "department": "Engineering",
+            "user_id": "u_alice"
+          },
+          "name": "Alice"
+        },
+        "output": {
+          "identity_method": "directory_contact",
+          "display_name": "Alice",
+          "user_id": "u_alice",
+          "department": "Engineering",
+          "contact_channel": "email",
+          "contact_value": "alice@company.com"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "query_availability_caldav",
+        "arguments": {
+          "item_id": "u_alice",
+          "start_date": "2025-06-01",
+          "quantity": 2
+        },
+        "output": {
+          "user_id": "u_alice",
+          "query_date": "2025-06-01",
+          "free_slots": [],
+          "total_slots": 0
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "get_meeting_rooms",
+        "arguments": {
+          "min_capacity": 5,
+          "date": "2025-06-01",
+          "start_time": "09:00"
+        },
+        "output": {
+          "count": 3000,
+          "rooms": [
+            {
+              "name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-02",
+              "end_date": "2025-06-01"
+            },
+            {
+              "name": "Meeting Room 2",
+              "capacity": 30,
+              "equipment": [
+                "Projector"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-03",
+              "end_date": "2025-06-01"
+            },
+            {
+              "name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-05",
+              "end_date": "2025-06-04"
+            },
+            {
+              "name": "Conference Room B",
+              "capacity": 100,
+              "equipment": [
+                "TV Screen",
+                "Video Conference"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-10",
+              "end_date": "2025-06-09"
+            }
+          ],
+          "filters_applied": {
+            "min_capacity": 5,
+            "date": "2025-06-01",
+            "start_time": "09:00",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2025-06-02",
+            "end_date": "2025-06-01"
+          }
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "book_meeting_room",
+        "arguments": {
+          "room_name": "Conference Room A",
+          "date": "2025-06-01",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "attendees": 5
+        },
+        "output": {
+          "message": "Meeting room booked successfully",
+          "booking_id": "BK168D3",
+          "room_name": "Conference Room A",
+          "date": "2025-06-01",
+          "start_time": "09:00",
+          "end_time": "10:00",
+          "attendees": 5,
+          "capacity": 50,
+          "equipment": [
+            "Projector",
+            "Whiteboard"
+          ]
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_contact_info_crm",
+          "arguments": {
+            "name": "alice"
+          },
+          "output": {
+            "found": true,
+            "name": "Alice",
+            "email": "alice@company.com",
+            "phone": "+1-555-0101",
+            "department": "Engineering",
+            "user_id": "u_alice"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "resolve_directory_contact_identity",
+          "arguments": {
+            "contact_data": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "name": "Alice"
+          },
+          "output": {
+            "identity_method": "directory_contact",
+            "display_name": "Alice",
+            "user_id": "u_alice",
+            "department": "Engineering",
+            "contact_channel": "email",
+            "contact_value": "alice@company.com"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "query_availability_caldav",
+          "arguments": {
+            "item_id": "u_alice",
+            "start_date": "2025-06-01",
+            "quantity": 2
+          },
+          "output": {
+            "user_id": "u_alice",
+            "query_date": "2025-06-01",
+            "free_slots": [],
+            "total_slots": 0
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_meeting_rooms",
+          "arguments": {
+            "min_capacity": 5,
+            "date": "2025-06-01",
+            "start_time": "09:00"
+          },
+          "output": {
+            "count": 3000,
+            "rooms": [
+              {
+                "name": "Meeting Room 1",
+                "capacity": 20,
+                "equipment": [
+                  "Whiteboard"
+                ],
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2025-06-02",
+                "end_date": "2025-06-01"
+              },
+              {
+                "name": "Meeting Room 2",
+                "capacity": 30,
+                "equipment": [
+                  "Projector"
+                ],
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2025-06-03",
+                "end_date": "2025-06-01"
+              },
+              {
+                "name": "Conference Room A",
+                "capacity": 50,
+                "equipment": [
+                  "Projector",
+                  "Whiteboard"
+                ],
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2025-06-05",
+                "end_date": "2025-06-04"
+              },
+              {
+                "name": "Conference Room B",
+                "capacity": 100,
+                "equipment": [
+                  "TV Screen",
+                  "Video Conference"
+                ],
+                "created_at": "2024-03-15",
+                "updated_at": "2024-03-10",
+                "start_date": "2025-06-10",
+                "end_date": "2025-06-09"
+              }
+            ],
+            "filters_applied": {
+              "min_capacity": 5,
+              "date": "2025-06-01",
+              "start_time": "09:00",
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-02",
+              "end_date": "2025-06-01"
+            }
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "book_meeting_room",
+          "arguments": {
+            "room_name": "Conference Room A",
+            "date": "2025-06-01",
+            "start_time": "09:00",
+            "end_time": "10:00",
+            "attendees": 5
+          },
+          "output": {
+            "message": "Meeting room booked successfully",
+            "booking_id": "BK168D3",
+            "room_name": "Conference Room A",
+            "date": "2025-06-01",
+            "start_time": "09:00",
+            "end_time": "10:00",
+            "attendees": 5,
+            "capacity": 50,
+            "equipment": [
+              "Projector",
+              "Whiteboard"
+            ]
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "temporal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-23T20:35:19.390351+00:00",
+  "end_time": "2026-10-23T20:36:58.557238+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: 'get_meeting_rooms' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please look up Alice’s contact details in our company systems, then use that information to find her directory identity and check her availability for 2 slots starting on 2025-06-01. After that, find a meeting room for 5 people that’s available on 2025-06-01 at 09:00, and then book Conference Room A on 2025-06-01 from 09:00 to 10:00 for 5 attendees.",
+      "attendees": 5,
+      "contact_name": "alice",
+      "end_time": "10:00",
+      "meeting_date": "2025-06-01",
+      "quantity": 2,
+      "room_name": "Conference Room A",
+      "start_time": "09:00"
+    },
+    "task_description": "Please look up Alice’s contact details in our company systems, then use that to find her directory identity and check her availability for two slots starting on 2025-06-01. After that, find a meeting room for 5 people available on 2025-06-01 at 09:00, and then book Conference Room A from 09:00 to 10:00 for 5 attendees.",
+    "template_id": "C1_template_005",
+    "domains": [
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_meeting_rooms'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_005_step_4_get_meeting_rooms",
+        "target_tool": "get_meeting_rooms",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "count": 3000,
+          "rooms": [
+            {
+              "name": "Meeting Room 1",
+              "capacity": 20,
+              "equipment": [
+                "Whiteboard"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-02",
+              "end_date": "2025-06-01"
+            },
+            {
+              "name": "Meeting Room 2",
+              "capacity": 30,
+              "equipment": [
+                "Projector"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-03",
+              "end_date": "2025-06-01"
+            },
+            {
+              "name": "Conference Room A",
+              "capacity": 50,
+              "equipment": [
+                "Projector",
+                "Whiteboard"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-05",
+              "end_date": "2025-06-04"
+            },
+            {
+              "name": "Conference Room B",
+              "capacity": 100,
+              "equipment": [
+                "TV Screen",
+                "Video Conference"
+              ],
+              "created_at": "2024-03-15",
+              "updated_at": "2024-03-10",
+              "start_date": "2025-06-10",
+              "end_date": "2025-06-09"
+            }
+          ],
+          "filters_applied": {
+            "min_capacity": 5,
+            "date": "2025-06-01",
+            "start_time": "09:00",
+            "created_at": "2024-03-15",
+            "updated_at": "2024-03-10",
+            "start_date": "2025-06-02",
+            "end_date": "2025-06-01"
+          }
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: 'get_meeting_rooms' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_meeting_rooms",
+      "missing_tools": [
+        "query_availability_caldav",
+        "resolve_directory_contact_identity",
+        "get_meeting_rooms",
+        "get_contact_info_crm"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_contact_info_crm",
+          "resolve_directory_contact_identity",
+          "query_availability_caldav",
+          "get_meeting_rooms",
+          "book_meeting_room"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

@@ -1,0 +1,5425 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_094",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_094",
+    "template_id": "C4_template_094",
+    "complexity": "C4",
+    "task_description": "My user ID is u_alice and my email is alice@company.com. First, check the stock price for AAPL, assess the trade risk for an amount of $170.25, and place a buy order at that price. Then, I want to buy some headphones: get collaborative recommendations for the Sony WH-1000XM5 Black (product ID p_sony_xm5_blk) in the electronics category. Hold the best recommendation for 1 unit, confirm the held order, and build my cart items from this selection. Next, get my available coupons, optimize the discount, and generate a payment invoice via Stripe. Once the invoice is generated, snapshot the workspace at '/var/data/workspace' using the invoice ID as the backup name and send a high-priority alert to my email. Finally, build a text report of the snapshot titled 'Daily Backup Report' and email it to me with high priority.",
+    "user_input": {
+      "query": "Hi, my user ID is u_alice and my email is alice@company.com. First, please check the stock price for AAPL, assess the trade risk for an amount of $170.25, and place a buy order at that price. \n\nNext, I'm looking to buy some headphones. Please get collaborative recommendations for the Sony WH-1000XM5 Black (product ID p_sony_xm5_blk) in the electronics category. Hold the best recommendation for a quantity of 1, confirm the held order, and build my cart items from this selection. After that, check my available coupons, optimize the discount using the code SAVE15, and generate a payment invoice using stripe as the payment gateway. \n\nOnce the invoice is ready, please snapshot my workspace located at /var/data/workspace using the generated invoice ID as the backup name, and send a high priority alert to me via the email channel. Finally, build a text report of the snapshot titled Daily Backup Report and email it to me with high priority.",
+      "category": "electronics",
+      "channel": "email",
+      "coupon_code": "SAVE15",
+      "email": "alice@company.com",
+      "payment_gateway": "stripe",
+      "priority": "high",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "ticker": "AAPL",
+      "title": "Daily Backup Report",
+      "user_id": "u_alice",
+      "workspace_path": "/var/data/workspace"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "place_buy_order",
+          "get_recommendations_collaborative",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "build_cart_items_from_selection",
+          "get_available_coupons",
+          "optimize_discount",
+          "generate_payment_invoice",
+          "snapshot_workspace_and_alert",
+          "build_snapshot_text_report"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2",
+          "s8a3",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "place_buy_order",
+            "arguments": {
+              "risk_token": "[REDACTED]",
+              "price": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 170.25,
+              "message": "Order executed successfully"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "u_alice"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm4_blk",
+              "count": 42000,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Successfully retrieved 42 recommendations with an average relevance score of 9.5 and average price of $850.00."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "u_alice",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+              "selected_relevance_score": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "u_alice"
+            },
+            "output": {
+              "count": 0,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                }
+              ],
+              "user_id": "u_bob"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "optimize_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "coupons_list": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "u_alice"
+            },
+            "output": {
+              "cart_subtotal": 399.0,
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "final_total": 359.1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "generate_payment_invoice",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 359.1,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 359.1,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "size_mb": 290,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "build_snapshot_text_report",
+            "arguments": {
+              "snapshot_data": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "title": "Daily Backup Report",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "title": "Daily Backup Report",
+              "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "tags": [
+                "snapshot",
+                "unknown"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order",
+              "arguments": {
+                "risk_token": "[REDACTED]",
+                "price": 170.25
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 170.25,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "u_alice"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm4_blk",
+                "count": 42000,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Successfully retrieved 42 recommendations with an average relevance score of 9.5 and average price of $850.00."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "u_alice"
+              },
+              "output": {
+                "count": 0,
+                "coupons": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "u_bob"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "optimize_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "coupons_list": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "u_alice"
+              },
+              "output": {
+                "cart_subtotal": 399.0,
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "final_total": 359.1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_payment_invoice",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 359.1,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 359.1,
+                "currency": "USD",
+                "billing_email": "alice@company.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_snapshot_text_report",
+              "arguments": {
+                "snapshot_data": {
+                  "message": "Notification sent successfully",
+                  "notification_id": "NOTIFEE84C",
+                  "user_id": "u_alice",
+                  "content": "BACKUPA3B2C",
+                  "priority": "high",
+                  "backup_id": "BACKUPA3B2C",
+                  "workspace_path": "/var/data/workspace",
+                  "backup_name": "INV-F685ABC9",
+                  "size_mb": 290,
+                  "backup_status": "completed",
+                  "backup_timestamp": "2024-12-08 12:00:00"
+                },
+                "title": "Daily Backup Report",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "title": "Daily Backup Report",
+                "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "tags": [
+                  "snapshot",
+                  "unknown"
+                ],
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "place_buy_order",
+          "get_recommendations_collaborative",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "build_cart_items_from_selection",
+          "get_cart_summary",
+          "build_invoice_from_summary",
+          "generate_invoice_from_summary",
+          "snapshot_workspace_and_alert",
+          "build_snapshot_text_report"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a",
+          "s5",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2",
+          "s8b3",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "place_buy_order",
+            "arguments": {
+              "risk_token": "[REDACTED]",
+              "price": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 170.25,
+              "message": "Order executed successfully"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_recommendations_collaborative",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "u_alice"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk_15_items",
+              "count": -15,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 400.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 250.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Successfully retrieved 15 recommendations with an average relevance score of 9.8 and an average price of $1,250.00."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "u_alice",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+              "selected_relevance_score": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_cart_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "u_alice",
+              "coupon_code": "SAVE15"
+            },
+            "output": {
+              "subtotal": 150.0,
+              "discount": -25.0,
+              "final_total": 500.0,
+              "coupon_status": "Coupon rejected",
+              "item_count": 4
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "final_total": 384.0,
+                "coupon_status": "Coupon applied successfully",
+                "item_count": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 384.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe",
+              "subtotal": 399.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "generate_invoice_from_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 384.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe",
+              "subtotal": 399.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "size_mb": 290,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "build_snapshot_text_report",
+            "arguments": {
+              "snapshot_data": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "title": "Daily Backup Report",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "title": "Daily Backup Report",
+              "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "tags": [
+                "snapshot",
+                "unknown"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order",
+              "arguments": {
+                "risk_token": "[REDACTED]",
+                "price": 170.25
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 170.25,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_collaborative",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "u_alice"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk_15_items",
+                "count": -15,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 400.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 250.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Successfully retrieved 15 recommendations with an average relevance score of 9.8 and an average price of $1,250.00."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_cart_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "u_alice",
+                "coupon_code": "SAVE15"
+              },
+              "output": {
+                "subtotal": 150.0,
+                "discount": -25.0,
+                "final_total": 500.0,
+                "coupon_status": "Coupon rejected",
+                "item_count": 4
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "subtotal": 399.0,
+                  "discount": 15.0,
+                  "final_total": 384.0,
+                  "coupon_status": "Coupon applied successfully",
+                  "item_count": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 384.0,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe",
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_invoice_from_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 384.0,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe",
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 384.0,
+                "currency": "USD",
+                "billing_email": "alice@company.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link.",
+                "cart_subtotal": 399.0,
+                "cart_discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_snapshot_text_report",
+              "arguments": {
+                "snapshot_data": {
+                  "message": "Notification sent successfully",
+                  "notification_id": "NOTIFEE84C",
+                  "user_id": "u_alice",
+                  "content": "BACKUPA3B2C",
+                  "priority": "high",
+                  "backup_id": "BACKUPA3B2C",
+                  "workspace_path": "/var/data/workspace",
+                  "backup_name": "INV-F685ABC9",
+                  "size_mb": 290,
+                  "backup_status": "completed",
+                  "backup_timestamp": "2024-12-08 12:00:00"
+                },
+                "title": "Daily Backup Report",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "title": "Daily Backup Report",
+                "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "tags": [
+                  "snapshot",
+                  "unknown"
+                ],
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "place_buy_order",
+          "get_recommendations_content",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "build_cart_items_from_selection",
+          "get_available_coupons",
+          "optimize_discount",
+          "generate_payment_invoice",
+          "snapshot_workspace_and_alert",
+          "build_snapshot_text_report"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5",
+          "s6",
+          "s7",
+          "s8a1",
+          "s8a2",
+          "s8a3",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "place_buy_order",
+            "arguments": {
+              "risk_token": "[REDACTED]",
+              "price": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 170.25,
+              "message": "Order executed successfully"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_recommendations_content",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "u_alice"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm3_blk",
+              "count": -15,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                }
+              ],
+              "message": "Successfully retrieved 15 alternative products."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "u_alice",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+              "selected_relevance_score": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "u_alice"
+            },
+            "output": {
+              "count": -52,
+              "coupons": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                }
+              ],
+              "user_id": "u_bob_999"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "optimize_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "coupons_list": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "u_alice"
+            },
+            "output": {
+              "cart_subtotal": 399.0,
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 39.9,
+              "final_total": 359.1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "generate_payment_invoice",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 359.1,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 359.1,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link."
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "size_mb": 290,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "build_snapshot_text_report",
+            "arguments": {
+              "snapshot_data": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "title": "Daily Backup Report",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "title": "Daily Backup Report",
+              "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "tags": [
+                "snapshot",
+                "unknown"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order",
+              "arguments": {
+                "risk_token": "[REDACTED]",
+                "price": 170.25
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 170.25,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_content",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "u_alice"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm3_blk",
+                "count": -15,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  }
+                ],
+                "message": "Successfully retrieved 15 alternative products."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "u_alice"
+              },
+              "output": {
+                "count": -52,
+                "coupons": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "u_bob_999"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "optimize_discount",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "coupons_list": [
+                  {
+                    "code": "SAVE15",
+                    "description": "Save $15.00 on orders over $100.00",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "u_alice"
+              },
+              "output": {
+                "cart_subtotal": 399.0,
+                "best_coupon_code": "WELCOME10",
+                "estimated_savings": 39.9,
+                "final_total": 359.1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_payment_invoice",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 359.1,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 359.1,
+                "currency": "USD",
+                "billing_email": "alice@company.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link."
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_snapshot_text_report",
+              "arguments": {
+                "snapshot_data": {
+                  "message": "Notification sent successfully",
+                  "notification_id": "NOTIFEE84C",
+                  "user_id": "u_alice",
+                  "content": "BACKUPA3B2C",
+                  "priority": "high",
+                  "backup_id": "BACKUPA3B2C",
+                  "workspace_path": "/var/data/workspace",
+                  "backup_name": "INV-F685ABC9",
+                  "size_mb": 290,
+                  "backup_status": "completed",
+                  "backup_timestamp": "2024-12-08 12:00:00"
+                },
+                "title": "Daily Backup Report",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "title": "Daily Backup Report",
+                "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "tags": [
+                  "snapshot",
+                  "unknown"
+                ],
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "place_buy_order",
+          "get_recommendations_content",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "build_cart_items_from_selection",
+          "get_cart_summary",
+          "build_invoice_from_summary",
+          "generate_invoice_from_summary",
+          "snapshot_workspace_and_alert",
+          "build_snapshot_text_report"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b",
+          "s5",
+          "s6",
+          "s7",
+          "s8b1",
+          "s8b2",
+          "s8b3",
+          "s9",
+          "s10"
+        ],
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "assess_trade_risk",
+            "arguments": {
+              "amount": 170.25
+            },
+            "output": {
+              "decision": "approved",
+              "risk_token": "[REDACTED]",
+              "reason": "Transaction within safe limits"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "place_buy_order",
+            "arguments": {
+              "risk_token": "[REDACTED]",
+              "price": 170.25
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "filled_average_price": 170.25,
+              "message": "Order executed successfully"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_recommendations_content",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "u_alice"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_blk_01",
+              "count": 15000,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 2
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 2
+                }
+              ],
+              "message": "Found 15 alternatives in the same category with an average price of $12.50."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "u_alice",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "total_price": 399.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+              "selected_relevance_score": 3
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "get_cart_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "u_alice",
+              "coupon_code": "SAVE15"
+            },
+            "output": {
+              "subtotal": 450.0,
+              "discount": 50.0,
+              "final_total": 100.0,
+              "coupon_status": "Coupon failed - expired",
+              "item_count": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "final_total": 384.0,
+                "coupon_status": "Coupon applied successfully",
+                "item_count": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 384.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe",
+              "subtotal": 399.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "generate_invoice_from_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1
+                }
+              ],
+              "payment_amount": 384.0,
+              "user_id": "u_alice",
+              "email": "alice@company.com",
+              "payment_gateway": "stripe",
+              "subtotal": 399.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 384.0,
+              "currency": "USD",
+              "billing_email": "alice@company.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "cart_subtotal": 399.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/data/workspace",
+              "backup_name": "INV-F685ABC9",
+              "size_mb": 290,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "build_snapshot_text_report",
+            "arguments": {
+              "snapshot_data": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "title": "Daily Backup Report",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "title": "Daily Backup Report",
+              "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "tags": [
+                "snapshot",
+                "unknown"
+              ],
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "assess_trade_risk",
+              "arguments": {
+                "amount": 170.25
+              },
+              "output": {
+                "decision": "approved",
+                "risk_token": "[REDACTED]",
+                "reason": "Transaction within safe limits"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order",
+              "arguments": {
+                "risk_token": "[REDACTED]",
+                "price": 170.25
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "filled_average_price": 170.25,
+                "message": "Order executed successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_content",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "u_alice"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_blk_01",
+                "count": 15000,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 2
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 2
+                  }
+                ],
+                "message": "Found 15 alternatives in the same category with an average price of $12.50."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_cart_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "u_alice",
+                "coupon_code": "SAVE15"
+              },
+              "output": {
+                "subtotal": 450.0,
+                "discount": 50.0,
+                "final_total": 100.0,
+                "coupon_status": "Coupon failed - expired",
+                "item_count": 0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "subtotal": 399.0,
+                  "discount": 15.0,
+                  "final_total": 384.0,
+                  "coupon_status": "Coupon applied successfully",
+                  "item_count": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 384.0,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe",
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_invoice_from_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1
+                  }
+                ],
+                "payment_amount": 384.0,
+                "user_id": "u_alice",
+                "email": "alice@company.com",
+                "payment_gateway": "stripe",
+                "subtotal": 399.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 384.0,
+                "currency": "USD",
+                "billing_email": "alice@company.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link.",
+                "cart_subtotal": 399.0,
+                "cart_discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/data/workspace",
+                "backup_name": "INV-F685ABC9",
+                "size_mb": 290,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_snapshot_text_report",
+              "arguments": {
+                "snapshot_data": {
+                  "message": "Notification sent successfully",
+                  "notification_id": "NOTIFEE84C",
+                  "user_id": "u_alice",
+                  "content": "BACKUPA3B2C",
+                  "priority": "high",
+                  "backup_id": "BACKUPA3B2C",
+                  "workspace_path": "/var/data/workspace",
+                  "backup_name": "INV-F685ABC9",
+                  "size_mb": 290,
+                  "backup_status": "completed",
+                  "backup_timestamp": "2024-12-08 12:00:00"
+                },
+                "title": "Daily Backup Report",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "title": "Daily Backup Report",
+                "content": "Workspace: /var/data/workspace\nBackup ID: BACKUPA3B2C\nBackup Name: INV-F685ABC9\nSize (MB): 290\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "tags": [
+                  "snapshot",
+                  "unknown"
+                ],
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "build_invoice_from_summary",
+      "generate_invoice_from_summary",
+      "generate_payment_invoice",
+      "get_available_coupons",
+      "get_cart_summary",
+      "get_recommendations_collaborative",
+      "get_recommendations_content",
+      "optimize_discount"
+    ],
+    "domains": [
+      "Financial",
+      "Shopping",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s4",
+        "s8"
+      ]
+    },
+    "corruption_type": "statistical_inconsistency"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T09:37:17.987267+00:00",
+  "end_time": "2026-10-24T09:39:28.199299+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_recommendations_collaborative' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "generate_payment_invoice",
+    "get_available_coupons"
+  ],
+  "tokens": {
+    "input_tokens": 56132,
+    "output_tokens": 6016,
+    "total_tokens": 62148
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, my user ID is u_alice and my email is alice@company.com. First, please check the stock price for AAPL, assess the trade risk for an amount of $170.25, and place a buy order at that price. \n\nNext, I'm looking to buy some headphones. Please get collaborative recommendations for the Sony WH-1000XM5 Black (product ID p_sony_xm5_blk) in the electronics category. Hold the best recommendation for a quantity of 1, confirm the held order, and build my cart items from this selection. After that, check my available coupons, optimize the discount using the code SAVE15, and generate a payment invoice using stripe as the payment gateway. \n\nOnce the invoice is ready, please snapshot my workspace located at /var/data/workspace using the generated invoice ID as the backup name, and send a high priority alert to me via the email channel. Finally, build a text report of the snapshot titled Daily Backup Report and email it to me with high priority.",
+      "category": "electronics",
+      "channel": "email",
+      "coupon_code": "SAVE15",
+      "email": "alice@company.com",
+      "payment_gateway": "stripe",
+      "priority": "high",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 1,
+      "ticker": "AAPL",
+      "title": "Daily Backup Report",
+      "user_id": "u_alice",
+      "workspace_path": "/var/data/workspace"
+    },
+    "task_description": "My user ID is u_alice and my email is alice@company.com. First, check the stock price for AAPL, assess the trade risk for an amount of $170.25, and place a buy order at that price. Then, I want to buy some headphones: get collaborative recommendations for the Sony WH-1000XM5 Black (product ID p_sony_xm5_blk) in the electronics category. Hold the best recommendation for 1 unit, confirm the held order, and build my cart items from this selection. Next, get my available coupons, optimize the discount, and generate a payment invoice via Stripe. Once the invoice is generated, snapshot the workspace at '/var/data/workspace' using the invoice ID as the backup name and send a high-priority alert to my email. Finally, build a text report of the snapshot titled 'Daily Backup Report' and email it to me with high priority.",
+    "template_id": "C4_template_094",
+    "domains": [
+      "Financial",
+      "Shopping",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_recommendations_collaborative', 'get_available_coupons'], matching recorded execution failure in tools ['get_available_coupons', 'get_available_coupons'] leading to task failure.",
+    "configured_count": 8,
+    "activated_count": 3,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_094_path_0_get_recommendations_collaborative",
+        "target_tool": "get_recommendations_collaborative",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm4_blk",
+          "count": 42000,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 249.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 1
+            }
+          ],
+          "message": "Successfully retrieved 42 recommendations with an average relevance score of 9.5 and average price of $850.00."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_0_get_available_coupons",
+        "target_tool": "get_available_coupons",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "count": 0,
+          "coupons": [
+            {
+              "code": "SAVE15",
+              "description": "Save $15.00 on orders over $100.00",
+              "condition": {
+                "min_spend": 100.0,
+                "type": "fixed"
+              }
+            }
+          ],
+          "user_id": "u_bob"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_1_get_recommendations_collaborative",
+        "target_tool": "get_recommendations_collaborative",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm5_blk_15_items",
+          "count": -15,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 400.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 250.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 1
+            }
+          ],
+          "message": "Successfully retrieved 15 recommendations with an average relevance score of 9.8 and an average price of $1,250.00."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_1_get_cart_summary",
+        "target_tool": "get_cart_summary",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "subtotal": 150.0,
+          "discount": -25.0,
+          "final_total": 500.0,
+          "coupon_status": "Coupon rejected",
+          "item_count": 4
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_recommendation_provider_pair:collaborative",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_2_get_recommendations_content",
+        "target_tool": "get_recommendations_content",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm3_blk",
+          "count": -15,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            }
+          ],
+          "message": "Successfully retrieved 15 alternative products."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_2_get_available_coupons",
+        "target_tool": "get_available_coupons",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "count": -52,
+          "coupons": [
+            {
+              "code": "SAVE15",
+              "description": "Save $15.00 on orders over $100.00",
+              "condition": {
+                "min_spend": 100.0,
+                "type": "fixed"
+              }
+            }
+          ],
+          "user_id": "u_bob_999"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:coupon_optimize_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_3_get_recommendations_content",
+        "target_tool": "get_recommendations_content",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm5_blk_01",
+          "count": 15000,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 2
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 249.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 2
+            }
+          ],
+          "message": "Found 15 alternatives in the same category with an average price of $12.50."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ]
+      },
+      {
+        "config_id": "C4_task_094_path_3_get_cart_summary",
+        "target_tool": "get_cart_summary",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "subtotal": 450.0,
+          "discount": 50.0,
+          "final_total": 100.0,
+          "coupon_status": "Coupon failed - expired",
+          "item_count": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_recommendation_provider_pair:content",
+          "alt_invoice_coupon_vs_summary_chain:summary_derived_invoice"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_recommendations_collaborative",
+        "tool_name": "get_recommendations_collaborative",
+        "step": 4,
+        "timestamp": "2026-10-24T09:37:51.143342+00:00",
+        "config_id": "C4_task_094_path_0_get_recommendations_collaborative",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "user_id": "u_alice",
+          "product_id": "p_sony_xm5_blk",
+          "category": "electronics"
+        },
+        "modified_output_sample": {
+          "original_product_id": "p_sony_xm4_blk",
+          "count": 42000,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 249.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 1
+            }
+          ],
+          "message": "Successfully retrieved 42 recommendations with an average relevance score of 9.5 and average price of $850.00."
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_get_available_coupons",
+        "tool_name": "get_available_coupons",
+        "step": 8,
+        "timestamp": "2026-10-24T09:38:17.851244+00:00",
+        "config_id": "C4_task_094_path_0_get_available_coupons",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "user_id": "u_alice"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+          "validation_failed_checks": [
+            "entity"
+          ],
+          "untrusted_output": {
+            "count": 0,
+            "coupons": [
+              {
+                "code": "SAVE15",
+                "description": "Save $15.00 on orders over $100.00",
+                "condition": {
+                  "min_spend": 100.0,
+                  "type": "fixed"
+                }
+              }
+            ],
+            "user_id": "u_bob"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_3_get_available_coupons",
+        "tool_name": "get_available_coupons",
+        "step": 9,
+        "timestamp": "2026-10-24T09:38:22.383036+00:00",
+        "config_id": "C4_task_094_path_0_get_available_coupons",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "user_id": "u_alice"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+          "validation_failed_checks": [
+            "entity"
+          ],
+          "untrusted_output": {
+            "count": 0,
+            "coupons": [
+              {
+                "code": "SAVE15",
+                "description": "Save $15.00 on orders over $100.00",
+                "condition": {
+                  "min_spend": 100.0,
+                  "type": "fixed"
+                }
+              }
+            ],
+            "user_id": "u_bob"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_stock_finnhub",
+      "tool_name": "get_stock_finnhub",
+      "arguments": {
+        "ticker": "AAPL"
+      },
+      "result_sample": {
+        "price_usd": 170.25,
+        "currency": "USD"
+      },
+      "status": "success",
+      "duration_ms": 0.3254300681874156,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:37:28.113207+00:00"
+    },
+    {
+      "call_id": "tc_2_2_assess_trade_risk",
+      "tool_name": "assess_trade_risk",
+      "arguments": {
+        "amount": 170.25
+      },
+      "result_sample": {
+        "decision": "approved",
+        "risk_token": "[REDACTED]",
+        "reason": "Transaction within safe limits"
+      },
+      "status": "success",
+      "duration_ms": 0.3275270573794842,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:37:36.882325+00:00"
+    },
+    {
+      "call_id": "tc_3_3_place_buy_order",
+      "tool_name": "place_buy_order",
+      "arguments": {
+        "risk_token": "[REDACTED]",
+        "price": 170.25
+      },
+      "result_sample": {
+        "order_id": "ORD-BUY-FAEF1",
+        "action": "BUY",
+        "status": "filled",
+        "filled_average_price": 170.25,
+        "message": "Order executed successfully"
+      },
+      "status": "success",
+      "duration_ms": 0.3496359568089247,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:37:41.427909+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_recommendations_collaborative",
+      "tool_name": "get_recommendations_collaborative",
+      "arguments": {
+        "user_id": "u_alice",
+        "product_id": "p_sony_xm5_blk",
+        "category": "electronics"
+      },
+      "result_sample": {
+        "original_product_id": "p_sony_xm4_blk",
+        "count": 42000,
+        "similar_products": [
+          {
+            "name": "Sony WH-1000XM5 Headphones (Silver)",
+            "price": 399.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "sony",
+              "headphone"
+            ],
+            "stock": 10,
+            "id": "p_sony_xm5_slv",
+            "relevance_score": 3
+          },
+          {
+            "name": "Apple AirPods Pro 2",
+            "price": 249.0,
+            "category": "electronics",
+            "tags": [
+              "audio",
+              "apple",
+              "earbuds"
+            ],
+            "stock": 50,
+            "id": "p_apple_airpods",
+            "relevance_score": 1
+          }
+        ],
+        "message": "Successfully retrieved 42 recommendations with an average relevance score of 9.5 and average price of $850.00."
+      },
+      "status": "success",
+      "duration_ms": 0.32070104498416185,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:37:51.143342+00:00"
+    },
+    {
+      "call_id": "tc_5_5_hold_best_recommendation",
+      "tool_name": "hold_best_recommendation",
+      "arguments": {
+        "quantity": 1,
+        "user_id": "u_alice",
+        "product_id": "p_sony_xm5_slv"
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 1,
+        "total_price": 399.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 1,
+          "total_price": 399.0
+        },
+        "original_product_id": "p_sony_xm5_slv",
+        "recommended_product_id": "p_sony_xm5_blk",
+        "recommended_product_name": "Sony WH-1000XM5 Headphones (Black)",
+        "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+        "selected_relevance_score": 3
+      },
+      "status": "success",
+      "duration_ms": 0.7060019997879863,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:37:57.234764+00:00"
+    },
+    {
+      "call_id": "tc_6_6_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "arguments": {
+        "quantity": 1,
+        "product_id": "p_sony_xm5_blk",
+        "reservation_id": "RESV-14729 Honey"
+      },
+      "result_sample": {
+        "order_id": "ORD-5C8E2A1B",
+        "reservation_id": "RESV-14729 Honey",
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 1,
+        "status": "confirmed",
+        "estimated_delivery": "3-5 business days",
+        "confirmation_strategy": "held_recommendation"
+      },
+      "status": "success",
+      "duration_ms": 0.3698380896821618,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:03.724367+00:00"
+    },
+    {
+      "call_id": "tc_7_7_build_cart_items_from_selection",
+      "tool_name": "build_cart_items_from_selection",
+      "arguments": {
+        "selected_product": {
+          "product_id": "p_sony_xm5_blk"
+        },
+        "quantity": 1
+      },
+      "result_sample": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "product_id": "p_sony_xm5_blk",
+        "quantity": 1
+      },
+      "status": "success",
+      "duration_ms": 0.3276839852333069,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:11.348096+00:00"
+    },
+    {
+      "call_id": "tc_8_8_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "arguments": {
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+        "validation_failed_checks": [
+          "entity"
+        ],
+        "untrusted_output": {
+          "count": 0,
+          "coupons": [
+            {
+              "code": "SAVE15",
+              "description": "Save $15.00 on orders over $100.00",
+              "condition": {
+                "min_spend": 100.0,
+                "type": "fixed"
+              }
+            }
+          ],
+          "user_id": "u_bob"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3095769789069891,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:17.851244+00:00"
+    },
+    {
+      "call_id": "tc_9_9_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "arguments": {
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [entity] Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+        "validation_failed_checks": [
+          "entity"
+        ],
+        "untrusted_output": {
+          "count": 0,
+          "coupons": [
+            {
+              "code": "SAVE15",
+              "description": "Save $15.00 on orders over $100.00",
+              "condition": {
+                "min_spend": 100.0,
+                "type": "fixed"
+              }
+            }
+          ],
+          "user_id": "u_bob"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.31841499730944633,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:22.383036+00:00"
+    },
+    {
+      "call_id": "tc_10_10_optimize_discount",
+      "tool_name": "optimize_discount",
+      "arguments": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "coupons": [
+          {
+            "code": "SAVE15",
+            "condition": {
+              "min_spend": 100,
+              "type": "fixed"
+            },
+            "description": "Save $15.00 on orders over $100.00"
+          }
+        ]
+      },
+      "result_sample": {
+        "error": "Validation failed",
+        "details": [
+          "Missing required parameter: coupons_list"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.27842994313687086,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:36.380646+00:00"
+    },
+    {
+      "call_id": "tc_11_11_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "cart_items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "payment_gateway": "stripe"
+      },
+      "result_sample": {
+        "error": "Validation failed",
+        "details": [
+          "Missing required parameter: items",
+          "Missing required parameter: payment_amount",
+          "Missing required parameter: user_id"
+        ]
+      },
+      "status": "success",
+      "duration_ms": 0.2566120820119977,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:46.652218+00:00"
+    },
+    {
+      "call_id": "tc_12_12_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "payment_amount": 999,
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+        "validation_failed_checks": [
+          "type",
+          "required"
+        ],
+        "untrusted_output": {
+          "invoice_id": "INV-F685ABC9",
+          "status": "generated",
+          "total_due": 999,
+          "currency": "USD",
+          "billing_email": null,
+          "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+          "message": "Invoice generated. Please complete payment via the link."
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3972830018028617,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:38:56.033297+00:00"
+    },
+    {
+      "call_id": "tc_13_13_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "billing_email": "alice@example.com",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "payment_amount": 999,
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType); [required] Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+        "validation_failed_checks": [
+          "type",
+          "required"
+        ],
+        "untrusted_output": {
+          "invoice_id": "INV-F685ABC9",
+          "status": "generated",
+          "total_due": 999,
+          "currency": "USD",
+          "billing_email": null,
+          "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+          "message": "Invoice generated. Please complete payment via the link."
+        }
+      },
+      "status": "success",
+      "duration_ms": 19.782359013333917,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:39:10.624291+00:00"
+    },
+    {
+      "call_id": "tc_14_14_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "arguments": {
+        "email": "alice@example.com",
+        "items": [
+          {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 1
+          }
+        ],
+        "payment_amount": 999,
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "invoice_id": "INV-F685ABC9",
+        "status": "generated",
+        "total_due": 999,
+        "currency": "USD",
+        "billing_email": "alice@example.com",
+        "payment_link": "https://pay.example.com/paypal/INV-F685ABC9",
+        "message": "Invoice generated. Please complete payment via the link."
+      },
+      "status": "success",
+      "duration_ms": 0.6171240238472819,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T09:39:20.577564+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_stock_finnhub",
+      "tool_name": "get_stock_finnhub",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (2 fields verified)",
+          "details": {
+            "tool_name": "get_stock_finnhub",
+            "verified_fields": [
+              "price_usd",
+              "currency"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.01
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 2 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_stock_finnhub",
+            "checked_fields": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 2 required fields present and non-null",
+          "details": {
+            "tool_name": "get_stock_finnhub",
+            "verified_fields": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'get_stock_finnhub'",
+          "details": {
+            "tool_name": "get_stock_finnhub",
+            "applied_rules": [
+              "RR-001"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_stock_finnhub'",
+          "details": {
+            "tool_name": "get_stock_finnhub"
+          },
+          "latency_ms": 0.024
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_stock_finnhub'",
+          "details": {
+            "arguments": [
+              "ticker"
+            ],
+            "output": [
+              "price_usd",
+              "currency"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "get_stock_finnhub",
+            "applied_rules": [
+              "CFR-005"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_stock_finnhub' output",
+          "details": {
+            "tool_name": "get_stock_finnhub"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_stock_finnhub'",
+          "details": {
+            "tool_name": "get_stock_finnhub"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:37:28.113419+00:00"
+    },
+    {
+      "call_id": "tc_2_2_assess_trade_risk",
+      "tool_name": "assess_trade_risk",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "assess_trade_risk",
+            "verified_fields": [
+              "decision",
+              "risk_token",
+              "reason"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "assess_trade_risk",
+            "checked_fields": [
+              "decision",
+              "risk_token",
+              "reason"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "assess_trade_risk",
+            "verified_fields": [
+              "decision",
+              "risk_token",
+              "reason"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'assess_trade_risk'",
+          "details": {
+            "tool_name": "assess_trade_risk"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'assess_trade_risk'",
+          "details": {
+            "tool_name": "assess_trade_risk"
+          },
+          "latency_ms": 0.031
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'assess_trade_risk'",
+          "details": {
+            "arguments": [
+              "amount"
+            ],
+            "output": [
+              "decision",
+              "risk_token",
+              "reason"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'assess_trade_risk'",
+          "details": {
+            "tool_name": "assess_trade_risk"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'assess_trade_risk' output",
+          "details": {
+            "tool_name": "assess_trade_risk"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'assess_trade_risk'",
+          "details": {
+            "tool_name": "assess_trade_risk"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:37:36.882539+00:00"
+    },
+    {
+      "call_id": "tc_3_3_place_buy_order",
+      "tool_name": "place_buy_order",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "place_buy_order",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_average_price",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "place_buy_order",
+            "checked_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_average_price",
+              "message"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "place_buy_order",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_average_price",
+              "message"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'place_buy_order'",
+          "details": {
+            "tool_name": "place_buy_order"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'place_buy_order'",
+          "details": {
+            "tool_name": "place_buy_order"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'place_buy_order'",
+          "details": {
+            "arguments": [
+              "risk_token",
+              "price"
+            ],
+            "output": [
+              "order_id",
+              "action",
+              "status",
+              "filled_average_price",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'place_buy_order'",
+          "details": {
+            "tool_name": "place_buy_order"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'place_buy_order' output",
+          "details": {
+            "tool_name": "place_buy_order"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'place_buy_order'",
+          "details": {
+            "tool_name": "place_buy_order"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:37:41.428137+00:00"
+    },
+    {
+      "call_id": "tc_4_4_get_recommendations_collaborative",
+      "tool_name": "get_recommendations_collaborative",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_recommendations_collaborative",
+            "verified_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_recommendations_collaborative",
+            "checked_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_recommendations_collaborative",
+            "verified_fields": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_recommendations_collaborative'",
+          "details": {
+            "tool_name": "get_recommendations_collaborative"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_recommendations_collaborative'",
+          "details": {
+            "tool_name": "get_recommendations_collaborative"
+          },
+          "latency_ms": 0.037
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_recommendations_collaborative'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "product_id",
+              "category"
+            ],
+            "output": [
+              "original_product_id",
+              "count",
+              "similar_products",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_recommendations_collaborative'",
+          "details": {
+            "tool_name": "get_recommendations_collaborative"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_recommendations_collaborative' output",
+          "details": {
+            "tool_name": "get_recommendations_collaborative"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_recommendations_collaborative'",
+          "details": {
+            "tool_name": "get_recommendations_collaborative"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:37:51.143847+00:00"
+    },
+    {
+      "call_id": "tc_5_5_hold_best_recommendation",
+      "tool_name": "hold_best_recommendation",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (12 fields verified)",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.019
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 12 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.024
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 12 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.029
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_best_recommendation",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.171
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_best_recommendation'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "user_id",
+              "product_id"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details",
+              "original_product_id",
+              "recommended_product_id",
+              "recommended_product_name",
+              "selection_reason",
+              "selected_relevance_score"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.018
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_best_recommendation' output",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.02
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_best_recommendation'",
+          "details": {
+            "tool_name": "hold_best_recommendation"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:37:57.235214+00:00"
+    },
+    {
+      "call_id": "tc_6_6_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "checked_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.055
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "product_id",
+              "reservation_id"
+            ],
+            "output": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'confirm_held_recommendation_order' output",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:38:03.724600+00:00"
+    },
+    {
+      "call_id": "tc_7_7_build_cart_items_from_selection",
+      "tool_name": "build_cart_items_from_selection",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "build_cart_items_from_selection",
+            "verified_fields": [
+              "items",
+              "product_id",
+              "quantity"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "build_cart_items_from_selection",
+            "checked_fields": [
+              "items",
+              "product_id",
+              "quantity"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "build_cart_items_from_selection",
+            "verified_fields": [
+              "items",
+              "product_id",
+              "quantity"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'build_cart_items_from_selection'",
+          "details": {
+            "tool_name": "build_cart_items_from_selection"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'build_cart_items_from_selection'",
+          "details": {
+            "tool_name": "build_cart_items_from_selection"
+          },
+          "latency_ms": 0.032
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'build_cart_items_from_selection'",
+          "details": {
+            "arguments": [
+              "selected_product",
+              "quantity"
+            ],
+            "output": [
+              "items",
+              "product_id",
+              "quantity"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'build_cart_items_from_selection'",
+          "details": {
+            "tool_name": "build_cart_items_from_selection"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'build_cart_items_from_selection' output",
+          "details": {
+            "tool_name": "build_cart_items_from_selection"
+          },
+          "latency_ms": 0.007
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'build_cart_items_from_selection'",
+          "details": {
+            "tool_name": "build_cart_items_from_selection"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:38:11.348332+00:00"
+    },
+    {
+      "call_id": "tc_8_8_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "checked_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.009
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.03
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "INVALID",
+          "reason": "Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "violations": [
+              {
+                "field": "user_id",
+                "requested": "u_alice",
+                "returned": "u_bob",
+                "reason": "Requested user_id='u_alice', but output returned user_id='u_bob'"
+              }
+            ],
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "u_alice",
+                "returned": "u_bob",
+                "match": false
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_available_coupons' output",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "entity"
+      ],
+      "timestamp": "2026-10-24T09:38:17.851725+00:00"
+    },
+    {
+      "call_id": "tc_9_9_get_available_coupons",
+      "tool_name": "get_available_coupons",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (3 fields verified)",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.01
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 3 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "checked_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 3 required fields present and non-null",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "verified_fields": [
+              "count",
+              "coupons",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.031
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "INVALID",
+          "reason": "Entity mismatch detected: Requested user_id='u_alice', but output returned user_id='u_bob'",
+          "details": {
+            "tool_name": "get_available_coupons",
+            "violations": [
+              {
+                "field": "user_id",
+                "requested": "u_alice",
+                "returned": "u_bob",
+                "reason": "Requested user_id='u_alice', but output returned user_id='u_bob'"
+              }
+            ],
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "u_alice",
+                "returned": "u_bob",
+                "match": false
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_available_coupons' output",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_available_coupons'",
+          "details": {
+            "tool_name": "get_available_coupons"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "entity"
+      ],
+      "timestamp": "2026-10-24T09:38:22.383537+00:00"
+    },
+    {
+      "call_id": "tc_10_10_optimize_discount",
+      "tool_name": "optimize_discount",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.005
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:38:36.380904+00:00"
+    },
+    {
+      "call_id": "tc_11_11_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.005
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.003
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Validation failed"
+          },
+          "latency_ms": 0.001
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:38:46.652427+00:00"
+    },
+    {
+      "call_id": "tc_12_12_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "violations": [
+              {
+                "field": "billing_email",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "missing_fields": [],
+            "null_fields": [
+              "billing_email"
+            ],
+            "expected_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.057
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_payment_invoice'",
+          "details": {
+            "arguments": [
+              "items",
+              "payment_amount",
+              "user_id"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_payment_invoice' output",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required"
+      ],
+      "timestamp": "2026-10-24T09:38:56.033585+00:00"
+    },
+    {
+      "call_id": "tc_13_13_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'billing_email' expected string, got NoneType (expected string, got NoneType)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "violations": [
+              {
+                "field": "billing_email",
+                "expected_type": "string",
+                "actual_type": "NoneType",
+                "actual_value": null,
+                "violation_reason": "expected string, got NoneType"
+              }
+            ],
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'generate_payment_invoice': null: ['billing_email']",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "missing_fields": [],
+            "null_fields": [
+              "billing_email"
+            ],
+            "expected_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.055
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_payment_invoice'",
+          "details": {
+            "arguments": [
+              "billing_email",
+              "items",
+              "payment_amount",
+              "user_id"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_payment_invoice' output",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "type",
+        "required"
+      ],
+      "timestamp": "2026-10-24T09:39:10.624571+00:00"
+    },
+    {
+      "call_id": "tc_14_14_generate_payment_invoice",
+      "tool_name": "generate_payment_invoice",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "checked_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.018
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "generate_payment_invoice",
+            "verified_fields": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.024
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.121
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'generate_payment_invoice'",
+          "details": {
+            "arguments": [
+              "email",
+              "items",
+              "payment_amount",
+              "user_id"
+            ],
+            "output": [
+              "invoice_id",
+              "status",
+              "total_due",
+              "currency",
+              "billing_email",
+              "payment_link",
+              "message"
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'generate_payment_invoice' output",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.019
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'generate_payment_invoice'",
+          "details": {
+            "tool_name": "generate_payment_invoice"
+          },
+          "latency_ms": 0.005
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T09:39:20.578121+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_recommendations_collaborative' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_recommendations_collaborative",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_snapshot_text_report",
+        "optimize_discount",
+        "snapshot_workspace_and_alert"
+      ],
+      "insufficient_calls": {
+        "optimize_discount": {
+          "expected": 1,
+          "actual": 0
+        },
+        "snapshot_workspace_and_alert": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_snapshot_text_report": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "place_buy_order",
+              "get_recommendations_collaborative",
+              "hold_best_recommendation",
+              "confirm_held_recommendation_order",
+              "build_cart_items_from_selection",
+              "get_available_coupons",
+              "optimize_discount",
+              "generate_payment_invoice",
+              "snapshot_workspace_and_alert",
+              "build_snapshot_text_report"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "place_buy_order",
+              "get_recommendations_collaborative",
+              "hold_best_recommendation",
+              "confirm_held_recommendation_order",
+              "build_cart_items_from_selection",
+              "get_cart_summary",
+              "build_invoice_from_summary",
+              "generate_invoice_from_summary",
+              "snapshot_workspace_and_alert",
+              "build_snapshot_text_report"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "place_buy_order",
+              "get_recommendations_content",
+              "hold_best_recommendation",
+              "confirm_held_recommendation_order",
+              "build_cart_items_from_selection",
+              "get_available_coupons",
+              "optimize_discount",
+              "generate_payment_invoice",
+              "snapshot_workspace_and_alert",
+              "build_snapshot_text_report"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "get_stock_finnhub",
+              "assess_trade_risk",
+              "place_buy_order",
+              "get_recommendations_content",
+              "hold_best_recommendation",
+              "confirm_held_recommendation_order",
+              "build_cart_items_from_selection",
+              "get_cart_summary",
+              "build_invoice_from_summary",
+              "generate_invoice_from_summary",
+              "snapshot_workspace_and_alert",
+              "build_snapshot_text_report"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "build_invoice_from_summary",
+          "generate_invoice_from_summary",
+          "generate_payment_invoice",
+          "get_available_coupons",
+          "get_cart_summary",
+          "get_recommendations_collaborative",
+          "get_recommendations_content",
+          "optimize_discount"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s4",
+            "s8"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "get_stock_finnhub",
+          "assess_trade_risk",
+          "place_buy_order",
+          "get_recommendations_collaborative",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "build_cart_items_from_selection",
+          "get_available_coupons",
+          "get_available_coupons",
+          "optimize_discount",
+          "generate_payment_invoice",
+          "generate_payment_invoice",
+          "generate_payment_invoice",
+          "generate_payment_invoice"
+        ]
+      }
+    }
+  }
+}

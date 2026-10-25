@@ -1,0 +1,3471 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_004",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_004",
+    "template_id": "C4_template_004",
+    "complexity": "C4",
+    "task_description": "Please reserve 2 Apple AirPods for me, turn that selection into cart items, check my available coupons, and apply the best discount before placing the order with my credit card. After that, clear the AirPods from my cart, prepare an invoice for emailing to user@example.com, then go ahead with the best recommended electronics checkout for 1 black Sony XM5, get the current prices for BTC and AAPL, and finally save a short note titled “Shopping and Market Snapshot” summarizing the checkout, invoice prep, recommendation order, and market quotes.",
+    "user_input": {
+      "query": "Please help me with a shopping flow for user_123 in the electronics category: reserve quantity 2 of p_apple_airpods, convert that selection into cart items, check my available coupons, and apply the best discount, including coupon code SAVE15 if eligible, before placing the order using stripe with my credit_card. After checkout, clear the AirPods from my cart so the post-checkout cart quantity is 0, and prepare an invoice to email to user@example.com. Then proceed with the best recommended electronics checkout for quantity 1 of p_sony_xm5_blk. Also get the current prices for BTC and AAPL. Finally, save a short note titled Shopping and Market Snapshot with the content: “Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.” Please tag it with shopping, finance, and audit.",
+      "category": "electronics",
+      "coupon_code": "SAVE15",
+      "crypto_symbol": "BTC",
+      "document_content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+      "document_tags": [
+        "shopping",
+        "finance",
+        "audit"
+      ],
+      "document_title": "Shopping and Market Snapshot",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "payment_method": "credit_card",
+      "post_checkout_cart_quantity": 0,
+      "product_id": "p_apple_airpods",
+      "quantity": 2,
+      "recommended_product_id": "p_sony_xm5_blk",
+      "recommended_quantity": 1,
+      "stock_ticker": "AAPL",
+      "user_id": "user_123"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "hold_inventory",
+          "build_cart_items_from_selection",
+          "get_available_coupons",
+          "optimize_discount",
+          "submit_order",
+          "update_cart_item",
+          "build_invoice_from_summary",
+          "checkout_best_recommendation",
+          "get_crypto_price_coinmarketcap",
+          "get_stock_finnhub",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s3a3",
+          "s4",
+          "s5",
+          "s6a",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_inventory",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "user_id": "user_123",
+              "quantity": 2
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_apple_airpods",
+              "quantity": 2,
+              "total_price": 498.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_apple_airpods",
+              "quantity": 2
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "user_123"
+            },
+            "output": {
+              "count": -5,
+              "coupons": [
+                {
+                  "code": "DEBUG_SAVE15",
+                  "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                },
+                {
+                  "code": "INTLEAK",
+                  "description": "Internal coupon leaked from debug output",
+                  "condition": {
+                    "min_spend": 9999.0,
+                    "type": "fixed"
+                  }
+                }
+              ],
+              "user_id": "user_999"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "optimize_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "coupons_list": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "user_123"
+            },
+            "output": {
+              "cart_subtotal": 498.0,
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 49.8,
+              "final_total": 448.2
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "submit_order",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 448.2,
+              "user_id": "user_123",
+              "payment_method": "credit_card"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 448.2,
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "name": "Apple AirPods Pro 2",
+                  "quantity": 2,
+                  "subtotal": 498.0
+                }
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_cart_item",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "new_quantity": 0,
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Item added to cart",
+              "product_id": "p_apple_airpods",
+              "new_quantity": 1,
+              "action": "add",
+              "cart": {
+                "p_apple_airpods": 1
+              },
+              "cart_items": {
+                "p_apple_airpods": 1
+              },
+              "cart_summary": {
+                "total_items": 1
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "total_items": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 0.0,
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "subtotal": 0.0,
+              "discount": 0.0,
+              "coupon_status": ""
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "checkout_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "user_123",
+              "category": "electronics"
+            },
+            "output": {
+              "order_id": "DEBUG-ORD-SELECT * FROM users",
+              "reservation_id": "RESV-NULLPOINTEREXCEPTION",
+              "product_id": "gpt-4o-mini",
+              "quantity": -3,
+              "status": "API endpoint: /internal/path",
+              "estimated_delivery": "yesterday",
+              "confirmation_strategy": "internal_error: NullPointerException",
+              "original_product_id": "SELECT * FROM users",
+              "recommended_product_id": "/internal/path",
+              "workflow": "debug_info:model_used=gpt-4o-mini"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Shopping and Market Snapshot",
+              "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Shopping and Market Snapshot",
+              "content_length": 113,
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_inventory",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "user_id": "user_123",
+                "quantity": 2
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2,
+                    "total_price": 498.0
+                  }
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_apple_airpods",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "user_123"
+              },
+              "output": {
+                "count": -5,
+                "coupons": [
+                  {
+                    "code": "DEBUG_SAVE15",
+                    "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "INTLEAK",
+                    "description": "Internal coupon leaked from debug output",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "user_999"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "submit_order",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 448.2,
+                "user_id": "user_123",
+                "payment_method": "credit_card"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 448.2,
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "name": "Apple AirPods Pro 2",
+                    "quantity": 2,
+                    "subtotal": 498.0
+                  }
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_cart_item",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "new_quantity": 0,
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Item added to cart",
+                "product_id": "p_apple_airpods",
+                "new_quantity": 1,
+                "action": "add",
+                "cart": {
+                  "p_apple_airpods": 1
+                },
+                "cart_items": {
+                  "p_apple_airpods": 1
+                },
+                "cart_summary": {
+                  "total_items": 1
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "total_items": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 0.0,
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "subtotal": 0.0,
+                "discount": 0.0,
+                "coupon_status": ""
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "checkout_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 1,
+                "user_id": "user_123",
+                "category": "electronics"
+              },
+              "output": {
+                "order_id": "DEBUG-ORD-SELECT * FROM users",
+                "reservation_id": "RESV-NULLPOINTEREXCEPTION",
+                "product_id": "gpt-4o-mini",
+                "quantity": -3,
+                "status": "API endpoint: /internal/path",
+                "estimated_delivery": "yesterday",
+                "confirmation_strategy": "internal_error: NullPointerException",
+                "original_product_id": "SELECT * FROM users",
+                "recommended_product_id": "/internal/path",
+                "workflow": "debug_info:model_used=gpt-4o-mini"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Shopping and Market Snapshot",
+                "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Shopping and Market Snapshot",
+                "content_length": 113,
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "hold_inventory",
+          "build_cart_items_from_selection",
+          "get_available_coupons",
+          "optimize_discount",
+          "submit_order",
+          "update_cart_item",
+          "build_invoice_from_summary",
+          "hold_best_recommendation",
+          "build_checkout_from_hold",
+          "confirm_held_recommendation_order",
+          "get_crypto_price_coinmarketcap",
+          "get_stock_finnhub",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3a1",
+          "s3a2",
+          "s3a3",
+          "s4",
+          "s5",
+          "s6b1",
+          "s6b2",
+          "s6b3",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_inventory",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "user_id": "user_123",
+              "quantity": 2
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_apple_airpods",
+              "quantity": 2,
+              "total_price": 498.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_apple_airpods",
+              "quantity": 2
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_available_coupons",
+            "arguments": {
+              "user_id": "user_123"
+            },
+            "output": {
+              "count": -3,
+              "coupons": [
+                {
+                  "code": "DEBUG_SAVE15",
+                  "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+                  "condition": {
+                    "min_spend": 100,
+                    "type": "fixed | model_used: gpt-4o-mini"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                  "condition": {
+                    "min_spend": 0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "user_999_leaked"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "optimize_discount",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "coupons_list": [
+                {
+                  "code": "SAVE15",
+                  "description": "Save $15.00 on orders over $100.00",
+                  "condition": {
+                    "min_spend": 100.0,
+                    "type": "fixed"
+                  }
+                },
+                {
+                  "code": "WELCOME10",
+                  "description": "Save 10% on any order",
+                  "condition": {
+                    "min_spend": 0.0,
+                    "type": "percent"
+                  }
+                }
+              ],
+              "user_id": "user_123"
+            },
+            "output": {
+              "cart_subtotal": 498.0,
+              "best_coupon_code": "WELCOME10",
+              "estimated_savings": 49.8,
+              "final_total": 448.2
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "submit_order",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 448.2,
+              "user_id": "user_123",
+              "payment_method": "credit_card"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 448.2,
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "name": "Apple AirPods Pro 2",
+                  "quantity": 2,
+                  "subtotal": 498.0
+                }
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_cart_item",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "new_quantity": 0,
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Item added to cart",
+              "product_id": "p_apple_airpods",
+              "new_quantity": 1,
+              "action": "add",
+              "cart": {
+                "p_apple_airpods": 1
+              },
+              "cart_items": {
+                "p_apple_airpods": 1
+              },
+              "cart_summary": {
+                "total_items": 1
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "total_items": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 0.0,
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "subtotal": 0.0,
+              "discount": 0.0,
+              "coupon_status": ""
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "user_123",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "DEBUG-NULL-RESV",
+              "expires_in": -42,
+              "product_id": "SELECT * FROM users",
+              "quantity": 0,
+              "total_price": -399.0,
+              "expiry_time": 0,
+              "reservation_details": {
+                "product_id": "API endpoint: /internal/path",
+                "quantity": -1,
+                "total_price": 0
+              },
+              "original_product_id": "gpt-4o-mini",
+              "recommended_product_id": "NullPointerException",
+              "recommended_product_name": "Internal debug_info: API endpoint: /internal/path",
+              "selection_reason": "model_used=gpt-4o-mini; internal_error=NullPointerException; sql_query=SELECT * FROM users",
+              "selected_relevance_score": -7
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_checkout_from_hold",
+            "arguments": {
+              "hold_data": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 13,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Shopping and Market Snapshot",
+              "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Shopping and Market Snapshot",
+              "content_length": 113,
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_inventory",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "user_id": "user_123",
+                "quantity": 2
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2,
+                    "total_price": 498.0
+                  }
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_apple_airpods",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_available_coupons",
+              "arguments": {
+                "user_id": "user_123"
+              },
+              "output": {
+                "count": -3,
+                "coupons": [
+                  {
+                    "code": "DEBUG_SAVE15",
+                    "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  },
+                  {
+                    "code": "WELCOME10",
+                    "description": "Save 10% on any order | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                    "condition": {
+                      "min_spend": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  }
+                ],
+                "user_id": "user_999_leaked"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "submit_order",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 448.2,
+                "user_id": "user_123",
+                "payment_method": "credit_card"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 448.2,
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "name": "Apple AirPods Pro 2",
+                    "quantity": 2,
+                    "subtotal": 498.0
+                  }
+                ]
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_cart_item",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "new_quantity": 0,
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Item added to cart",
+                "product_id": "p_apple_airpods",
+                "new_quantity": 1,
+                "action": "add",
+                "cart": {
+                  "p_apple_airpods": 1
+                },
+                "cart_items": {
+                  "p_apple_airpods": 1
+                },
+                "cart_summary": {
+                  "total_items": 1
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "total_items": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 0.0,
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "subtotal": 0.0,
+                "discount": 0.0,
+                "coupon_status": ""
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "hold_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 1,
+                "user_id": "user_123",
+                "category": "electronics"
+              },
+              "output": {
+                "reservation_id": "DEBUG-NULL-RESV",
+                "expires_in": -42,
+                "product_id": "SELECT * FROM users",
+                "quantity": 0,
+                "total_price": -399.0,
+                "expiry_time": 0,
+                "reservation_details": {
+                  "product_id": "API endpoint: /internal/path",
+                  "quantity": -1,
+                  "total_price": 0
+                },
+                "original_product_id": "gpt-4o-mini",
+                "recommended_product_id": "NullPointerException",
+                "recommended_product_name": "Internal debug_info: API endpoint: /internal/path",
+                "selection_reason": "model_used=gpt-4o-mini; internal_error=NullPointerException; sql_query=SELECT * FROM users",
+                "selected_relevance_score": -7
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_checkout_from_hold",
+              "arguments": {
+                "hold_data": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Shopping and Market Snapshot",
+                "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Shopping and Market Snapshot",
+                "content_length": 113,
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "hold_inventory",
+          "build_cart_items_from_selection",
+          "get_cart_summary",
+          "build_checkout_from_summary",
+          "submit_order_from_summary",
+          "update_cart_item",
+          "build_invoice_from_summary",
+          "checkout_best_recommendation",
+          "get_crypto_price_coinmarketcap",
+          "get_stock_finnhub",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s3b3",
+          "s4",
+          "s5",
+          "s6a",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_inventory",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "user_id": "user_123",
+              "quantity": 2
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_apple_airpods",
+              "quantity": 2,
+              "total_price": 498.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_apple_airpods",
+              "quantity": 2
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_cart_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "coupon_code": "SAVE15"
+            },
+            "output": {
+              "subtotal": -12.5,
+              "discount": 99900.0,
+              "final_total": 2048.0,
+              "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+              "item_count": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "build_checkout_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "final_total": 483.0,
+                "coupon_status": "Coupon applied successfully",
+                "item_count": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "credit_card"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 483.0,
+              "user_id": "user_123",
+              "payment_method": "credit_card",
+              "subtotal": 498.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "submit_order_from_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 483.0,
+              "user_id": "user_123",
+              "payment_method": "credit_card",
+              "subtotal": 498.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 483.0,
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "name": "Apple AirPods Pro 2",
+                  "quantity": 2,
+                  "subtotal": 498.0
+                }
+              ],
+              "cart_subtotal": 498.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_cart_item",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "new_quantity": 0,
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Item added to cart",
+              "product_id": "p_apple_airpods",
+              "new_quantity": 1,
+              "action": "add",
+              "cart": {
+                "p_apple_airpods": 1
+              },
+              "cart_items": {
+                "p_apple_airpods": 1
+              },
+              "cart_summary": {
+                "total_items": 1
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "total_items": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 0.0,
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "subtotal": 0.0,
+              "discount": 0.0,
+              "coupon_status": ""
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "checkout_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "user_123",
+              "category": "electronics"
+            },
+            "output": {
+              "order_id": "DEBUG-SELECT * FROM users",
+              "reservation_id": "RESV-NullPointerException",
+              "product_id": "gpt-4o-mini",
+              "quantity": -3,
+              "status": "API endpoint: /internal/path",
+              "estimated_delivery": "yesterday",
+              "confirmation_strategy": "internal_error: NullPointerException",
+              "original_product_id": "/internal/path",
+              "recommended_product_id": "SELECT * FROM users",
+              "workflow": "debug_info:gpt-4o-mini"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Shopping and Market Snapshot",
+              "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Shopping and Market Snapshot",
+              "content_length": 113,
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_inventory",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "user_id": "user_123",
+                "quantity": 2
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2,
+                    "total_price": 498.0
+                  }
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_apple_airpods",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_cart_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "coupon_code": "SAVE15"
+              },
+              "output": {
+                "subtotal": -12.5,
+                "discount": 99900.0,
+                "final_total": 2048.0,
+                "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                "item_count": 0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_checkout_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "subtotal": 498.0,
+                  "discount": 15.0,
+                  "final_total": 483.0,
+                  "coupon_status": "Coupon applied successfully",
+                  "item_count": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "credit_card"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 483.0,
+                "user_id": "user_123",
+                "payment_method": "credit_card",
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_from_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 483.0,
+                "user_id": "user_123",
+                "payment_method": "credit_card",
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 483.0,
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "name": "Apple AirPods Pro 2",
+                    "quantity": 2,
+                    "subtotal": 498.0
+                  }
+                ],
+                "cart_subtotal": 498.0,
+                "cart_discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_cart_item",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "new_quantity": 0,
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Item added to cart",
+                "product_id": "p_apple_airpods",
+                "new_quantity": 1,
+                "action": "add",
+                "cart": {
+                  "p_apple_airpods": 1
+                },
+                "cart_items": {
+                  "p_apple_airpods": 1
+                },
+                "cart_summary": {
+                  "total_items": 1
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "total_items": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 0.0,
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "subtotal": 0.0,
+                "discount": 0.0,
+                "coupon_status": ""
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "checkout_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 1,
+                "user_id": "user_123",
+                "category": "electronics"
+              },
+              "output": {
+                "order_id": "DEBUG-SELECT * FROM users",
+                "reservation_id": "RESV-NullPointerException",
+                "product_id": "gpt-4o-mini",
+                "quantity": -3,
+                "status": "API endpoint: /internal/path",
+                "estimated_delivery": "yesterday",
+                "confirmation_strategy": "internal_error: NullPointerException",
+                "original_product_id": "/internal/path",
+                "recommended_product_id": "SELECT * FROM users",
+                "workflow": "debug_info:gpt-4o-mini"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Shopping and Market Snapshot",
+                "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Shopping and Market Snapshot",
+                "content_length": 113,
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "hold_inventory",
+          "build_cart_items_from_selection",
+          "get_cart_summary",
+          "build_checkout_from_summary",
+          "submit_order_from_summary",
+          "update_cart_item",
+          "build_invoice_from_summary",
+          "hold_best_recommendation",
+          "build_checkout_from_hold",
+          "confirm_held_recommendation_order",
+          "get_crypto_price_coinmarketcap",
+          "get_stock_finnhub",
+          "create_document"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3b1",
+          "s3b2",
+          "s3b3",
+          "s4",
+          "s5",
+          "s6b1",
+          "s6b2",
+          "s6b3",
+          "s7",
+          "s8",
+          "s9"
+        ],
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_inventory",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "user_id": "user_123",
+              "quantity": 2
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_apple_airpods",
+              "quantity": 2,
+              "total_price": 498.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_apple_airpods",
+              "quantity": 2
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_cart_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "coupon_code": "SAVE15"
+            },
+            "output": {
+              "subtotal": -12.5,
+              "discount": 700.0,
+              "final_total": 1200000.0,
+              "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+              "item_count": 0
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 4,
+            "tool_name": "build_checkout_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "final_total": 483.0,
+                "coupon_status": "Coupon applied successfully",
+                "item_count": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "payment_method": "credit_card"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 483.0,
+              "user_id": "user_123",
+              "payment_method": "credit_card",
+              "subtotal": 498.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "submit_order_from_summary",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 483.0,
+              "user_id": "user_123",
+              "payment_method": "credit_card",
+              "subtotal": 498.0,
+              "discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "output": {
+              "order_id": "ORD-8B2C1D3E",
+              "status": "confirmed",
+              "total_amount": 483.0,
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "name": "Apple AirPods Pro 2",
+                  "quantity": 2,
+                  "subtotal": 498.0
+                }
+              ],
+              "cart_subtotal": 498.0,
+              "cart_discount": 15.0,
+              "coupon_status": "Coupon applied successfully"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "update_cart_item",
+            "arguments": {
+              "product_id": "p_apple_airpods",
+              "new_quantity": 0,
+              "user_id": "user_123"
+            },
+            "output": {
+              "message": "Item added to cart",
+              "product_id": "p_apple_airpods",
+              "new_quantity": 1,
+              "action": "add",
+              "cart": {
+                "p_apple_airpods": 1
+              },
+              "cart_items": {
+                "p_apple_airpods": 1
+              },
+              "cart_summary": {
+                "total_items": 1
+              }
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "build_invoice_from_summary",
+            "arguments": {
+              "cart_summary": {
+                "total_items": 1
+              },
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe"
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 0.0,
+              "user_id": "user_123",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "subtotal": 0.0,
+              "discount": 0.0,
+              "coupon_status": ""
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 1,
+              "user_id": "user_123",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "DEBUG-NULL-RESV",
+              "expires_in": -42,
+              "product_id": "SELECT * FROM users",
+              "quantity": 0,
+              "total_price": -399.0,
+              "expiry_time": 0,
+              "reservation_details": {
+                "product_id": "/internal/path",
+                "quantity": -1,
+                "total_price": 0
+              },
+              "original_product_id": "gpt-4o-mini",
+              "recommended_product_id": "p_internal_leak_xm5",
+              "recommended_product_name": "API endpoint: /internal/path",
+              "selection_reason": "NullPointerException while selecting recommendation; debug_info leaked from API endpoint: /internal/path; sql_query: SELECT * FROM users",
+              "selected_relevance_score": -7
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 9,
+            "tool_name": "build_checkout_from_hold",
+            "arguments": {
+              "hold_data": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "total_price": 399.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                "selected_relevance_score": 3
+              },
+              "quantity": 1
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 10,
+            "tool_name": "confirm_held_recommendation_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 1,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days",
+              "confirmation_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 11,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 12,
+            "tool_name": "get_stock_finnhub",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 13,
+            "tool_name": "create_document",
+            "arguments": {
+              "title": "Shopping and Market Snapshot",
+              "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "output": {
+              "message": "Note saved successfully",
+              "note_id": "NOTE18E3D",
+              "title": "Shopping and Market Snapshot",
+              "content_length": 113,
+              "tags": [
+                "shopping",
+                "finance",
+                "audit"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_inventory",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "user_id": "user_123",
+                "quantity": 2
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_apple_airpods",
+                "quantity": 2,
+                "total_price": 498.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_apple_airpods",
+                  "quantity": 2,
+                  "total_price": 498.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2,
+                    "total_price": 498.0
+                  }
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_apple_airpods",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_cart_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "coupon_code": "SAVE15"
+              },
+              "output": {
+                "subtotal": -12.5,
+                "discount": 700.0,
+                "final_total": 1200000.0,
+                "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+                "item_count": 0
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_checkout_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "subtotal": 498.0,
+                  "discount": 15.0,
+                  "final_total": 483.0,
+                  "coupon_status": "Coupon applied successfully",
+                  "item_count": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "payment_method": "credit_card"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 483.0,
+                "user_id": "user_123",
+                "payment_method": "credit_card",
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "submit_order_from_summary",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 483.0,
+                "user_id": "user_123",
+                "payment_method": "credit_card",
+                "subtotal": 498.0,
+                "discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "output": {
+                "order_id": "ORD-8B2C1D3E",
+                "status": "confirmed",
+                "total_amount": 483.0,
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "name": "Apple AirPods Pro 2",
+                    "quantity": 2,
+                    "subtotal": 498.0
+                  }
+                ],
+                "cart_subtotal": 498.0,
+                "cart_discount": 15.0,
+                "coupon_status": "Coupon applied successfully"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "update_cart_item",
+              "arguments": {
+                "product_id": "p_apple_airpods",
+                "new_quantity": 0,
+                "user_id": "user_123"
+              },
+              "output": {
+                "message": "Item added to cart",
+                "product_id": "p_apple_airpods",
+                "new_quantity": 1,
+                "action": "add",
+                "cart": {
+                  "p_apple_airpods": 1
+                },
+                "cart_items": {
+                  "p_apple_airpods": 1
+                },
+                "cart_summary": {
+                  "total_items": 1
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_invoice_from_summary",
+              "arguments": {
+                "cart_summary": {
+                  "total_items": 1
+                },
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe"
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_apple_airpods",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 0.0,
+                "user_id": "user_123",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "subtotal": 0.0,
+                "discount": 0.0,
+                "coupon_status": ""
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "hold_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 1,
+                "user_id": "user_123",
+                "category": "electronics"
+              },
+              "output": {
+                "reservation_id": "DEBUG-NULL-RESV",
+                "expires_in": -42,
+                "product_id": "SELECT * FROM users",
+                "quantity": 0,
+                "total_price": -399.0,
+                "expiry_time": 0,
+                "reservation_details": {
+                  "product_id": "/internal/path",
+                  "quantity": -1,
+                  "total_price": 0
+                },
+                "original_product_id": "gpt-4o-mini",
+                "recommended_product_id": "p_internal_leak_xm5",
+                "recommended_product_name": "API endpoint: /internal/path",
+                "selection_reason": "NullPointerException while selecting recommendation; debug_info leaked from API endpoint: /internal/path; sql_query: SELECT * FROM users",
+                "selected_relevance_score": -7
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_checkout_from_hold",
+              "arguments": {
+                "hold_data": {
+                  "reservation_id": "RESV-14729548",
+                  "expires_in": 300,
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 1,
+                  "total_price": 399.0,
+                  "expiry_time": 1710000300,
+                  "reservation_details": {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 1,
+                    "total_price": 399.0
+                  },
+                  "original_product_id": "p_sony_xm5_blk",
+                  "recommended_product_id": "p_sony_xm5_slv",
+                  "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "selection_reason": "Highest relevance recommendation with enough stock for quantity 1",
+                  "selected_relevance_score": 3
+                },
+                "quantity": 1
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "confirm_held_recommendation_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 1,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days",
+                "confirmation_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_finnhub",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document",
+              "arguments": {
+                "title": "Shopping and Market Snapshot",
+                "content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "output": {
+                "message": "Note saved successfully",
+                "note_id": "NOTE18E3D",
+                "title": "Shopping and Market Snapshot",
+                "content_length": 113,
+                "tags": [
+                  "shopping",
+                  "finance",
+                  "audit"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "build_checkout_from_hold",
+      "build_checkout_from_summary",
+      "checkout_best_recommendation",
+      "confirm_held_recommendation_order",
+      "get_available_coupons",
+      "get_cart_summary",
+      "hold_best_recommendation",
+      "optimize_discount",
+      "submit_order",
+      "submit_order_from_summary"
+    ],
+    "domains": [
+      "Shopping",
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s3",
+        "s6"
+      ]
+    },
+    "corruption_type": "tool_leakage"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T04:10:02.972805+00:00",
+  "end_time": "2026-10-24T04:11:00.560274+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no perturbed C4 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 8017,
+    "output_tokens": 2863,
+    "total_tokens": 10880
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please help me with a shopping flow for user_123 in the electronics category: reserve quantity 2 of p_apple_airpods, convert that selection into cart items, check my available coupons, and apply the best discount, including coupon code SAVE15 if eligible, before placing the order using stripe with my credit_card. After checkout, clear the AirPods from my cart so the post-checkout cart quantity is 0, and prepare an invoice to email to user@example.com. Then proceed with the best recommended electronics checkout for quantity 1 of p_sony_xm5_blk. Also get the current prices for BTC and AAPL. Finally, save a short note titled Shopping and Market Snapshot with the content: “Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.” Please tag it with shopping, finance, and audit.",
+      "category": "electronics",
+      "coupon_code": "SAVE15",
+      "crypto_symbol": "BTC",
+      "document_content": "Initial checkout completed, invoice payload prepared, recommendation order processed, and market quotes captured.",
+      "document_tags": [
+        "shopping",
+        "finance",
+        "audit"
+      ],
+      "document_title": "Shopping and Market Snapshot",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "payment_method": "credit_card",
+      "post_checkout_cart_quantity": 0,
+      "product_id": "p_apple_airpods",
+      "quantity": 2,
+      "recommended_product_id": "p_sony_xm5_blk",
+      "recommended_quantity": 1,
+      "stock_ticker": "AAPL",
+      "user_id": "user_123"
+    },
+    "task_description": "Please reserve 2 Apple AirPods for me, turn that selection into cart items, check my available coupons, and apply the best discount before placing the order with my credit card. After that, clear the AirPods from my cart, prepare an invoice for emailing to user@example.com, then go ahead with the best recommended electronics checkout for 1 black Sony XM5, get the current prices for BTC and AAPL, and finally save a short note titled “Shopping and Market Snapshot” summarizing the checkout, invoice prep, recommendation order, and market quotes.",
+    "template_id": "C4_template_004",
+    "domains": [
+      "Shopping",
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_available_coupons', 'checkout_best_recommendation', 'get_available_coupons', 'hold_best_recommendation', 'get_cart_summary', 'checkout_best_recommendation', 'get_cart_summary', 'hold_best_recommendation'], but agent never invoked victim tool.",
+    "configured_count": 8,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_004_path_0_get_available_coupons",
+        "target_tool": "get_available_coupons",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "count": -5,
+          "coupons": [
+            {
+              "code": "DEBUG_SAVE15",
+              "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+              "condition": {
+                "min_spend": 100.0,
+                "type": "fixed"
+              }
+            },
+            {
+              "code": "WELCOME10",
+              "description": "Save 10% on any order | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+              "condition": {
+                "min_spend": 0.0,
+                "type": "percent"
+              }
+            },
+            {
+              "code": "INTLEAK",
+              "description": "Internal coupon leaked from debug output",
+              "condition": {
+                "min_spend": 9999.0,
+                "type": "fixed"
+              }
+            }
+          ],
+          "user_id": "user_999"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_0_checkout_best_recommendation",
+        "target_tool": "checkout_best_recommendation",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "order_id": "DEBUG-ORD-SELECT * FROM users",
+          "reservation_id": "RESV-NULLPOINTEREXCEPTION",
+          "product_id": "gpt-4o-mini",
+          "quantity": -3,
+          "status": "API endpoint: /internal/path",
+          "estimated_delivery": "yesterday",
+          "confirmation_strategy": "internal_error: NullPointerException",
+          "original_product_id": "SELECT * FROM users",
+          "recommended_product_id": "/internal/path",
+          "workflow": "debug_info:model_used=gpt-4o-mini"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_1_get_available_coupons",
+        "target_tool": "get_available_coupons",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "count": -3,
+          "coupons": [
+            {
+              "code": "DEBUG_SAVE15",
+              "description": "Save $15.00 on orders over $100.00 | debug_info: API endpoint: /internal/path",
+              "condition": {
+                "min_spend": 100,
+                "type": "fixed | model_used: gpt-4o-mini"
+              }
+            },
+            {
+              "code": "WELCOME10",
+              "description": "Save 10% on any order | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+              "condition": {
+                "min_spend": 0,
+                "type": "percent"
+              }
+            }
+          ],
+          "user_id": "user_999_leaked"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_1_hold_best_recommendation",
+        "target_tool": "hold_best_recommendation",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "reservation_id": "DEBUG-NULL-RESV",
+          "expires_in": -42,
+          "product_id": "SELECT * FROM users",
+          "quantity": 0,
+          "total_price": -399.0,
+          "expiry_time": 0,
+          "reservation_details": {
+            "product_id": "API endpoint: /internal/path",
+            "quantity": -1,
+            "total_price": 0
+          },
+          "original_product_id": "gpt-4o-mini",
+          "recommended_product_id": "NullPointerException",
+          "recommended_product_name": "Internal debug_info: API endpoint: /internal/path",
+          "selection_reason": "model_used=gpt-4o-mini; internal_error=NullPointerException; sql_query=SELECT * FROM users",
+          "selected_relevance_score": -7
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:coupon_optimize_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_2_get_cart_summary",
+        "target_tool": "get_cart_summary",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "subtotal": -12.5,
+          "discount": 99900.0,
+          "final_total": 2048.0,
+          "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+          "item_count": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_2_checkout_best_recommendation",
+        "target_tool": "checkout_best_recommendation",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "order_id": "DEBUG-SELECT * FROM users",
+          "reservation_id": "RESV-NullPointerException",
+          "product_id": "gpt-4o-mini",
+          "quantity": -3,
+          "status": "API endpoint: /internal/path",
+          "estimated_delivery": "yesterday",
+          "confirmation_strategy": "internal_error: NullPointerException",
+          "original_product_id": "/internal/path",
+          "recommended_product_id": "SELECT * FROM users",
+          "workflow": "debug_info:gpt-4o-mini"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:integrated"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_3_get_cart_summary",
+        "target_tool": "get_cart_summary",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "subtotal": -12.5,
+          "discount": 700.0,
+          "final_total": 1200000.0,
+          "coupon_status": "Coupon applied successfully | debug_info: API endpoint: /internal/path | model_used: gpt-4o-mini | internal_error: NullPointerException | sql_query: SELECT * FROM users",
+          "item_count": 0
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ]
+      },
+      {
+        "config_id": "C4_task_004_path_3_hold_best_recommendation",
+        "target_tool": "hold_best_recommendation",
+        "step": 8,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "reservation_id": "DEBUG-NULL-RESV",
+          "expires_in": -42,
+          "product_id": "SELECT * FROM users",
+          "quantity": 0,
+          "total_price": -399.0,
+          "expiry_time": 0,
+          "reservation_details": {
+            "product_id": "/internal/path",
+            "quantity": -1,
+            "total_price": 0
+          },
+          "original_product_id": "gpt-4o-mini",
+          "recommended_product_id": "p_internal_leak_xm5",
+          "recommended_product_name": "API endpoint: /internal/path",
+          "selection_reason": "NullPointerException while selecting recommendation; debug_info leaked from API endpoint: /internal/path; sql_query: SELECT * FROM users",
+          "selected_relevance_score": -7
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_checkout_coupon_vs_summary_chain:summary_derived_submit",
+          "alt_best_recommendation_checkout:hold_build_checkout"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "arguments": {
+        "user_id": "user_123",
+        "product_id": "p_apple_airpods",
+        "quantity": 2
+      },
+      "result_sample": {
+        "reservation_id": "RESV-14729548",
+        "expires_in": 300,
+        "product_id": "p_apple_airpods",
+        "quantity": 2,
+        "total_price": 498.0,
+        "expiry_time": 1710000300,
+        "reservation_details": {
+          "product_id": "p_apple_airpods",
+          "quantity": 2,
+          "total_price": 498.0
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.4098119679838419,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:10:45.912595+00:00"
+    },
+    {
+      "call_id": "tc_2_2_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "arguments": {
+        "product_id": "p_apple_airpods",
+        "quantity": 2,
+        "reservation_id": "RESV-14729548"
+      },
+      "result_sample": {
+        "order_id": "ORD-5C8E2A1B",
+        "reservation_id": "RESV-14729548",
+        "product_id": "p_apple_airpods",
+        "quantity": 2,
+        "status": "confirmed",
+        "estimated_delivery": "3-5 business days",
+        "confirmation_strategy": "held_recommendation"
+      },
+      "status": "success",
+      "duration_ms": 0.4276389954611659,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T04:10:56.328510+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_hold_inventory",
+      "tool_name": "hold_inventory",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "hold_inventory",
+            "verified_fields": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "hold_inventory",
+            "checked_fields": [
+              "expiry_time"
+            ]
+          },
+          "latency_ms": 0.06
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'hold_inventory'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "product_id",
+              "quantity"
+            ],
+            "output": [
+              "reservation_id",
+              "expires_in",
+              "product_id",
+              "quantity",
+              "total_price",
+              "expiry_time",
+              "reservation_details"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'hold_inventory' output",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'hold_inventory'",
+          "details": {
+            "tool_name": "hold_inventory"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T04:10:45.912876+00:00"
+    },
+    {
+      "call_id": "tc_2_2_confirm_held_recommendation_order",
+      "tool_name": "confirm_held_recommendation_order",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "checked_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order",
+            "verified_fields": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.089
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "arguments": [
+              "product_id",
+              "quantity",
+              "reservation_id"
+            ],
+            "output": [
+              "order_id",
+              "reservation_id",
+              "product_id",
+              "quantity",
+              "status",
+              "estimated_delivery",
+              "confirmation_strategy"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'confirm_held_recommendation_order' output",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.025
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'confirm_held_recommendation_order'",
+          "details": {
+            "tool_name": "confirm_held_recommendation_order"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T04:10:56.328789+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no perturbed C4 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "build_cart_items_from_selection",
+        "build_invoice_from_summary",
+        "checkout_best_recommendation",
+        "create_document",
+        "get_available_coupons",
+        "get_crypto_price_coinmarketcap",
+        "get_stock_finnhub",
+        "optimize_discount",
+        "submit_order",
+        "update_cart_item"
+      ],
+      "insufficient_calls": {
+        "build_cart_items_from_selection": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_available_coupons": {
+          "expected": 1,
+          "actual": 0
+        },
+        "optimize_discount": {
+          "expected": 1,
+          "actual": 0
+        },
+        "submit_order": {
+          "expected": 1,
+          "actual": 0
+        },
+        "update_cart_item": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_invoice_from_summary": {
+          "expected": 1,
+          "actual": 0
+        },
+        "checkout_best_recommendation": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_crypto_price_coinmarketcap": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_stock_finnhub": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "hold_inventory",
+              "build_cart_items_from_selection",
+              "get_available_coupons",
+              "optimize_discount",
+              "submit_order",
+              "update_cart_item",
+              "build_invoice_from_summary",
+              "checkout_best_recommendation",
+              "get_crypto_price_coinmarketcap",
+              "get_stock_finnhub",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "hold_inventory",
+              "build_cart_items_from_selection",
+              "get_available_coupons",
+              "optimize_discount",
+              "submit_order",
+              "update_cart_item",
+              "build_invoice_from_summary",
+              "hold_best_recommendation",
+              "build_checkout_from_hold",
+              "confirm_held_recommendation_order",
+              "get_crypto_price_coinmarketcap",
+              "get_stock_finnhub",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "hold_inventory",
+              "build_cart_items_from_selection",
+              "get_cart_summary",
+              "build_checkout_from_summary",
+              "submit_order_from_summary",
+              "update_cart_item",
+              "build_invoice_from_summary",
+              "checkout_best_recommendation",
+              "get_crypto_price_coinmarketcap",
+              "get_stock_finnhub",
+              "create_document"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "hold_inventory",
+              "build_cart_items_from_selection",
+              "get_cart_summary",
+              "build_checkout_from_summary",
+              "submit_order_from_summary",
+              "update_cart_item",
+              "build_invoice_from_summary",
+              "hold_best_recommendation",
+              "build_checkout_from_hold",
+              "confirm_held_recommendation_order",
+              "get_crypto_price_coinmarketcap",
+              "get_stock_finnhub",
+              "create_document"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "build_checkout_from_hold",
+          "build_checkout_from_summary",
+          "checkout_best_recommendation",
+          "confirm_held_recommendation_order",
+          "get_available_coupons",
+          "get_cart_summary",
+          "hold_best_recommendation",
+          "optimize_discount",
+          "submit_order",
+          "submit_order_from_summary"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s3",
+            "s6"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "hold_inventory",
+          "confirm_held_recommendation_order"
+        ]
+      }
+    }
+  }
+}

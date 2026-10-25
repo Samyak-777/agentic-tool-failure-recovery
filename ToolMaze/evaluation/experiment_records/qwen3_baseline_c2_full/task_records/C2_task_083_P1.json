@@ -1,0 +1,1751 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c2_full",
+  "task_id": "C2_task_083",
+  "mode": "P1",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_083",
+    "template_id": "C2_template_083",
+    "complexity": "C2",
+    "task_description": "Please check whether the NASDAQ market is open, then get the current BTC price and use that to place a buy order for 1500 with a risk check. After that, get AAPL’s price converted to EUR, then prepare a high-priority Balance Report for my investment account in EUR for user_123 in the app, and finally create the balance data and send the alert.",
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and if it is, get the current BTC price and use it to place a buy order for 1500 with a risk check first. After that, get the current price of AAPL converted to EUR. Then prepare a high-priority Balance Report in EUR for my investment account for user_123 in the app, and finally create the balance data and send the alert.",
+      "account_type": "investment",
+      "amount": 1500,
+      "benchmark_ticker": "AAPL",
+      "exchange": "NASDAQ",
+      "symbol": "BTC",
+      "target_currency": "EUR",
+      "title": "Balance Report",
+      "user_id": "user_123"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_market_status_alpha",
+          "get_crypto_price_coingecko",
+          "place_buy_order_with_risk_check",
+          "get_stock_price_and_convert",
+          "build_balance_structured_payload",
+          "create_balance_data_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_crypto_price_provider_pair:coingecko"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_crypto_price_coingecko",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "error": "Gateway Timeout"
+            },
+            "status": "error",
+            "error_message": "504 Timeout",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price_coingecko",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 1500
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 1500,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 156.63,
+              "currency": "EUR",
+              "ticker": "AAPL",
+              "price_usd": 170.25,
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "build_balance_structured_payload",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "balance": 44933,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 41338.36
+              },
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app",
+              "account_type": "investment",
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "create_balance_data_and_alert",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_123\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "source_type": "dict",
+              "serialized_preview": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", ",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "workflow": "balance_structured_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_crypto_price_coingecko",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "error": "Gateway Timeout"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coingecko",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 1500
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 1500,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_structured_payload",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_123",
+                  "account_type": "investment",
+                  "balance": 44933,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 41338.36
+                },
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app",
+                "account_type": "investment",
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_balance_data_and_alert",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_123\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "document_timestamp": "2024-12-08 12:00:00",
+                "source_type": "dict",
+                "serialized_preview": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", ",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "workflow": "balance_structured_report"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_market_status_alpha",
+          "get_crypto_price_coinmarketcap",
+          "place_buy_order_with_risk_check",
+          "get_stock_price_and_convert",
+          "build_balance_structured_payload",
+          "create_balance_data_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_crypto_price_provider_pair:coinmarketcap"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_market_status_alpha",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "error": "Resource Temporarily Locked"
+            },
+            "status": "error",
+            "error_message": "409 ResourceLocked",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "arguments": {
+              "symbol": "BTC"
+            },
+            "output": {
+              "symbol": "BTC",
+              "name": "Bitcoin",
+              "price_usd": 42500.5,
+              "change_24h": 2.35,
+              "market_cap": 830000000000
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "place_buy_order_with_risk_check",
+            "arguments": {
+              "amount": 1500
+            },
+            "output": {
+              "order_id": "ORD-BUY-FAEF1",
+              "action": "BUY",
+              "status": "filled",
+              "message": "Order executed successfully",
+              "filled_amount": 1500,
+              "risk_token": "[REDACTED]",
+              "risk_decision": "approved"
+            },
+            "status": "success"
+          },
+          {
+            "step": 5,
+            "tool_name": "get_stock_price_and_convert",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "price": 156.63,
+              "currency": "EUR",
+              "ticker": "AAPL",
+              "price_usd": 170.25,
+              "rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "build_balance_structured_payload",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "data": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "balance": 44933,
+                "source_currency": "USD",
+                "rate": 0.92,
+                "target_currency": "EUR",
+                "converted_balance": 41338.36
+              },
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "user_id": "user_123",
+              "priority": "high",
+              "channel": "app",
+              "account_type": "investment",
+              "target_currency": "EUR"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "create_balance_data_and_alert",
+            "arguments": {
+              "user_id": "user_123",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "title": "Balance Report",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "user_123",
+              "content": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_123\"}",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Balance Report",
+              "tags": [
+                "balance",
+                "eur",
+                "structured"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "source_type": "dict",
+              "serialized_preview": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", ",
+              "account_type": "investment",
+              "target_currency": "EUR",
+              "workflow": "balance_structured_report"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_market_status_alpha",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "exchange": "NASDAQ",
+                "is_open": true,
+                "session": "regular",
+                "details": {
+                  "is_open": true,
+                  "session": "regular",
+                  "next_close": "16:00 EST"
+                }
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "error": "Resource Temporarily Locked"
+              },
+              "status": "error",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_crypto_price_coinmarketcap",
+              "arguments": {
+                "symbol": "BTC"
+              },
+              "output": {
+                "symbol": "BTC",
+                "name": "Bitcoin",
+                "price_usd": 42500.5,
+                "change_24h": 2.35,
+                "market_cap": 830000000000
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "place_buy_order_with_risk_check",
+              "arguments": {
+                "amount": 1500
+              },
+              "output": {
+                "order_id": "ORD-BUY-FAEF1",
+                "action": "BUY",
+                "status": "filled",
+                "message": "Order executed successfully",
+                "filled_amount": 1500,
+                "risk_token": "[REDACTED]",
+                "risk_decision": "approved"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_stock_price_and_convert",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "price": 156.63,
+                "currency": "EUR",
+                "ticker": "AAPL",
+                "price_usd": 170.25,
+                "rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "build_balance_structured_payload",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "data": {
+                  "user_id": "user_123",
+                  "account_type": "investment",
+                  "balance": 44933,
+                  "source_currency": "USD",
+                  "rate": 0.92,
+                  "target_currency": "EUR",
+                  "converted_balance": 41338.36
+                },
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "user_id": "user_123",
+                "priority": "high",
+                "channel": "app",
+                "account_type": "investment",
+                "target_currency": "EUR"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_balance_data_and_alert",
+              "arguments": {
+                "user_id": "user_123",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "title": "Balance Report",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "user_123",
+                "content": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_123\"}",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Balance Report",
+                "tags": [
+                  "balance",
+                  "eur",
+                  "structured"
+                ],
+                "document_timestamp": "2024-12-08 12:00:00",
+                "source_type": "dict",
+                "serialized_preview": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", ",
+                "account_type": "investment",
+                "target_currency": "EUR",
+                "workflow": "balance_structured_report"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_crypto_price_coingecko",
+      "get_crypto_price_coinmarketcap"
+    ],
+    "domains": [
+      "Financial"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 1
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T16:11:55.104973+00:00",
+  "end_time": "2026-10-23T16:12:38.269586+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: missing shared tools: ['build_balance_structured_payload']",
+  "failed_tools": [
+    "create_balance_data_and_alert",
+    "get_crypto_price_coingecko"
+  ],
+  "tokens": {
+    "input_tokens": 15520,
+    "output_tokens": 2461,
+    "total_tokens": 17981
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether the NASDAQ market is open, and if it is, get the current BTC price and use it to place a buy order for 1500 with a risk check first. After that, get the current price of AAPL converted to EUR. Then prepare a high-priority Balance Report in EUR for my investment account for user_123 in the app, and finally create the balance data and send the alert.",
+      "account_type": "investment",
+      "amount": 1500,
+      "benchmark_ticker": "AAPL",
+      "exchange": "NASDAQ",
+      "symbol": "BTC",
+      "target_currency": "EUR",
+      "title": "Balance Report",
+      "user_id": "user_123"
+    },
+    "task_description": "Please check whether the NASDAQ market is open, then get the current BTC price and use that to place a buy order for 1500 with a risk check. After that, get AAPL’s price converted to EUR, then prepare a high-priority Balance Report for my investment account in EUR for user_123 in the app, and finally create the balance data and send the alert.",
+    "template_id": "C2_template_083",
+    "domains": [
+      "Financial"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['get_crypto_price_coingecko'], matching recorded execution failure in tools ['get_crypto_price_coingecko'] leading to task failure.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_083_path_0_get_crypto_price_coingecko",
+        "target_tool": "get_crypto_price_coingecko",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_crypto_price_provider_pair:coingecko"
+        ]
+      },
+      {
+        "config_id": "C2_task_083_path_1_get_crypto_price_coinmarketcap",
+        "target_tool": "get_crypto_price_coinmarketcap",
+        "step": 2,
+        "mode": "P1",
+        "complexity": "C2",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Resource Temporarily Locked"
+        },
+        "error_message": "409 ResourceLocked",
+        "trigger_condition": "first_touch_path",
+        "category": "syntactic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_crypto_price_provider_pair:coinmarketcap"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_crypto_price_coingecko",
+        "tool_name": "get_crypto_price_coingecko",
+        "step": 2,
+        "timestamp": "2026-10-23T16:12:08.474608+00:00",
+        "config_id": "C2_task_083_path_0_get_crypto_price_coingecko",
+        "configured_mode": "P1",
+        "changed_execution": true,
+        "modified_status": "error",
+        "arguments_sample": {
+          "symbol": "BTC"
+        },
+        "modified_output_sample": {
+          "error": "Gateway Timeout"
+        },
+        "subsequent_tool_failed": true,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "arguments": {
+        "exchange": "NASDAQ"
+      },
+      "result_sample": {
+        "exchange": "NASDAQ",
+        "is_open": true,
+        "session": "regular",
+        "details": {
+          "is_open": true,
+          "session": "regular",
+          "next_close": "16:00 EST"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3383411094546318,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:00.800276+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_crypto_price_coingecko",
+      "tool_name": "get_crypto_price_coingecko",
+      "arguments": {
+        "symbol": "BTC"
+      },
+      "result_sample": {
+        "error": "Gateway Timeout"
+      },
+      "status": "error",
+      "duration_ms": 0.23661099839955568,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INCONCLUSIVE",
+      "validation_passed": false,
+      "has_error": true,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:08.474608+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_crypto_price_coinmarketcap",
+      "tool_name": "get_crypto_price_coinmarketcap",
+      "arguments": {
+        "symbol": "BTC"
+      },
+      "result_sample": {
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "price_usd": 42500.5,
+        "change_24h": 2.35,
+        "market_cap": 830000000000
+      },
+      "status": "success",
+      "duration_ms": 0.32601901330053806,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:10.146486+00:00"
+    },
+    {
+      "call_id": "tc_4_4_place_buy_order_with_risk_check",
+      "tool_name": "place_buy_order_with_risk_check",
+      "arguments": {
+        "amount": 1500
+      },
+      "result_sample": {
+        "order_id": "ORD-BUY-FAEF1",
+        "action": "BUY",
+        "status": "filled",
+        "message": "Order executed successfully",
+        "filled_amount": 1500,
+        "risk_token": "[REDACTED]",
+        "risk_decision": "approved"
+      },
+      "status": "success",
+      "duration_ms": 0.3438090207055211,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:13.329313+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_stock_price_and_convert",
+      "tool_name": "get_stock_price_and_convert",
+      "arguments": {
+        "ticker": "AAPL",
+        "target_currency": "EUR"
+      },
+      "result_sample": {
+        "price": 156.63,
+        "currency": "EUR",
+        "ticker": "AAPL",
+        "price_usd": 170.25,
+        "rate": 0.92
+      },
+      "status": "success",
+      "duration_ms": 0.5056370282545686,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:17.968588+00:00"
+    },
+    {
+      "call_id": "tc_6_6_create_balance_data_and_alert",
+      "tool_name": "create_balance_data_and_alert",
+      "arguments": {
+        "user_id": "user_123",
+        "target_currency": "EUR",
+        "account_type": "investment",
+        "channel": "app",
+        "priority": "high",
+        "title": "Balance Report"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [schema] Tool output for 'create_balance_data_and_alert' is missing required schema field(s): document_timestamp; [required] Required field violation for 'create_balance_data_and_alert': missing: ['document_timestamp']",
+        "validation_failed_checks": [
+          "schema",
+          "required"
+        ],
+        "untrusted_output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_123",
+          "content": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", \"target_currency\": \"EUR\", \"user_id\": \"user_123\"}",
+          "priority": "high",
+          "note_id": "NOTE18E3D",
+          "title": "Balance Report",
+          "tags": [
+            "balance",
+            "eur",
+            "structured"
+          ],
+          "source_type": "dict",
+          "serialized_preview": "{\"account_type\": \"investment\", \"balance\": 44933, \"converted_balance\": 41338.36, \"rate\": 0.92, \"source_currency\": \"USD\", ",
+          "account_type": "investment",
+          "target_currency": "EUR",
+          "workflow": "balance_structured_report"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.6948210066184402,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T16:12:22.498932+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_market_status_alpha",
+      "tool_name": "get_market_status_alpha",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "checked_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "get_market_status_alpha",
+            "verified_fields": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.008
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.033
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_market_status_alpha'",
+          "details": {
+            "arguments": [
+              "exchange"
+            ],
+            "output": [
+              "exchange",
+              "is_open",
+              "session",
+              "details"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_market_status_alpha' output",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_market_status_alpha'",
+          "details": {
+            "tool_name": "get_market_status_alpha"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T16:12:00.800506+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_crypto_price_coingecko",
+      "tool_name": "get_crypto_price_coingecko",
+      "pipeline_status": "INCONCLUSIVE",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; output schema does not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.006
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; type checking does not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.003
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; required fields do not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; range checks do not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; temporal check does not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; entity checking does not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-field checks do not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; state checks do not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "Tool returned an explicit error response; cross-tool checks do not apply",
+          "details": {
+            "error": "Gateway Timeout"
+          },
+          "latency_ms": 0.002
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T16:12:08.474928+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_crypto_price_coinmarketcap",
+      "tool_name": "get_crypto_price_coinmarketcap",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "verified_fields": [
+              "symbol",
+              "name",
+              "price_usd",
+              "change_24h",
+              "market_cap"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "checked_fields": [
+              "symbol",
+              "name",
+              "price_usd",
+              "change_24h",
+              "market_cap"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "verified_fields": [
+              "symbol",
+              "name",
+              "price_usd",
+              "change_24h",
+              "market_cap"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'get_crypto_price_coinmarketcap'",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "applied_rules": [
+              "RR-002"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_crypto_price_coinmarketcap'",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap"
+          },
+          "latency_ms": 0.04
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap",
+            "compared_pairs": [
+              {
+                "arg_key": "symbol",
+                "res_key": "symbol",
+                "requested": "BTC",
+                "returned": "BTC",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_crypto_price_coinmarketcap'",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_crypto_price_coinmarketcap' output",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_crypto_price_coinmarketcap'",
+          "details": {
+            "tool_name": "get_crypto_price_coinmarketcap"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T16:12:10.146747+00:00"
+    },
+    {
+      "call_id": "tc_4_4_place_buy_order_with_risk_check",
+      "tool_name": "place_buy_order_with_risk_check",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (7 fields verified)",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 7 checked output fields match expected types",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "checked_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 7 required fields present and non-null",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check",
+            "verified_fields": [
+              "order_id",
+              "action",
+              "status",
+              "filled_amount",
+              "message",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.053
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "arguments": [
+              "amount"
+            ],
+            "output": [
+              "order_id",
+              "action",
+              "status",
+              "message",
+              "filled_amount",
+              "risk_token",
+              "risk_decision"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'place_buy_order_with_risk_check' output",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.011
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'place_buy_order_with_risk_check'",
+          "details": {
+            "tool_name": "place_buy_order_with_risk_check"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T16:12:13.329548+00:00"
+    },
+    {
+      "call_id": "tc_5_5_get_stock_price_and_convert",
+      "tool_name": "get_stock_price_and_convert",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_stock_price_and_convert",
+            "verified_fields": [
+              "price",
+              "currency",
+              "ticker",
+              "price_usd",
+              "rate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.015
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_stock_price_and_convert",
+            "checked_fields": [
+              "price",
+              "currency",
+              "ticker",
+              "price_usd",
+              "rate"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_stock_price_and_convert",
+            "verified_fields": [
+              "price",
+              "currency",
+              "ticker",
+              "price_usd",
+              "rate"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_stock_price_and_convert'",
+          "details": {
+            "tool_name": "get_stock_price_and_convert"
+          },
+          "latency_ms": 0.018
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_stock_price_and_convert'",
+          "details": {
+            "tool_name": "get_stock_price_and_convert"
+          },
+          "latency_ms": 0.082
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_stock_price_and_convert",
+            "compared_pairs": [
+              {
+                "arg_key": "ticker",
+                "res_key": "ticker",
+                "requested": "AAPL",
+                "returned": "AAPL",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.007
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_stock_price_and_convert'",
+          "details": {
+            "tool_name": "get_stock_price_and_convert"
+          },
+          "latency_ms": 0.011
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_stock_price_and_convert' output",
+          "details": {
+            "tool_name": "get_stock_price_and_convert"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_stock_price_and_convert'",
+          "details": {
+            "tool_name": "get_stock_price_and_convert"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T16:12:17.968883+00:00"
+    },
+    {
+      "call_id": "tc_6_6_create_balance_data_and_alert",
+      "tool_name": "create_balance_data_and_alert",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "INVALID",
+          "reason": "Tool output for 'create_balance_data_and_alert' is missing required schema field(s): document_timestamp",
+          "details": {
+            "tool_name": "create_balance_data_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "source_type",
+              "serialized_preview",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ],
+            "actual_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "source_type",
+              "serialized_preview",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.027
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 13 checked output fields match expected types",
+          "details": {
+            "tool_name": "create_balance_data_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "source_type",
+              "serialized_preview",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "INVALID",
+          "reason": "Required field violation for 'create_balance_data_and_alert': missing: ['document_timestamp']",
+          "details": {
+            "tool_name": "create_balance_data_and_alert",
+            "missing_fields": [
+              "document_timestamp"
+            ],
+            "null_fields": [],
+            "expected_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "note_id",
+              "title",
+              "tags",
+              "document_timestamp",
+              "source_type",
+              "serialized_preview",
+              "account_type",
+              "target_currency",
+              "workflow"
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'create_balance_data_and_alert'",
+          "details": {
+            "tool_name": "create_balance_data_and_alert"
+          },
+          "latency_ms": 0.018
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'create_balance_data_and_alert'",
+          "details": {
+            "tool_name": "create_balance_data_and_alert"
+          },
+          "latency_ms": 0.091
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "create_balance_data_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "user_123",
+                "returned": "user_123",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'create_balance_data_and_alert'",
+          "details": {
+            "tool_name": "create_balance_data_and_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'create_balance_data_and_alert' output",
+          "details": {
+            "tool_name": "create_balance_data_and_alert"
+          },
+          "latency_ms": 0.015
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'create_balance_data_and_alert'",
+          "details": {
+            "tool_name": "create_balance_data_and_alert"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "schema",
+        "required"
+      ],
+      "timestamp": "2026-10-23T16:12:22.499251+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: missing shared tools: ['build_balance_structured_payload']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_crypto_price_coingecko",
+      "missing_tools": [
+        "build_balance_structured_payload"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_crypto_price_coingecko",
+              "place_buy_order_with_risk_check",
+              "get_stock_price_and_convert",
+              "build_balance_structured_payload",
+              "create_balance_data_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_market_status_alpha",
+              "get_crypto_price_coinmarketcap",
+              "place_buy_order_with_risk_check",
+              "get_stock_price_and_convert",
+              "build_balance_structured_payload",
+              "create_balance_data_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_crypto_price_coingecko",
+          "get_crypto_price_coinmarketcap"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_market_status_alpha",
+          "get_crypto_price_coingecko",
+          "get_crypto_price_coinmarketcap",
+          "place_buy_order_with_risk_check",
+          "get_stock_price_and_convert",
+          "create_balance_data_and_alert"
+        ]
+      }
+    }
+  }
+}

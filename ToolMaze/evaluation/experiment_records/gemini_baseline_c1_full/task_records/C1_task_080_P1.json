@@ -1,0 +1,420 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_080",
+  "mode": "P1",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_080",
+    "template_id": "C1_template_080",
+    "complexity": "C1",
+    "task_description": "Please check AAPL’s current price, confirm whether the NASDAQ market is open, and get the USD to EUR exchange rate. Then use that information to prepare and place a buy order for 10 shares of AAPL based on the total cost, and after that create a high-priority in-app note for user trader_001 with the content “test.”",
+    "user_input": {
+      "query": "Please check AAPL’s current price, confirm whether the NASDAQ market is open, and get the USD to EUR exchange rate. Then use that information to prepare and place a buy order for 10 shares of AAPL on NASDAQ based on the total cost converted to EUR. After that, create a high-priority in-app note for user trader_001 with title Untitled, content “test,” and tags [].",
+      "content": "test",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "tags": [],
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "title": "Untitled",
+      "user_id": "trader_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_stock_yahoo_finance",
+        "arguments": {
+          "ticker": "AAPL"
+        },
+        "output": {
+          "price_usd": 170.25,
+          "currency": "USD"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "get_market_status",
+        "arguments": {
+          "exchange": "NASDAQ"
+        },
+        "output": {
+          "exchange": "NASDAQ",
+          "is_open": true,
+          "session": "regular",
+          "details": {
+            "is_open": true,
+            "session": "regular",
+            "next_close": "16:00 EST"
+          }
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "get_exchange_rate_fixer",
+        "arguments": {
+          "from_currency": "USD",
+          "to_currency": "EUR"
+        },
+        "output": {
+          "rate": 0.92
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "prepare_equity_risk_order",
+        "arguments": {
+          "market_data": {
+            "exchange": "NASDAQ",
+            "is_open": true,
+            "session": "regular",
+            "details": {
+              "is_open": true,
+              "session": "regular",
+              "next_close": "16:00 EST"
+            }
+          },
+          "stock_data": {
+            "price_usd": 170.25,
+            "currency": "USD"
+          },
+          "ticker": "AAPL",
+          "quantity": 10
+        },
+        "output": {
+          "error": "Gateway Timeout"
+        },
+        "status": "error",
+        "error_message": "504 Timeout",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "prepare_equity_risk_order",
+        "arguments": {
+          "market_data": {
+            "exchange": "NASDAQ",
+            "is_open": true,
+            "session": "regular",
+            "details": {
+              "is_open": true,
+              "session": "regular",
+              "next_close": "16:00 EST"
+            }
+          },
+          "stock_data": {
+            "price_usd": 170.25,
+            "currency": "USD"
+          },
+          "ticker": "AAPL",
+          "quantity": 10
+        },
+        "output": {
+          "ticker": "AAPL",
+          "quantity": 10.0,
+          "limit_price": 170.25,
+          "amount": 1702.5,
+          "market_session": "regular"
+        },
+        "status": "success"
+      },
+      {
+        "step": 6,
+        "tool_name": "place_equity_order_from_cost",
+        "arguments": {
+          "amount": 1702.5,
+          "ticker": "AAPL"
+        },
+        "output": {
+          "order_id": "ORD-BUY-FAEF1",
+          "action": "BUY",
+          "status": "filled",
+          "message": "Order executed successfully",
+          "filled_amount": 1702.5,
+          "risk_token": "[REDACTED]",
+          "risk_decision": "approved",
+          "ticker": "AAPL",
+          "order_strategy": "equity_cost_checked"
+        },
+        "status": "success"
+      },
+      {
+        "step": 7,
+        "tool_name": "create_document_and_alert",
+        "arguments": {
+          "title": "Untitled",
+          "content": "test",
+          "tags": [],
+          "user_id": "trader_001",
+          "priority": "high",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "trader_001",
+          "content": "test",
+          "priority": "high",
+          "note_id": "NOTE18E3D",
+          "title": "Untitled",
+          "tags": []
+        },
+        "status": "success"
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_stock_yahoo_finance",
+          "arguments": {
+            "ticker": "AAPL"
+          },
+          "output": {
+            "price_usd": 170.25,
+            "currency": "USD"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_market_status",
+          "arguments": {
+            "exchange": "NASDAQ"
+          },
+          "output": {
+            "exchange": "NASDAQ",
+            "is_open": true,
+            "session": "regular",
+            "details": {
+              "is_open": true,
+              "session": "regular",
+              "next_close": "16:00 EST"
+            }
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_exchange_rate_fixer",
+          "arguments": {
+            "from_currency": "USD",
+            "to_currency": "EUR"
+          },
+          "output": {
+            "rate": 0.92
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "prepare_equity_risk_order",
+          "arguments": {
+            "market_data": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "stock_data": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "ticker": "AAPL",
+            "quantity": 10
+          },
+          "output": {
+            "error": "Gateway Timeout"
+          },
+          "status": "error",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "prepare_equity_risk_order",
+          "arguments": {
+            "market_data": {
+              "exchange": "NASDAQ",
+              "is_open": true,
+              "session": "regular",
+              "details": {
+                "is_open": true,
+                "session": "regular",
+                "next_close": "16:00 EST"
+              }
+            },
+            "stock_data": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "ticker": "AAPL",
+            "quantity": 10
+          },
+          "output": {
+            "ticker": "AAPL",
+            "quantity": 10.0,
+            "limit_price": 170.25,
+            "amount": 1702.5,
+            "market_session": "regular"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "place_equity_order_from_cost",
+          "arguments": {
+            "amount": 1702.5,
+            "ticker": "AAPL"
+          },
+          "output": {
+            "order_id": "ORD-BUY-FAEF1",
+            "action": "BUY",
+            "status": "filled",
+            "message": "Order executed successfully",
+            "filled_amount": 1702.5,
+            "risk_token": "[REDACTED]",
+            "risk_decision": "approved",
+            "ticker": "AAPL",
+            "order_strategy": "equity_cost_checked"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "create_document_and_alert",
+          "arguments": {
+            "title": "Untitled",
+            "content": "test",
+            "tags": [],
+            "user_id": "trader_001",
+            "priority": "high",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "trader_001",
+            "content": "test",
+            "priority": "high",
+            "note_id": "NOTE18E3D",
+            "title": "Untitled",
+            "tags": [],
+            "document_timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P1",
+    "perturbation_point": 3
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T01:55:05.840060+00:00",
+  "end_time": "2026-10-24T01:56:45.379582+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P1 failed: no retry on 'prepare_equity_risk_order' (called 0 time(s), need >=2); 'prepare_equity_risk_order' never succeeded after retries; missing required tools: ['get_exchange_rate_fixer', 'get_market_status', 'place_equity_order_from_cost', 'create_document_and_alert', 'prepare_equity_risk_order', 'get_stock_yahoo_finance']",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check AAPL’s current price, confirm whether the NASDAQ market is open, and get the USD to EUR exchange rate. Then use that information to prepare and place a buy order for 10 shares of AAPL on NASDAQ based on the total cost converted to EUR. After that, create a high-priority in-app note for user trader_001 with title Untitled, content “test,” and tags [].",
+      "content": "test",
+      "exchange": "NASDAQ",
+      "quantity": 10,
+      "tags": [],
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "title": "Untitled",
+      "user_id": "trader_001"
+    },
+    "task_description": "Please check AAPL’s current price, confirm whether the NASDAQ market is open, and get the USD to EUR exchange rate. Then use that information to prepare and place a buy order for 10 shares of AAPL based on the total cost, and after that create a high-priority in-app note for user trader_001 with the content “test.”",
+    "template_id": "C1_template_080",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P1 configured for tools ['prepare_equity_risk_order'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_080_step_4_prepare_equity_risk_order",
+        "target_tool": "prepare_equity_risk_order",
+        "step": 4,
+        "mode": "P1",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "Gateway Timeout"
+        },
+        "error_message": "504 Timeout",
+        "trigger_condition": "first_call",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P1 failed: no retry on 'prepare_equity_risk_order' (called 0 time(s), need >=2); 'prepare_equity_risk_order' never succeeded after retries; missing required tools: ['get_exchange_rate_fixer', 'get_market_status', 'place_equity_order_from_cost', 'create_document_and_alert', 'prepare_equity_risk_order', 'get_stock_yahoo_finance']",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "prepare_equity_risk_order",
+      "missing_tools": [
+        "get_exchange_rate_fixer",
+        "get_market_status",
+        "place_equity_order_from_cost",
+        "create_document_and_alert",
+        "prepare_equity_risk_order",
+        "get_stock_yahoo_finance"
+      ],
+      "ground_truth": {
+        "execution_trace": [
+          "get_stock_yahoo_finance",
+          "get_market_status",
+          "get_exchange_rate_fixer",
+          "prepare_equity_risk_order",
+          "prepare_equity_risk_order",
+          "place_equity_order_from_cost",
+          "create_document_and_alert"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

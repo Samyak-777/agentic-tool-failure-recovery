@@ -1,0 +1,377 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_051",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_051",
+    "template_id": "C1_template_051",
+    "complexity": "C1",
+    "task_description": "Please pull the latest technology news from both sources, then rank the two sources by how many headlines each returned in descending order. After that, create a Meeting Notes document with that technology news summary and send me an in-app medium-priority alert, then also push the summary notification to Bob in the app.",
+    "user_input": {
+      "query": "Please pull the latest technology news from both sources for the technology category, then rank the two sources in descending order by how many headlines each returned. After that, create a document titled Meeting Notes with the technology news summary, and use config_key as the key. Please send me an in-app medium-priority alert as well, and also push the summary notification to Bob in the app. Make sure this is associated with user_001, and include the tags finance and travel.",
+      "category": "technology",
+      "document_title": "Meeting Notes",
+      "key": "config_key",
+      "recipient_name": "Bob",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_news_gnews",
+        "arguments": {
+          "category": "technology"
+        },
+        "output": {
+          "category": "technology",
+          "headlines": [
+            "AI breakthrough in natural language processing",
+            "New quantum computer achieves major milestone",
+            "Tech giant announces revolutionary chip design"
+          ],
+          "count": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "get_news_newsapi",
+        "arguments": {
+          "category": "technology"
+        },
+        "output": {
+          "category": "technology",
+          "headlines": [
+            "AI breakthrough in natural language processing",
+            "New quantum computer achieves major milestone",
+            "Tech giant announces revolutionary chip design"
+          ],
+          "count": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "order_items",
+        "arguments": {
+          "items": [
+            {
+              "source": "gnews",
+              "count": 3
+            },
+            {
+              "source": "newsapi",
+              "count": 3
+            }
+          ],
+          "order": "desc",
+          "key": "config_key"
+        },
+        "output": {
+          "sorted_items": [
+            {
+              "source": "gnews",
+              "count": 3
+            }
+          ],
+          "count": -3,
+          "order": "asc"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "create_document_and_alert_from_data",
+        "arguments": {
+          "title": "Meeting Notes",
+          "data": {
+            "category": "technology",
+            "gnews": {
+              "category": "technology",
+              "headlines": [
+                "AI breakthrough in natural language processing",
+                "New quantum computer achieves major milestone",
+                "Tech giant announces revolutionary chip design"
+              ],
+              "count": 3
+            },
+            "newsapi": {
+              "category": "technology",
+              "headlines": [
+                "AI breakthrough in natural language processing",
+                "New quantum computer achieves major milestone",
+                "Tech giant announces revolutionary chip design"
+              ],
+              "count": 3
+            },
+            "sorted_sources_by_headline_count": [
+              {
+                "source": "gnews",
+                "count": 3
+              },
+              {
+                "source": "newsapi",
+                "count": 3
+              }
+            ]
+          },
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "user_id": "user_001",
+          "priority": "medium",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "{\"category\": \"technology\", \"gnews\": {\"category\": \"technology\", \"count\": 3, \"headlines\": [\"AI breakthrough in natural language processing\", \"New quantum computer achieves major milestone\", \"Tech giant announces revolutionary chip design\"]}, \"newsapi\": {\"category\": \"technology\", \"count\": 3, \"headlines\": [\"AI breakthrough in natural language processing\", \"New quantum computer achieves major milestone\", \"Tech giant announces revolutionary chip design\"]}, \"sorted_sources_by_headline_count\": [{\"count\": 3, \"source\": \"gnews\"}, {\"count\": 3, \"source\": \"newsapi\"}]}",
+          "priority": "medium",
+          "note_id": "NOTE18E3D",
+          "title": "Meeting Notes",
+          "tags": [
+            "finance",
+            "travel"
+          ],
+          "source_type": "dict",
+          "serialized_preview": "{\"category\": \"technology\", \"gnews\": {\"category\": \"technology\", \"count\": 3, \"headlines\": [\"AI breakthrough in natural lan"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "push_alert_to_contact",
+        "arguments": {
+          "user_id": "user_001",
+          "recipient_name": "Bob",
+          "message": "News summary document created for category technology. GNews returned 3 headlines and NewsAPI returned 3 headlines.",
+          "priority": "medium",
+          "channel": "app"
+        },
+        "output": {
+          "message": "Notification sent successfully",
+          "notification_id": "NOTIFEE84C",
+          "user_id": "user_001",
+          "content": "News summary document created for category technology. GNews returned 3 headlines and NewsAPI returned 3 headlines.",
+          "priority": "medium",
+          "recipient_name": "Bob",
+          "status": "sent"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_news_gnews",
+          "arguments": {
+            "category": "technology"
+          },
+          "output": {
+            "category": "technology",
+            "headlines": [
+              "AI breakthrough in natural language processing",
+              "New quantum computer achieves major milestone",
+              "Tech giant announces revolutionary chip design"
+            ],
+            "count": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_news_newsapi",
+          "arguments": {
+            "category": "technology"
+          },
+          "output": {
+            "category": "technology",
+            "headlines": [
+              "AI breakthrough in natural language processing",
+              "New quantum computer achieves major milestone",
+              "Tech giant announces revolutionary chip design"
+            ],
+            "count": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "order_items",
+          "arguments": {
+            "items": [
+              {
+                "source": "gnews",
+                "count": 3
+              },
+              {
+                "source": "newsapi",
+                "count": 3
+              }
+            ],
+            "order": "desc",
+            "key": "config_key"
+          },
+          "output": {
+            "sorted_items": [
+              {
+                "source": "gnews",
+                "count": 3
+              }
+            ],
+            "count": -3,
+            "order": "asc"
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "push_alert_to_contact",
+          "arguments": {
+            "user_id": "user_001",
+            "recipient_name": "Bob",
+            "message": "News summary document created for category technology. GNews returned 3 headlines and NewsAPI returned 3 headlines.",
+            "priority": "medium",
+            "channel": "app"
+          },
+          "output": {
+            "message": "Notification sent successfully",
+            "notification_id": "NOTIFEE84C",
+            "user_id": "user_001",
+            "content": "News summary document created for category technology. GNews returned 3 headlines and NewsAPI returned 3 headlines.",
+            "priority": "medium",
+            "recipient_name": "Bob",
+            "status": "sent"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "General",
+      "Office"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 2,
+    "corruption_type": "statistical_inconsistency"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-23T23:52:30.440712+00:00",
+  "end_time": "2026-10-23T23:54:09.928144+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: 'order_items' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please pull the latest technology news from both sources for the technology category, then rank the two sources in descending order by how many headlines each returned. After that, create a document titled Meeting Notes with the technology news summary, and use config_key as the key. Please send me an in-app medium-priority alert as well, and also push the summary notification to Bob in the app. Make sure this is associated with user_001, and include the tags finance and travel.",
+      "category": "technology",
+      "document_title": "Meeting Notes",
+      "key": "config_key",
+      "recipient_name": "Bob",
+      "tags": [
+        "finance",
+        "travel"
+      ],
+      "user_id": "user_001"
+    },
+    "task_description": "Please pull the latest technology news from both sources, then rank the two sources by how many headlines each returned in descending order. After that, create a Meeting Notes document with that technology news summary and send me an in-app medium-priority alert, then also push the summary notification to Bob in the app.",
+    "template_id": "C1_template_051",
+    "domains": [
+      "General",
+      "Office"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['order_items'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_051_step_3_order_items",
+        "target_tool": "order_items",
+        "step": 3,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "sorted_items": [
+            {
+              "source": "gnews",
+              "count": 3
+            }
+          ],
+          "count": -3,
+          "order": "asc"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: 'order_items' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "order_items",
+      "missing_tools": [
+        "order_items",
+        "get_news_newsapi",
+        "get_news_gnews"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_news_gnews",
+          "get_news_newsapi",
+          "order_items",
+          "create_document_and_alert_from_data",
+          "push_alert_to_contact"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

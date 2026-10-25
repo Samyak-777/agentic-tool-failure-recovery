@@ -1,0 +1,2750 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c4_full",
+  "task_id": "C4_task_064",
+  "mode": "P4",
+  "complexity": "C4",
+  "task_definition": {
+    "task_id": "C4_task_064",
+    "template_id": "C4_template_064",
+    "complexity": "C4",
+    "task_description": "Please check whether there are any PDF files in `/projects/report`, then scan the living room devices and identify the smart lock from the results. After that, check the living room light’s current status, use that to set its brightness to 70, then schedule a high-priority meeting called “Quarterly Planning Sync” with alice@company.com and bob@company.com from 2026-02-14 10:00 to 11:00 with the description “Discuss roadmap, room readiness, and workspace setup.”, send Alex a high-priority email saying the reminder was created successfully, and then create a document titled “Workspace Preparation Summary” with that same reminder message and the tags office, meeting, and workspace, and send the alert by email.",
+    "user_input": {
+      "query": "For user_id u_12345, please check whether there are any .pdf files in /projects/report, then scan the devices in the living_room and identify the smart lock from the results. After that, check the current status of the living room light with device_id light_living and light_id light_living, and based on that set its brightness to 70. Then schedule a high-priority meeting called “Quarterly Planning Sync” with alice@company.com and bob@company.com from 2026-02-14 10:00 to 2026-02-14 11:00, with the description “Discuss roadmap, room readiness, and workspace setup.” After the reminder is created, send Alex a high-priority email saying it was created successfully, then create a document titled “Workspace Preparation Summary” with that same reminder message and the tags office, meeting, and workspace, and send the alert by email.",
+      "area": "living_room",
+      "brightness_value": 70,
+      "channel": "email",
+      "device_id": "light_living",
+      "document_title": "Workspace Preparation Summary",
+      "end_time": "2026-02-14 11:00",
+      "extension": ".pdf",
+      "folder_path": "/projects/report",
+      "light_id": "light_living",
+      "meeting_description": "Discuss roadmap, room readiness, and workspace setup.",
+      "meeting_title": "Quarterly Planning Sync",
+      "participants": [
+        "alice@company.com",
+        "bob@company.com"
+      ],
+      "priority": "high",
+      "recipient_name": "Alex",
+      "start_time": "2026-02-14 10:00",
+      "user_id": "u_12345"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_iot_device_status",
+          "build_device_config_request",
+          "set_light_brightness",
+          "schedule_meeting_with_reminder",
+          "push_alert_to_contact",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects/report",
+              "extension": ".pdf"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects/report",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": -3,
+              "device_count": -4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                },
+                {
+                  "device_id": "phantom_device_-1",
+                  "name": "Negative One Device",
+                  "type": "media_player"
+                }
+              ],
+              "message": "Scan complete successfully with -20% of devices found."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "device_name": "Main Door Lock",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": -5,
+              "power_state": "-20%",
+              "brightness": -150,
+              "color": "-50°C"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 70,
+              "actual_brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting_with_reminder",
+            "arguments": {
+              "title": "Quarterly Planning Sync",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "start_time": "2026-02-14 10:00",
+              "end_time": "2026-02-14 11:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Reminder created successfully",
+              "reminder_id": "REM7A3B2",
+              "title": "Quarterly Planning Sync",
+              "datetime": "2026-02-14 10:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high",
+              "status": "active",
+              "meeting_id": "MTG-5A3B2C1D",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "participant_count": 2,
+              "meeting_start_time": "2026-02-14 10:00",
+              "meeting_end_time": "2026-02-14 11:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_12345",
+              "recipient_name": "Alex",
+              "message": "Reminder created successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "recipient_name": "Alex",
+              "status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Workspace Preparation Summary",
+              "content": "Reminder created successfully",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ],
+              "user_id": "u_12345",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Workspace Preparation Summary",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "browse_storage",
+              "arguments": {
+                "folder_path": "/projects/report",
+                "extension": ".pdf"
+              },
+              "output": {
+                "found": true,
+                "folder": "/projects/report",
+                "total_count": 2,
+                "matched_count": 0,
+                "files": []
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": -3,
+                "device_count": -4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  },
+                  {
+                    "device_id": "phantom_device_-1",
+                    "name": "Negative One Device",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully with -20% of devices found."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "device_name": "Main Door Lock",
+                "location": "living_room",
+                "selection_reason": "selected_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": -5,
+                "power_state": "-20%",
+                "brightness": -150,
+                "color": "-50°C"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living",
+                  "power_state": "off",
+                  "brightness": 0,
+                  "color": "white"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 70
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 70,
+                "actual_brightness": 70,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting_with_reminder",
+              "arguments": {
+                "title": "Quarterly Planning Sync",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "start_time": "2026-02-14 10:00",
+                "end_time": "2026-02-14 11:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Reminder created successfully",
+                "reminder_id": "REM7A3B2",
+                "title": "Quarterly Planning Sync",
+                "datetime": "2026-02-14 10:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high",
+                "status": "active",
+                "meeting_id": "MTG-5A3B2C1D",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "participant_count": 2,
+                "meeting_start_time": "2026-02-14 10:00",
+                "meeting_end_time": "2026-02-14 11:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_12345",
+                "recipient_name": "Alex",
+                "message": "Reminder created successfully",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "recipient_name": "Alex",
+                "status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Workspace Preparation Summary",
+                "content": "Reminder created successfully",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ],
+                "user_id": "u_12345",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Workspace Preparation Summary",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "browse_storage",
+          "discover_smart_devices",
+          "select_discovered_device_by_type",
+          "get_light_status",
+          "build_device_config_request",
+          "set_light_brightness",
+          "schedule_meeting_with_reminder",
+          "push_alert_to_contact",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a1",
+          "s2a2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects/report",
+              "extension": ".pdf"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects/report",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "discover_smart_devices",
+            "arguments": {
+              "location": "living_room"
+            },
+            "output": {
+              "location": -3,
+              "device_count": -4,
+              "devices": [
+                {
+                  "device_id": "lock_main",
+                  "name": "Main Door Lock",
+                  "type": "smart_lock"
+                },
+                {
+                  "device_id": "light_living",
+                  "name": "Living Room Main Light",
+                  "type": "smart_light"
+                },
+                {
+                  "device_id": "ac_living",
+                  "name": "Living Room AC",
+                  "type": "thermostat"
+                },
+                {
+                  "device_id": "tv_living",
+                  "name": "Living Room TV",
+                  "type": "media_player"
+                },
+                {
+                  "device_id": "ghost_device_minus_one",
+                  "name": "Negative One Device",
+                  "type": -1
+                }
+              ],
+              "message": "Scan complete successfully with -4 devices found in -3."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "select_discovered_device_by_type",
+            "arguments": {
+              "discovery_data": {
+                "location": "living_room",
+                "device_count": 4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  }
+                ],
+                "message": "Scan complete successfully."
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "device_name": "Main Door Lock",
+              "location": "living_room",
+              "selection_reason": "selected_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": "light_living_-3",
+              "power_state": "-20%",
+              "brightness": -150,
+              "color": "-50°C white"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 70,
+              "actual_brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting_with_reminder",
+            "arguments": {
+              "title": "Quarterly Planning Sync",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "start_time": "2026-02-14 10:00",
+              "end_time": "2026-02-14 11:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Reminder created successfully",
+              "reminder_id": "REM7A3B2",
+              "title": "Quarterly Planning Sync",
+              "datetime": "2026-02-14 10:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high",
+              "status": "active",
+              "meeting_id": "MTG-5A3B2C1D",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "participant_count": 2,
+              "meeting_start_time": "2026-02-14 10:00",
+              "meeting_end_time": "2026-02-14 11:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_12345",
+              "recipient_name": "Alex",
+              "message": "Reminder created successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "recipient_name": "Alex",
+              "status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Workspace Preparation Summary",
+              "content": "Reminder created successfully",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ],
+              "user_id": "u_12345",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Workspace Preparation Summary",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "browse_storage",
+              "arguments": {
+                "folder_path": "/projects/report",
+                "extension": ".pdf"
+              },
+              "output": {
+                "found": true,
+                "folder": "/projects/report",
+                "total_count": 2,
+                "matched_count": 0,
+                "files": []
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "discover_smart_devices",
+              "arguments": {
+                "location": "living_room"
+              },
+              "output": {
+                "location": -3,
+                "device_count": -4,
+                "devices": [
+                  {
+                    "device_id": "lock_main",
+                    "name": "Main Door Lock",
+                    "type": "smart_lock"
+                  },
+                  {
+                    "device_id": "light_living",
+                    "name": "Living Room Main Light",
+                    "type": "smart_light"
+                  },
+                  {
+                    "device_id": "ac_living",
+                    "name": "Living Room AC",
+                    "type": "thermostat"
+                  },
+                  {
+                    "device_id": "tv_living",
+                    "name": "Living Room TV",
+                    "type": "media_player"
+                  },
+                  {
+                    "device_id": "ghost_device_minus_one",
+                    "name": "Negative One Device",
+                    "type": -1
+                  }
+                ],
+                "message": "Scan complete successfully with -4 devices found in -3."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "select_discovered_device_by_type",
+              "arguments": {
+                "discovery_data": {
+                  "location": "living_room",
+                  "device_count": 4,
+                  "devices": [
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    },
+                    {
+                      "device_id": "<max_depth_exceeded>",
+                      "name": "<max_depth_exceeded>",
+                      "type": "<max_depth_exceeded>"
+                    }
+                  ],
+                  "message": "Scan complete successfully."
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "device_name": "Main Door Lock",
+                "location": "living_room",
+                "selection_reason": "selected_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": "light_living_-3",
+                "power_state": "-20%",
+                "brightness": -150,
+                "color": "-50°C white"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living",
+                  "power_state": "off",
+                  "brightness": 0,
+                  "color": "white"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 70
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 70,
+                "actual_brightness": 70,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting_with_reminder",
+              "arguments": {
+                "title": "Quarterly Planning Sync",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "start_time": "2026-02-14 10:00",
+                "end_time": "2026-02-14 11:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Reminder created successfully",
+                "reminder_id": "REM7A3B2",
+                "title": "Quarterly Planning Sync",
+                "datetime": "2026-02-14 10:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high",
+                "status": "active",
+                "meeting_id": "MTG-5A3B2C1D",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "participant_count": 2,
+                "meeting_start_time": "2026-02-14 10:00",
+                "meeting_end_time": "2026-02-14 11:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_12345",
+                "recipient_name": "Alex",
+                "message": "Reminder created successfully",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "recipient_name": "Alex",
+                "status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Workspace Preparation Summary",
+                "content": "Reminder created successfully",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ],
+                "user_id": "u_12345",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Workspace Preparation Summary",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_2",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_iot_device_status",
+          "build_device_config_request",
+          "set_light_brightness",
+          "schedule_meeting_with_reminder",
+          "push_alert_to_contact",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3a",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects/report",
+              "extension": ".pdf"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects/report",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "found": -20,
+              "area_name": "-50°C_living_room",
+              "total_items": -5,
+              "items": [
+                150,
+                -3,
+                "lock_main",
+                -20
+              ]
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_iot_device_status",
+            "arguments": {
+              "device_id": "light_living"
+            },
+            "output": {
+              "device_id": -5,
+              "power_state": 150000,
+              "brightness": -20,
+              "color": -50
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 70,
+              "actual_brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting_with_reminder",
+            "arguments": {
+              "title": "Quarterly Planning Sync",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "start_time": "2026-02-14 10:00",
+              "end_time": "2026-02-14 11:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Reminder created successfully",
+              "reminder_id": "REM7A3B2",
+              "title": "Quarterly Planning Sync",
+              "datetime": "2026-02-14 10:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high",
+              "status": "active",
+              "meeting_id": "MTG-5A3B2C1D",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "participant_count": 2,
+              "meeting_start_time": "2026-02-14 10:00",
+              "meeting_end_time": "2026-02-14 11:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_12345",
+              "recipient_name": "Alex",
+              "message": "Reminder created successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "recipient_name": "Alex",
+              "status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Workspace Preparation Summary",
+              "content": "Reminder created successfully",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ],
+              "user_id": "u_12345",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Workspace Preparation Summary",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "browse_storage",
+              "arguments": {
+                "folder_path": "/projects/report",
+                "extension": ".pdf"
+              },
+              "output": {
+                "found": true,
+                "folder": "/projects/report",
+                "total_count": 2,
+                "matched_count": 0,
+                "files": []
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "found": -20,
+                "area_name": "-50°C_living_room",
+                "total_items": -5,
+                "items": [
+                  150,
+                  -3,
+                  "lock_main",
+                  -20
+                ]
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_iot_device_status",
+              "arguments": {
+                "device_id": "light_living"
+              },
+              "output": {
+                "device_id": -5,
+                "power_state": 150000,
+                "brightness": -20,
+                "color": -50
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living",
+                  "power_state": "off",
+                  "brightness": 0,
+                  "color": "white"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 70
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 70,
+                "actual_brightness": 70,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting_with_reminder",
+              "arguments": {
+                "title": "Quarterly Planning Sync",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "start_time": "2026-02-14 10:00",
+                "end_time": "2026-02-14 11:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Reminder created successfully",
+                "reminder_id": "REM7A3B2",
+                "title": "Quarterly Planning Sync",
+                "datetime": "2026-02-14 10:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high",
+                "status": "active",
+                "meeting_id": "MTG-5A3B2C1D",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "participant_count": 2,
+                "meeting_start_time": "2026-02-14 10:00",
+                "meeting_end_time": "2026-02-14 11:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_12345",
+                "recipient_name": "Alex",
+                "message": "Reminder created successfully",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "recipient_name": "Alex",
+                "status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Workspace Preparation Summary",
+                "content": "Reminder created successfully",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ],
+                "user_id": "u_12345",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Workspace Preparation Summary",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_3",
+        "tools": [
+          "browse_storage",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "get_light_status",
+          "build_device_config_request",
+          "set_light_brightness",
+          "schedule_meeting_with_reminder",
+          "push_alert_to_contact",
+          "create_document_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b1",
+          "s2b2",
+          "s3b",
+          "s4",
+          "s5",
+          "s6",
+          "s7",
+          "s8"
+        ],
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "browse_storage",
+            "arguments": {
+              "folder_path": "/projects/report",
+              "extension": ".pdf"
+            },
+            "output": {
+              "found": true,
+              "folder": "/projects/report",
+              "total_count": 2,
+              "matched_count": 0,
+              "files": []
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "query_connected_devices",
+            "arguments": {
+              "area": "living_room",
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "found": -20,
+              "area_name": -5,
+              "total_items": -4,
+              "items": [
+                "lock_main",
+                -1,
+                "ac_living",
+                150
+              ]
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "resolve_connected_device_by_type",
+            "arguments": {
+              "connected_data": {
+                "found": true,
+                "area_name": "living_room",
+                "total_items": 4,
+                "items": [
+                  "lock_main",
+                  "light_living",
+                  "ac_living",
+                  "tv_living"
+                ]
+              },
+              "device_type": "smart_lock"
+            },
+            "output": {
+              "device_id": "lock_main",
+              "device_type": "smart_lock",
+              "area": "living_room",
+              "selection_reason": "resolved_first_smart_lock"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "get_light_status",
+            "arguments": {
+              "light_id": "light_living"
+            },
+            "output": {
+              "device_id": -5,
+              "power_state": "150% on",
+              "brightness": -20,
+              "color": "-50°C white"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "build_device_config_request",
+            "arguments": {
+              "device_ref": {
+                "device_id": "light_living",
+                "power_state": "off",
+                "brightness": 0,
+                "color": "white"
+              },
+              "property": "brightness",
+              "value": 70
+            },
+            "output": {
+              "device_id": "light_living",
+              "property": "brightness",
+              "value": 70
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "set_light_brightness",
+            "arguments": {
+              "light_id": "light_living",
+              "brightness": 70
+            },
+            "output": {
+              "device": "light_living",
+              "set_level": 70,
+              "actual_brightness": 70,
+              "message": "Brightness adjusted"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "schedule_meeting_with_reminder",
+            "arguments": {
+              "title": "Quarterly Planning Sync",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "start_time": "2026-02-14 10:00",
+              "end_time": "2026-02-14 11:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high"
+            },
+            "output": {
+              "message": "Reminder created successfully",
+              "reminder_id": "REM7A3B2",
+              "title": "Quarterly Planning Sync",
+              "datetime": "2026-02-14 10:00",
+              "description": "Discuss roadmap, room readiness, and workspace setup.",
+              "priority": "high",
+              "status": "active",
+              "meeting_id": "MTG-5A3B2C1D",
+              "participants": [
+                "alice@company.com",
+                "bob@company.com"
+              ],
+              "participant_count": 2,
+              "meeting_start_time": "2026-02-14 10:00",
+              "meeting_end_time": "2026-02-14 11:00",
+              "invitation_status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 8,
+            "tool_name": "push_alert_to_contact",
+            "arguments": {
+              "user_id": "u_12345",
+              "recipient_name": "Alex",
+              "message": "Reminder created successfully",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "recipient_name": "Alex",
+              "status": "sent"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 9,
+            "tool_name": "create_document_and_alert",
+            "arguments": {
+              "title": "Workspace Preparation Summary",
+              "content": "Reminder created successfully",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ],
+              "user_id": "u_12345",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_12345",
+              "content": "Reminder created successfully",
+              "priority": "high",
+              "note_id": "NOTE18E3D",
+              "title": "Workspace Preparation Summary",
+              "tags": [
+                "office",
+                "meeting",
+                "workspace"
+              ]
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "browse_storage",
+              "arguments": {
+                "folder_path": "/projects/report",
+                "extension": ".pdf"
+              },
+              "output": {
+                "found": true,
+                "folder": "/projects/report",
+                "total_count": 2,
+                "matched_count": 0,
+                "files": []
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "query_connected_devices",
+              "arguments": {
+                "area": "living_room",
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "found": -20,
+                "area_name": -5,
+                "total_items": -4,
+                "items": [
+                  "lock_main",
+                  -1,
+                  "ac_living",
+                  150
+                ]
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "resolve_connected_device_by_type",
+              "arguments": {
+                "connected_data": {
+                  "found": true,
+                  "area_name": "living_room",
+                  "total_items": 4,
+                  "items": [
+                    "lock_main",
+                    "light_living",
+                    "ac_living",
+                    "tv_living"
+                  ]
+                },
+                "device_type": "smart_lock"
+              },
+              "output": {
+                "device_id": "lock_main",
+                "device_type": "smart_lock",
+                "area": "living_room",
+                "selection_reason": "resolved_first_smart_lock"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_light_status",
+              "arguments": {
+                "light_id": "light_living"
+              },
+              "output": {
+                "device_id": -5,
+                "power_state": "150% on",
+                "brightness": -20,
+                "color": "-50°C white"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_device_config_request",
+              "arguments": {
+                "device_ref": {
+                  "device_id": "light_living",
+                  "power_state": "off",
+                  "brightness": 0,
+                  "color": "white"
+                },
+                "property": "brightness",
+                "value": 70
+              },
+              "output": {
+                "device_id": "light_living",
+                "property": "brightness",
+                "value": 70
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "set_light_brightness",
+              "arguments": {
+                "light_id": "light_living",
+                "brightness": 70
+              },
+              "output": {
+                "device": "light_living",
+                "set_level": 70,
+                "actual_brightness": 70,
+                "message": "Brightness adjusted"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "schedule_meeting_with_reminder",
+              "arguments": {
+                "title": "Quarterly Planning Sync",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "start_time": "2026-02-14 10:00",
+                "end_time": "2026-02-14 11:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high"
+              },
+              "output": {
+                "message": "Reminder created successfully",
+                "reminder_id": "REM7A3B2",
+                "title": "Quarterly Planning Sync",
+                "datetime": "2026-02-14 10:00",
+                "description": "Discuss roadmap, room readiness, and workspace setup.",
+                "priority": "high",
+                "status": "active",
+                "meeting_id": "MTG-5A3B2C1D",
+                "participants": [
+                  "alice@company.com",
+                  "bob@company.com"
+                ],
+                "participant_count": 2,
+                "meeting_start_time": "2026-02-14 10:00",
+                "meeting_end_time": "2026-02-14 11:00",
+                "invitation_status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert_to_contact",
+              "arguments": {
+                "user_id": "u_12345",
+                "recipient_name": "Alex",
+                "message": "Reminder created successfully",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "recipient_name": "Alex",
+                "status": "sent"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "create_document_and_alert",
+              "arguments": {
+                "title": "Workspace Preparation Summary",
+                "content": "Reminder created successfully",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ],
+                "user_id": "u_12345",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_12345",
+                "content": "Reminder created successfully",
+                "priority": "high",
+                "note_id": "NOTE18E3D",
+                "title": "Workspace Preparation Summary",
+                "tags": [
+                  "office",
+                  "meeting",
+                  "workspace"
+                ]
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "discover_smart_devices",
+      "get_iot_device_status",
+      "get_light_status",
+      "query_connected_devices",
+      "resolve_connected_device_by_type",
+      "select_discovered_device_by_type"
+    ],
+    "domains": [
+      "Office",
+      "IoT",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": null,
+    "perturbation_target": {
+      "target_type": "all_alternative_slots",
+      "slot_ids": [
+        "s2",
+        "s3"
+      ]
+    },
+    "corruption_type": "physics_violation"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T07:34:13.870778+00:00",
+  "end_time": "2026-10-24T07:34:39.294963+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+  "failed_tools": [
+    "discover_smart_devices"
+  ],
+  "tokens": {
+    "input_tokens": 8158,
+    "output_tokens": 1478,
+    "total_tokens": 9636
+  },
+  "parameters": {
+    "user_input": {
+      "query": "For user_id u_12345, please check whether there are any .pdf files in /projects/report, then scan the devices in the living_room and identify the smart lock from the results. After that, check the current status of the living room light with device_id light_living and light_id light_living, and based on that set its brightness to 70. Then schedule a high-priority meeting called “Quarterly Planning Sync” with alice@company.com and bob@company.com from 2026-02-14 10:00 to 2026-02-14 11:00, with the description “Discuss roadmap, room readiness, and workspace setup.” After the reminder is created, send Alex a high-priority email saying it was created successfully, then create a document titled “Workspace Preparation Summary” with that same reminder message and the tags office, meeting, and workspace, and send the alert by email.",
+      "area": "living_room",
+      "brightness_value": 70,
+      "channel": "email",
+      "device_id": "light_living",
+      "document_title": "Workspace Preparation Summary",
+      "end_time": "2026-02-14 11:00",
+      "extension": ".pdf",
+      "folder_path": "/projects/report",
+      "light_id": "light_living",
+      "meeting_description": "Discuss roadmap, room readiness, and workspace setup.",
+      "meeting_title": "Quarterly Planning Sync",
+      "participants": [
+        "alice@company.com",
+        "bob@company.com"
+      ],
+      "priority": "high",
+      "recipient_name": "Alex",
+      "start_time": "2026-02-14 10:00",
+      "user_id": "u_12345"
+    },
+    "task_description": "Please check whether there are any PDF files in `/projects/report`, then scan the living room devices and identify the smart lock from the results. After that, check the living room light’s current status, use that to set its brightness to 70, then schedule a high-priority meeting called “Quarterly Planning Sync” with alice@company.com and bob@company.com from 2026-02-14 10:00 to 11:00 with the description “Discuss roadmap, room readiness, and workspace setup.”, send Alex a high-priority email saying the reminder was created successfully, and then create a document titled “Workspace Preparation Summary” with that same reminder message and the tags office, meeting, and workspace, and send the alert by email.",
+    "template_id": "C4_template_064",
+    "domains": [
+      "Office",
+      "IoT",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 16000
+    }
+  },
+  "causal_attribution": {
+    "attribution": "failure_supported_by_evidence_as_perturbation_related",
+    "confidence": "HIGH",
+    "evidence": "Perturbation modified tool ['discover_smart_devices'], matching recorded execution failure in tools ['discover_smart_devices'] leading to task failure.",
+    "configured_count": 8,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C4_task_064_path_0_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": -3,
+          "device_count": -4,
+          "devices": [
+            {
+              "device_id": "lock_main",
+              "name": "Main Door Lock",
+              "type": "smart_lock"
+            },
+            {
+              "device_id": "light_living",
+              "name": "Living Room Main Light",
+              "type": "smart_light"
+            },
+            {
+              "device_id": "ac_living",
+              "name": "Living Room AC",
+              "type": "thermostat"
+            },
+            {
+              "device_id": "tv_living",
+              "name": "Living Room TV",
+              "type": "media_player"
+            },
+            {
+              "device_id": "phantom_device_-1",
+              "name": "Negative One Device",
+              "type": "media_player"
+            }
+          ],
+          "message": "Scan complete successfully with -20% of devices found."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_0_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": -5,
+          "power_state": "-20%",
+          "brightness": -150,
+          "color": "-50°C"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_1_discover_smart_devices",
+        "target_tool": "discover_smart_devices",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "location": -3,
+          "device_count": -4,
+          "devices": [
+            {
+              "device_id": "lock_main",
+              "name": "Main Door Lock",
+              "type": "smart_lock"
+            },
+            {
+              "device_id": "light_living",
+              "name": "Living Room Main Light",
+              "type": "smart_light"
+            },
+            {
+              "device_id": "ac_living",
+              "name": "Living Room AC",
+              "type": "thermostat"
+            },
+            {
+              "device_id": "tv_living",
+              "name": "Living Room TV",
+              "type": "media_player"
+            },
+            {
+              "device_id": "ghost_device_minus_one",
+              "name": "Negative One Device",
+              "type": -1
+            }
+          ],
+          "message": "Scan complete successfully with -4 devices found in -3."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_1_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": "light_living_-3",
+          "power_state": "-20%",
+          "brightness": -150,
+          "color": "-50°C white"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:discovered_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_2_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": -20,
+          "area_name": "-50°C_living_room",
+          "total_items": -5,
+          "items": [
+            150,
+            -3,
+            "lock_main",
+            -20
+          ]
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_2_get_iot_device_status",
+        "target_tool": "get_iot_device_status",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": -5,
+          "power_state": 150000,
+          "brightness": -20,
+          "color": -50
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_2",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_status"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_3_query_connected_devices",
+        "target_tool": "query_connected_devices",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "found": -20,
+          "area_name": -5,
+          "total_items": -4,
+          "items": [
+            "lock_main",
+            -1,
+            "ac_living",
+            150
+          ]
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ]
+      },
+      {
+        "config_id": "C4_task_064_path_3_get_light_status",
+        "target_tool": "get_light_status",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C4",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "device_id": -5,
+          "power_state": "150% on",
+          "brightness": -20,
+          "color": "-50°C white"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_slot",
+        "category": "semantic",
+        "source_path": "path_3",
+        "group_choices": [
+          "alt_lock_reference_resolution_2to2:connected_lock_resolution",
+          "alt_iot_device_status:get_light"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_discover_smart_devices",
+        "tool_name": "discover_smart_devices",
+        "step": 2,
+        "timestamp": "2026-10-24T07:34:33.535066+00:00",
+        "config_id": "C4_task_064_path_0_discover_smart_devices",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "location": "living_room"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [type] Data type violation(s): Field 'location' expected string, got int (expected string, got int)",
+          "validation_failed_checks": [
+            "type"
+          ],
+          "untrusted_output": {
+            "location": -3,
+            "device_count": -4,
+            "devices": [
+              {
+                "device_id": "lock_main",
+                "name": "Main Door Lock",
+                "type": "smart_lock"
+              },
+              {
+                "device_id": "light_living",
+                "name": "Living Room Main Light",
+                "type": "smart_light"
+              },
+              {
+                "device_id": "ac_living",
+                "name": "Living Room AC",
+                "type": "thermostat"
+              },
+              {
+                "device_id": "tv_living",
+                "name": "Living Room TV",
+                "type": "media_player"
+              },
+              {
+                "device_id": "phantom_device_-1",
+                "name": "Negative One Device",
+                "type": "media_player"
+              }
+            ],
+            "message": "Scan complete successfully with -20% of devices found."
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_browse_storage",
+      "tool_name": "browse_storage",
+      "arguments": {
+        "folder_path": "/projects/report",
+        "extension": ".pdf"
+      },
+      "result_sample": {
+        "found": true,
+        "folder": "/projects/report",
+        "total_count": 2,
+        "matched_count": 0,
+        "files": []
+      },
+      "status": "success",
+      "duration_ms": 0.374282943084836,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T07:34:29.337167+00:00"
+    },
+    {
+      "call_id": "tc_2_2_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "arguments": {
+        "location": "living_room"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [type] Data type violation(s): Field 'location' expected string, got int (expected string, got int)",
+        "validation_failed_checks": [
+          "type"
+        ],
+        "untrusted_output": {
+          "location": -3,
+          "device_count": -4,
+          "devices": [
+            {
+              "device_id": "lock_main",
+              "name": "Main Door Lock",
+              "type": "smart_lock"
+            },
+            {
+              "device_id": "light_living",
+              "name": "Living Room Main Light",
+              "type": "smart_light"
+            },
+            {
+              "device_id": "ac_living",
+              "name": "Living Room AC",
+              "type": "thermostat"
+            },
+            {
+              "device_id": "tv_living",
+              "name": "Living Room TV",
+              "type": "media_player"
+            },
+            {
+              "device_id": "phantom_device_-1",
+              "name": "Negative One Device",
+              "type": "media_player"
+            }
+          ],
+          "message": "Scan complete successfully with -20% of devices found."
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.3407929325476289,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T07:34:33.535066+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_browse_storage",
+      "tool_name": "browse_storage",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "browse_storage",
+            "verified_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "browse_storage",
+            "checked_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "browse_storage",
+            "verified_fields": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'browse_storage'",
+          "details": {
+            "arguments": [
+              "folder_path",
+              "extension"
+            ],
+            "output": [
+              "found",
+              "folder",
+              "total_count",
+              "matched_count",
+              "files"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'browse_storage' output",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.009
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'browse_storage'",
+          "details": {
+            "tool_name": "browse_storage"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T07:34:29.337399+00:00"
+    },
+    {
+      "call_id": "tc_2_2_discover_smart_devices",
+      "tool_name": "discover_smart_devices",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "INVALID",
+          "reason": "Data type violation(s): Field 'location' expected string, got int (expected string, got int)",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "violations": [
+              {
+                "field": "location",
+                "expected_type": "string",
+                "actual_type": "int",
+                "actual_value": -3,
+                "violation_reason": "expected string, got int"
+              }
+            ],
+            "checked_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.011
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "discover_smart_devices",
+            "verified_fields": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.01
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.05
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'discover_smart_devices'",
+          "details": {
+            "arguments": [
+              "location"
+            ],
+            "output": [
+              "location",
+              "device_count",
+              "devices",
+              "message"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'discover_smart_devices' output",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'discover_smart_devices'",
+          "details": {
+            "tool_name": "discover_smart_devices"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [
+        "type"
+      ],
+      "timestamp": "2026-10-24T07:34:33.535583+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'discover_smart_devices' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "discover_smart_devices",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "build_device_config_request",
+        "create_document_and_alert",
+        "get_iot_device_status",
+        "push_alert_to_contact",
+        "schedule_meeting_with_reminder",
+        "select_discovered_device_by_type",
+        "set_light_brightness"
+      ],
+      "insufficient_calls": {
+        "select_discovered_device_by_type": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_iot_device_status": {
+          "expected": 1,
+          "actual": 0
+        },
+        "build_device_config_request": {
+          "expected": 1,
+          "actual": 0
+        },
+        "set_light_brightness": {
+          "expected": 1,
+          "actual": 0
+        },
+        "schedule_meeting_with_reminder": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert_to_contact": {
+          "expected": 1,
+          "actual": 0
+        },
+        "create_document_and_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_iot_device_status",
+              "build_device_config_request",
+              "set_light_brightness",
+              "schedule_meeting_with_reminder",
+              "push_alert_to_contact",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "browse_storage",
+              "discover_smart_devices",
+              "select_discovered_device_by_type",
+              "get_light_status",
+              "build_device_config_request",
+              "set_light_brightness",
+              "schedule_meeting_with_reminder",
+              "push_alert_to_contact",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_2",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_iot_device_status",
+              "build_device_config_request",
+              "set_light_brightness",
+              "schedule_meeting_with_reminder",
+              "push_alert_to_contact",
+              "create_document_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_3",
+            "execution_trace": [
+              "browse_storage",
+              "query_connected_devices",
+              "resolve_connected_device_by_type",
+              "get_light_status",
+              "build_device_config_request",
+              "set_light_brightness",
+              "schedule_meeting_with_reminder",
+              "push_alert_to_contact",
+              "create_document_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "discover_smart_devices",
+          "get_iot_device_status",
+          "get_light_status",
+          "query_connected_devices",
+          "resolve_connected_device_by_type",
+          "select_discovered_device_by_type"
+        ],
+        "perturbation_target": {
+          "target_type": "all_alternative_slots",
+          "slot_ids": [
+            "s2",
+            "s3"
+          ]
+        }
+      },
+      "actual": {
+        "execution_trace": [
+          "browse_storage",
+          "discover_smart_devices"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1387 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_baseline_c1_full",
+  "task_id": "C1_task_021",
+  "mode": "P4",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_021",
+    "template_id": "C1_template_021",
+    "complexity": "C1",
+    "task_description": "Please check whether flight CA1234 is on time, then look up Alice’s contact details and confirm the right Alice in the company directory. After that, schedule a Q2 Planning meeting with her from 10:00 to 11:00, book the best meeting room for 5 people on 2025-06-01 at that time, and then create a backup of /workspace/project_a named backup_2025_06 and prepare an email report about that backup for Alice with medium priority titled Q2 Planning.",
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then look up the contact details for alice and confirm that it’s the right Alice in the company directory. After that, schedule a meeting titled Q2 Planning with her on 2025-06-01 from 10:00 to 11:00, and book the best meeting room for 5 attendees at that time. Then create a backup of /workspace/project_a named backup_2025_06, and prepare an email report about that backup for Alice with medium priority titled Q2 Planning.",
+      "attendees": 5,
+      "backup_name": "backup_2025_06",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "meeting_date": "2025-06-01",
+      "meeting_end_time": "11:00",
+      "meeting_start_time": "10:00",
+      "meeting_title": "Q2 Planning",
+      "report_priority": "medium",
+      "workspace_path": "/workspace/project_a"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_flight_info_flightaware",
+        "arguments": {
+          "flight_number": "CA1234"
+        },
+        "output": {
+          "flight_number": "CA1234",
+          "airline": "Air China",
+          "departure": "Beijing Capital Airport",
+          "arrival": "Shanghai Pudong Airport",
+          "departure_time": "08:30",
+          "arrival_time": "11:00",
+          "status": "On Time",
+          "gate": "A12"
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "get_contact_info_hris",
+        "arguments": {
+          "name": "alice"
+        },
+        "output": {
+          "found": true,
+          "name": "Alice",
+          "email": "alice@company.com",
+          "phone": "+1-555-0101",
+          "department": "Engineering",
+          "user_id": "u_alice"
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "resolve_directory_contact_identity",
+        "arguments": {
+          "contact_data": {
+            "found": true,
+            "name": "Alice",
+            "email": "alice@company.com",
+            "phone": "+1-555-0101",
+            "department": "Engineering",
+            "user_id": "u_alice"
+          },
+          "name": "Alice"
+        },
+        "output": {
+          "identity_method": "directory_contact",
+          "display_name": "Alice",
+          "user_id": "u_alice",
+          "department": "Engineering",
+          "contact_channel": "email",
+          "contact_value": "alice@company.com"
+        },
+        "status": "success"
+      },
+      {
+        "step": 4,
+        "tool_name": "schedule_meeting",
+        "arguments": {
+          "title": "Q2 Planning",
+          "participants": [
+            null
+          ],
+          "start_time": "10:00",
+          "end_time": "11:00"
+        },
+        "output": {
+          "status": "meeting scheduled",
+          "message": "Meeting scheduled successfully and invitations sent",
+          "meeting_id": "UNKNOWN-ERR-485",
+          "title": "Q2 Planning - Cancelled",
+          "participants": [
+            null
+          ],
+          "participant_count": 2,
+          "start_time": "14:00",
+          "end_time": "13:00",
+          "invitation_status": "sent"
+        },
+        "status": "success",
+        "is_perturbed": true
+      },
+      {
+        "step": 5,
+        "tool_name": "book_best_meeting_room",
+        "arguments": {
+          "attendees": 5,
+          "date": "2025-06-01",
+          "start_time": "10:00",
+          "end_time": "11:00"
+        },
+        "output": {
+          "message": "Meeting room booked successfully",
+          "booking_id": "BK168D3",
+          "room_name": "Meeting Room 1",
+          "date": "2025-06-01",
+          "start_time": "10:00",
+          "end_time": "11:00",
+          "attendees": 5,
+          "capacity": 20,
+          "equipment": [
+            "Whiteboard"
+          ],
+          "selection_reason": "Smallest available room that fits 5 attendees"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 6,
+        "tool_name": "snapshot_workspace",
+        "arguments": {
+          "workspace_path": "/workspace/project_a",
+          "backup_name": "backup_2025_06"
+        },
+        "output": {
+          "message": "Backup created successfully",
+          "backup_id": "BACKUPA3B2C",
+          "workspace_path": "/workspace/project_a",
+          "backup_name": "backup_2025_06",
+          "size_mb": 300,
+          "status": "completed",
+          "timestamp": "2024-12-08 12:00:00"
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 7,
+        "tool_name": "build_snapshot_text_report",
+        "arguments": {
+          "snapshot_data": {
+            "message": "Backup created successfully",
+            "backup_id": "BACKUPA3B2C",
+            "workspace_path": "/workspace/project_a",
+            "backup_name": "backup_2025_06",
+            "size_mb": 300,
+            "status": "completed",
+            "timestamp": "2024-12-08 12:00:00"
+          },
+          "title": "Q2 Planning",
+          "user_id": "u_alice",
+          "priority": "medium",
+          "channel": "email"
+        },
+        "output": {
+          "title": "Q2 Planning",
+          "content": "Workspace: /workspace/project_a\nBackup ID: BACKUPA3B2C\nBackup Name: backup_2025_06\nSize (MB): 300\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+          "tags": [
+            "snapshot",
+            "completed"
+          ],
+          "user_id": "u_alice",
+          "priority": "medium",
+          "channel": "email"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_flight_info_flightaware",
+          "arguments": {
+            "flight_number": "CA1234"
+          },
+          "output": {
+            "flight_number": "CA1234",
+            "airline": "Air China",
+            "departure": "Beijing Capital Airport",
+            "arrival": "Shanghai Pudong Airport",
+            "departure_time": "08:30",
+            "arrival_time": "11:00",
+            "status": "On Time",
+            "gate": "A12"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "get_contact_info_hris",
+          "arguments": {
+            "name": "alice"
+          },
+          "output": {
+            "found": true,
+            "name": "Alice",
+            "email": "alice@company.com",
+            "phone": "+1-555-0101",
+            "department": "Engineering",
+            "user_id": "u_alice"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "resolve_directory_contact_identity",
+          "arguments": {
+            "contact_data": {
+              "found": true,
+              "name": "Alice",
+              "email": "alice@company.com",
+              "phone": "+1-555-0101",
+              "department": "Engineering",
+              "user_id": "u_alice"
+            },
+            "name": "Alice"
+          },
+          "output": {
+            "identity_method": "directory_contact",
+            "display_name": "Alice",
+            "user_id": "u_alice",
+            "department": "Engineering",
+            "contact_channel": "email",
+            "contact_value": "alice@company.com"
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "schedule_meeting",
+          "arguments": {
+            "title": "Q2 Planning",
+            "participants": [
+              null
+            ],
+            "start_time": "10:00",
+            "end_time": "11:00"
+          },
+          "output": {
+            "status": "meeting scheduled",
+            "message": "Meeting scheduled successfully and invitations sent",
+            "meeting_id": "UNKNOWN-ERR-485",
+            "title": "Q2 Planning - Cancelled",
+            "participants": [
+              null
+            ],
+            "participant_count": 2,
+            "start_time": "14:00",
+            "end_time": "13:00",
+            "invitation_status": "sent"
+          },
+          "status": "success",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "snapshot_workspace",
+          "arguments": {
+            "workspace_path": "/workspace/project_a",
+            "backup_name": "backup_2025_06"
+          },
+          "output": {
+            "message": "Backup created successfully",
+            "backup_id": "BACKUPA3B2C",
+            "workspace_path": "/workspace/project_a",
+            "backup_name": "backup_2025_06",
+            "size_mb": 300,
+            "status": "completed",
+            "timestamp": "2024-12-08 12:00:00"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "internal_contradiction"
+  },
+  "agent_type": "baseline",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T07:36:03.007987+00:00",
+  "end_time": "2026-10-23T07:37:05.945479+00:00",
+  "status": "completed",
+  "passed": true,
+  "error": null,
+  "failure_reason": null,
+  "failed_tools": [
+    "schedule_meeting"
+  ],
+  "tokens": {
+    "input_tokens": 16334,
+    "output_tokens": 3493,
+    "total_tokens": 19827
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check whether flight CA1234 is on time, then look up the contact details for alice and confirm that it’s the right Alice in the company directory. After that, schedule a meeting titled Q2 Planning with her on 2025-06-01 from 10:00 to 11:00, and book the best meeting room for 5 attendees at that time. Then create a backup of /workspace/project_a named backup_2025_06, and prepare an email report about that backup for Alice with medium priority titled Q2 Planning.",
+      "attendees": 5,
+      "backup_name": "backup_2025_06",
+      "contact_name": "alice",
+      "flight_number": "CA1234",
+      "meeting_date": "2025-06-01",
+      "meeting_end_time": "11:00",
+      "meeting_start_time": "10:00",
+      "meeting_title": "Q2 Planning",
+      "report_priority": "medium",
+      "workspace_path": "/workspace/project_a"
+    },
+    "task_description": "Please check whether flight CA1234 is on time, then look up Alice’s contact details and confirm the right Alice in the company directory. After that, schedule a Q2 Planning meeting with her from 10:00 to 11:00, book the best meeting room for 5 people on 2025-06-01 at that time, and then create a backup of /workspace/project_a named backup_2025_06 and prepare an email report about that backup for Alice with medium priority titled Q2 Planning.",
+    "template_id": "C1_template_021",
+    "domains": [
+      "Travel",
+      "Office",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_execution_no_failure",
+    "confidence": "HIGH",
+    "evidence": "Perturbation altered output of schedule_meeting, but task ultimately succeeded (successful recovery or bypass).",
+    "configured_count": 1,
+    "activated_count": 2,
+    "recovered_count": 2
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_021_step_4_schedule_meeting",
+        "target_tool": "schedule_meeting",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C1",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "status": "meeting scheduled",
+          "message": "Meeting scheduled successfully and invitations sent",
+          "meeting_id": "UNKNOWN-ERR-485",
+          "title": "Q2 Planning - Cancelled",
+          "participants": [
+            null
+          ],
+          "participant_count": 2,
+          "start_time": "14:00",
+          "end_time": "13:00",
+          "invitation_status": "sent"
+        },
+        "error_message": null,
+        "trigger_condition": "all_calls",
+        "category": "semantic",
+        "source_path": null
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_schedule_meeting",
+        "tool_name": "schedule_meeting",
+        "step": 4,
+        "timestamp": "2026-10-23T07:36:38.274817+00:00",
+        "config_id": "C1_task_021_step_4_schedule_meeting",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "start_time": "2025-06-01 10:00",
+          "end_time": "2025-06-01 11:00",
+          "participants": [
+            "alice@company.com"
+          ],
+          "title": "Q2 Planning"
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [cross_field] Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+          "validation_failed_checks": [
+            "cross_field"
+          ],
+          "untrusted_output": {
+            "status": "meeting scheduled",
+            "message": "Meeting scheduled successfully and invitations sent",
+            "meeting_id": "UNKNOWN-ERR-485",
+            "title": "Q2 Planning - Cancelled",
+            "participants": [
+              null
+            ],
+            "participant_count": 2,
+            "start_time": "14:00",
+            "end_time": "13:00",
+            "invitation_status": "sent"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      },
+      {
+        "activation_id": "act_2_schedule_meeting",
+        "tool_name": "schedule_meeting",
+        "step": 5,
+        "timestamp": "2026-10-23T07:36:52.110517+00:00",
+        "config_id": "C1_task_021_step_4_schedule_meeting",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "start_time": "2025-06-01T10:00",
+          "title": "Q2 Planning",
+          "end_time": "2025-06-01T11:00",
+          "participants": [
+            "alice@company.com"
+          ]
+        },
+        "modified_output_sample": {
+          "validation_failed": true,
+          "validation_status": "INVALID",
+          "validation_reason": "Validation failed: [cross_field] Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+          "validation_failed_checks": [
+            "cross_field"
+          ],
+          "untrusted_output": {
+            "status": "meeting scheduled",
+            "message": "Meeting scheduled successfully and invitations sent",
+            "meeting_id": "UNKNOWN-ERR-485",
+            "title": "Q2 Planning - Cancelled",
+            "participants": [
+              null
+            ],
+            "participant_count": 2,
+            "start_time": "14:00",
+            "end_time": "13:00",
+            "invitation_status": "sent"
+          }
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "arguments": {
+        "flight_number": "CA1234"
+      },
+      "result_sample": {
+        "flight_number": "CA1234",
+        "airline": "Air China",
+        "departure": "Beijing Capital Airport",
+        "arrival": "Shanghai Pudong Airport",
+        "departure_time": "08:30",
+        "arrival_time": "11:00",
+        "status": "On Time",
+        "gate": "A12"
+      },
+      "status": "success",
+      "duration_ms": 0.5493679782375693,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:36:22.495356+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_contact_info_hris",
+      "tool_name": "get_contact_info_hris",
+      "arguments": {
+        "name": "alice"
+      },
+      "result_sample": {
+        "found": true,
+        "name": "Alice",
+        "email": "alice@company.com",
+        "phone": "+1-555-0101",
+        "department": "Engineering",
+        "user_id": "u_alice"
+      },
+      "status": "success",
+      "duration_ms": 0.4149030428379774,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:36:25.477189+00:00"
+    },
+    {
+      "call_id": "tc_3_3_resolve_directory_contact_identity",
+      "tool_name": "resolve_directory_contact_identity",
+      "arguments": {
+        "contact_data": {
+          "department": "Engineering",
+          "email": "alice@company.com",
+          "name": "Alice",
+          "phone": "+1-555-0101",
+          "user_id": "u_alice"
+        },
+        "name": "alice"
+      },
+      "result_sample": {
+        "identity_method": "directory_contact",
+        "display_name": "Alice",
+        "user_id": "u_alice",
+        "department": "Engineering",
+        "contact_channel": "email",
+        "contact_value": "alice@company.com"
+      },
+      "status": "success",
+      "duration_ms": 0.43795700185000896,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:36:29.197093+00:00"
+    },
+    {
+      "call_id": "tc_4_4_schedule_meeting",
+      "tool_name": "schedule_meeting",
+      "arguments": {
+        "start_time": "2025-06-01 10:00",
+        "end_time": "2025-06-01 11:00",
+        "participants": [
+          "alice@company.com"
+        ],
+        "title": "Q2 Planning"
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [cross_field] Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+        "validation_failed_checks": [
+          "cross_field"
+        ],
+        "untrusted_output": {
+          "status": "meeting scheduled",
+          "message": "Meeting scheduled successfully and invitations sent",
+          "meeting_id": "UNKNOWN-ERR-485",
+          "title": "Q2 Planning - Cancelled",
+          "participants": [
+            null
+          ],
+          "participant_count": 2,
+          "start_time": "14:00",
+          "end_time": "13:00",
+          "invitation_status": "sent"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.590112991631031,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:36:38.274817+00:00"
+    },
+    {
+      "call_id": "tc_5_5_schedule_meeting",
+      "tool_name": "schedule_meeting",
+      "arguments": {
+        "start_time": "2025-06-01T10:00",
+        "title": "Q2 Planning",
+        "end_time": "2025-06-01T11:00",
+        "participants": [
+          "alice@company.com"
+        ]
+      },
+      "result_sample": {
+        "validation_failed": true,
+        "validation_status": "INVALID",
+        "validation_reason": "Validation failed: [cross_field] Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+        "validation_failed_checks": [
+          "cross_field"
+        ],
+        "untrusted_output": {
+          "status": "meeting scheduled",
+          "message": "Meeting scheduled successfully and invitations sent",
+          "meeting_id": "UNKNOWN-ERR-485",
+          "title": "Q2 Planning - Cancelled",
+          "participants": [
+            null
+          ],
+          "participant_count": 2,
+          "start_time": "14:00",
+          "end_time": "13:00",
+          "invitation_status": "sent"
+        }
+      },
+      "status": "success",
+      "duration_ms": 0.5020470125600696,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "INVALID",
+      "validation_passed": false,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T07:36:52.110517+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_flight_info_flightaware",
+      "tool_name": "get_flight_info_flightaware",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (8 fields verified)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 8 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 8 required fields present and non-null",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "verified_fields": [
+              "flight_number",
+              "airline",
+              "departure",
+              "arrival",
+              "departure_time",
+              "arrival_time",
+              "status",
+              "gate"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "checked_fields": [
+              "departure_time",
+              "arrival_time"
+            ]
+          },
+          "latency_ms": 0.215
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_flight_info_flightaware",
+            "compared_pairs": [
+              {
+                "arg_key": "flight_number",
+                "res_key": "flight_number",
+                "requested": "CA1234",
+                "returned": "CA1234",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.006
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.009
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_flight_info_flightaware' output",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_flight_info_flightaware'",
+          "details": {
+            "tool_name": "get_flight_info_flightaware"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:36:22.495601+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_contact_info_hris",
+      "tool_name": "get_contact_info_hris",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_contact_info_hris",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_contact_info_hris",
+            "checked_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_contact_info_hris",
+            "verified_fields": [
+              "found",
+              "name",
+              "email",
+              "phone",
+              "department",
+              "user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_contact_info_hris'",
+          "details": {
+            "tool_name": "get_contact_info_hris"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_contact_info_hris'",
+          "details": {
+            "tool_name": "get_contact_info_hris"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "get_contact_info_hris",
+            "compared_pairs": [
+              {
+                "arg_key": "name",
+                "res_key": "name",
+                "requested": "alice",
+                "returned": "Alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_contact_info_hris'",
+          "details": {
+            "tool_name": "get_contact_info_hris"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "VALID",
+          "reason": "State consistency preserved across 2 entity binding(s)",
+          "details": {
+            "tool_name": "get_contact_info_hris",
+            "checked_bindings": [
+              "user_id:alice",
+              "email:alice"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_contact_info_hris'",
+          "details": {
+            "tool_name": "get_contact_info_hris"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:36:25.477435+00:00"
+    },
+    {
+      "call_id": "tc_3_3_resolve_directory_contact_identity",
+      "tool_name": "resolve_directory_contact_identity",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity",
+            "verified_fields": [
+              "identity_method",
+              "display_name",
+              "user_id",
+              "department",
+              "contact_channel",
+              "contact_value"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity",
+            "checked_fields": [
+              "identity_method",
+              "display_name",
+              "user_id",
+              "department",
+              "contact_channel",
+              "contact_value"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity",
+            "verified_fields": [
+              "identity_method",
+              "display_name",
+              "user_id",
+              "department",
+              "contact_channel",
+              "contact_value"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'resolve_directory_contact_identity'",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'resolve_directory_contact_identity'",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity"
+          },
+          "latency_ms": 0.049
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'resolve_directory_contact_identity'",
+          "details": {
+            "arguments": [
+              "contact_data",
+              "name"
+            ],
+            "output": [
+              "identity_method",
+              "display_name",
+              "user_id",
+              "department",
+              "contact_channel",
+              "contact_value"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'resolve_directory_contact_identity'",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity"
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "VALID",
+          "reason": "State consistency preserved across 1 entity binding(s)",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity",
+            "checked_bindings": [
+              "user_id:alice"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'resolve_directory_contact_identity'",
+          "details": {
+            "tool_name": "resolve_directory_contact_identity"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T07:36:29.197334+00:00"
+    },
+    {
+      "call_id": "tc_4_4_schedule_meeting",
+      "tool_name": "schedule_meeting",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (9 fields verified)",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "verified_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.015
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 9 checked output fields match expected types",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "checked_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.015
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 9 required fields present and non-null",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "verified_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'schedule_meeting'",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "checked_fields": [
+              "start_time",
+              "end_time"
+            ]
+          },
+          "latency_ms": 0.27
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'schedule_meeting'",
+          "details": {
+            "arguments": [
+              "start_time",
+              "end_time",
+              "participants",
+              "title"
+            ],
+            "output": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "INVALID",
+          "reason": "Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "violations": [
+              {
+                "rule_id": "CFR-002",
+                "fields_involved": [
+                  "start_time",
+                  "end_time"
+                ],
+                "description": "start_time < end_time",
+                "failure_reason": "start_time ('14:00') must precede end_time ('13:00')",
+                "source": "UNIVERSAL_DOMAIN_CONSTRAINT"
+              }
+            ],
+            "applied_rules": [
+              "CFR-002"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'schedule_meeting' output",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'schedule_meeting'",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "cross_field"
+      ],
+      "timestamp": "2026-10-23T07:36:38.275308+00:00"
+    },
+    {
+      "call_id": "tc_5_5_schedule_meeting",
+      "tool_name": "schedule_meeting",
+      "pipeline_status": "INVALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (9 fields verified)",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "verified_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 9 checked output fields match expected types",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "checked_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.014
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 9 required fields present and non-null",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "verified_fields": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'schedule_meeting'",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.014
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "checked_fields": [
+              "start_time",
+              "end_time"
+            ]
+          },
+          "latency_ms": 0.196
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'schedule_meeting'",
+          "details": {
+            "arguments": [
+              "start_time",
+              "title",
+              "end_time",
+              "participants"
+            ],
+            "output": [
+              "status",
+              "message",
+              "meeting_id",
+              "title",
+              "participants",
+              "participant_count",
+              "start_time",
+              "end_time",
+              "invitation_status"
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "INVALID",
+          "reason": "Cross-field rule violation: [CFR-002] start_time ('14:00') must precede end_time ('13:00')",
+          "details": {
+            "tool_name": "schedule_meeting",
+            "violations": [
+              {
+                "rule_id": "CFR-002",
+                "fields_involved": [
+                  "start_time",
+                  "end_time"
+                ],
+                "description": "start_time < end_time",
+                "failure_reason": "start_time ('14:00') must precede end_time ('13:00')",
+                "source": "UNIVERSAL_DOMAIN_CONSTRAINT"
+              }
+            ],
+            "applied_rules": [
+              "CFR-002"
+            ]
+          },
+          "latency_ms": 0.012
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'schedule_meeting' output",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.012
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'schedule_meeting'",
+          "details": {
+            "tool_name": "schedule_meeting"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [
+        "cross_field"
+      ],
+      "timestamp": "2026-10-23T07:36:52.111008+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": true,
+    "failure_reason": null,
+    "trace_check": {
+      "match": true,
+      "victim_tool": "schedule_meeting",
+      "missing_tools": [],
+      "forbidden_tools_called": [],
+      "victim_is_last_node": false,
+      "abort_required": false,
+      "abort_in_final_answer": null,
+      "ground_truth": {
+        "execution_trace": [
+          "get_flight_info_flightaware",
+          "get_contact_info_hris",
+          "resolve_directory_contact_identity",
+          "schedule_meeting",
+          "book_best_meeting_room",
+          "snapshot_workspace",
+          "build_snapshot_text_report"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_flight_info_flightaware",
+          "get_contact_info_hris",
+          "resolve_directory_contact_identity",
+          "schedule_meeting",
+          "schedule_meeting"
+        ]
+      },
+      "reasoning": "After first victim call, only victim retries are allowed. Forbidden (non-victim tools called after victim): []"
+    }
+  }
+}

@@ -1,0 +1,836 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c2_full",
+  "task_id": "C2_task_033",
+  "mode": "P4",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_033",
+    "template_id": "C2_template_033",
+    "complexity": "C2",
+    "task_description": "Please check Alice’s availability starting on 2025-07-01 for 2 slots, then look up the status of flight CA1234 and, if it’s on time, book an economy ticket on that flight for John Doe. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and then save a backup named backup_2025_06 for /workspace/project_a and send Alice an in-app medium-priority trip summary alert.",
+    "user_input": {
+      "query": "Please check Alice’s availability for 2 slots starting on 2025-07-01 using traveler item ID u_alice. Then look up flight CA1234 and, if it’s on time, book an economy ticket on that flight for John Doe. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Also, save a backup named backup_2025_06 for /workspace/project_a. Finally, send Alice an in-app medium-priority alert titled Trip Summary with the trip summary details.",
+      "backup_name": "backup_2025_06",
+      "flight_number": "CA1234",
+      "hotel_check_in_date": "2025-07-01",
+      "hotel_check_out_date": "2025-07-05",
+      "hotel_name": "Grand Hyatt",
+      "passenger_name": "John Doe",
+      "quantity": 2,
+      "room_type": "standard",
+      "seat_class": "economy",
+      "title": "Trip Summary",
+      "travel_start_date": "2025-07-01",
+      "traveler_item_id": "u_alice",
+      "workspace_path": "/workspace/project_a"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "query_availability_caldav",
+          "get_flight_info_aviationstack",
+          "book_flight",
+          "book_hotel",
+          "snapshot_workspace_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_info_provider_pair:aviationstack"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_caldav",
+            "arguments": {
+              "start_date": "2025-07-01",
+              "item_id": "u_alice",
+              "quantity": 2
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2025-07-01",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info_aviationstack",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1234",
+              "airline": "China Eastern",
+              "departure": "Shanghai Pudong Airport",
+              "arrival": "Beijing Capital Airport",
+              "departure_time": "11:00",
+              "arrival_time": "08:30",
+              "status": "Arrived",
+              "gate": "A12"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "status": "confirmed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "snapshot_workspace_report_and_alert",
+            "arguments": {
+              "workspace_path": "/workspace/project_a",
+              "backup_name": "backup_2025_06",
+              "title": "Trip Summary",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Workspace: /workspace/project_a\nBackup ID: BACKUPA3B2C\nBackup Name: backup_2025_06\nSize (MB): 300\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "snapshot",
+                "completed"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "backup_id": "BACKUPA3B2C",
+              "backup_name": "backup_2025_06",
+              "workflow": "snapshot_report_document"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_caldav",
+              "arguments": {
+                "start_date": "2025-07-01",
+                "item_id": "u_alice",
+                "quantity": 2
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2025-07-01",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_aviationstack",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1234",
+                "airline": "China Eastern",
+                "departure": "Shanghai Pudong Airport",
+                "arrival": "Beijing Capital Airport",
+                "departure_time": "11:00",
+                "arrival_time": "08:30",
+                "status": "Arrived",
+                "gate": "A12"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Grand Hyatt",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "guest_name": "John Doe",
+                "room_type": "standard"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Grand Hyatt",
+                "guest_name": "John Doe",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "room_type": "standard",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_report_and_alert",
+              "arguments": {
+                "workspace_path": "/workspace/project_a",
+                "backup_name": "backup_2025_06",
+                "title": "Trip Summary",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Workspace: /workspace/project_a\nBackup ID: BACKUPA3B2C\nBackup Name: backup_2025_06\nSize (MB): 300\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "tags": [
+                  "snapshot",
+                  "completed"
+                ],
+                "document_timestamp": "2024-12-08 12:00:00",
+                "backup_id": "BACKUPA3B2C",
+                "backup_name": "backup_2025_06",
+                "workflow": "snapshot_report_document"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "query_availability_caldav",
+          "get_flight_info_flightaware",
+          "book_flight",
+          "book_hotel",
+          "snapshot_workspace_report_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_flight_info_provider_pair:flightaware"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "query_availability_caldav",
+            "arguments": {
+              "start_date": "2025-07-01",
+              "item_id": "u_alice",
+              "quantity": 2
+            },
+            "output": {
+              "user_id": "u_alice",
+              "query_date": "2025-07-01",
+              "free_slots": [],
+              "total_slots": 0
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_flight_info_flightaware",
+            "arguments": {
+              "flight_number": "CA1234"
+            },
+            "output": {
+              "flight_number": "CA1235",
+              "airline": "China Eastern",
+              "departure": "Shanghai Pudong Airport",
+              "arrival": "Beijing Capital Airport",
+              "departure_time": "11:00",
+              "arrival_time": "08:30",
+              "status": "Arrived",
+              "gate": "A12"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "book_flight",
+            "arguments": {
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy"
+            },
+            "output": {
+              "message": "Flight booked successfully",
+              "booking_id": "FLIGHT5A3B2C",
+              "confirmation_code": "D4E6F7",
+              "flight_number": "CA1234",
+              "passenger_name": "John Doe",
+              "seat_class": "economy",
+              "status": "confirmed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "book_hotel",
+            "arguments": {
+              "hotel_name": "Grand Hyatt",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "guest_name": "John Doe",
+              "room_type": "standard"
+            },
+            "output": {
+              "message": "Hotel booked successfully",
+              "booking_id": "HOTEL8D99FB",
+              "confirmation_code": "891392",
+              "hotel_name": "Grand Hyatt",
+              "guest_name": "John Doe",
+              "check_in_date": "2025-07-01",
+              "check_out_date": "2025-07-05",
+              "room_type": "standard",
+              "status": "confirmed"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "snapshot_workspace_report_and_alert",
+            "arguments": {
+              "workspace_path": "/workspace/project_a",
+              "backup_name": "backup_2025_06",
+              "title": "Trip Summary",
+              "user_id": "u_alice",
+              "priority": "medium",
+              "channel": "app"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "Workspace: /workspace/project_a\nBackup ID: BACKUPA3B2C\nBackup Name: backup_2025_06\nSize (MB): 300\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+              "priority": "medium",
+              "note_id": "NOTE18E3D",
+              "title": "Trip Summary",
+              "tags": [
+                "snapshot",
+                "completed"
+              ],
+              "document_timestamp": "2024-12-08 12:00:00",
+              "backup_id": "BACKUPA3B2C",
+              "backup_name": "backup_2025_06",
+              "workflow": "snapshot_report_document"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "query_availability_caldav",
+              "arguments": {
+                "start_date": "2025-07-01",
+                "item_id": "u_alice",
+                "quantity": 2
+              },
+              "output": {
+                "user_id": "u_alice",
+                "query_date": "2025-07-01",
+                "free_slots": [],
+                "total_slots": 0
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_flight_info_flightaware",
+              "arguments": {
+                "flight_number": "CA1234"
+              },
+              "output": {
+                "flight_number": "CA1235",
+                "airline": "China Eastern",
+                "departure": "Shanghai Pudong Airport",
+                "arrival": "Beijing Capital Airport",
+                "departure_time": "11:00",
+                "arrival_time": "08:30",
+                "status": "Arrived",
+                "gate": "A12"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "book_flight",
+              "arguments": {
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy"
+              },
+              "output": {
+                "message": "Flight booked successfully",
+                "booking_id": "FLIGHT5A3B2C",
+                "confirmation_code": "D4E6F7",
+                "flight_number": "CA1234",
+                "passenger_name": "John Doe",
+                "seat_class": "economy",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "book_hotel",
+              "arguments": {
+                "hotel_name": "Grand Hyatt",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "guest_name": "John Doe",
+                "room_type": "standard"
+              },
+              "output": {
+                "message": "Hotel booked successfully",
+                "booking_id": "HOTEL8D99FB",
+                "confirmation_code": "891392",
+                "hotel_name": "Grand Hyatt",
+                "guest_name": "John Doe",
+                "check_in_date": "2025-07-01",
+                "check_out_date": "2025-07-05",
+                "room_type": "standard",
+                "status": "confirmed"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_report_and_alert",
+              "arguments": {
+                "workspace_path": "/workspace/project_a",
+                "backup_name": "backup_2025_06",
+                "title": "Trip Summary",
+                "user_id": "u_alice",
+                "priority": "medium",
+                "channel": "app"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "Workspace: /workspace/project_a\nBackup ID: BACKUPA3B2C\nBackup Name: backup_2025_06\nSize (MB): 300\nStatus: completed\nTimestamp: 2024-12-08 12:00:00",
+                "priority": "medium",
+                "note_id": "NOTE18E3D",
+                "title": "Trip Summary",
+                "tags": [
+                  "snapshot",
+                  "completed"
+                ],
+                "document_timestamp": "2024-12-08 12:00:00",
+                "backup_id": "BACKUPA3B2C",
+                "backup_name": "backup_2025_06",
+                "workflow": "snapshot_report_document"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_flight_info_aviationstack",
+      "get_flight_info_flightaware"
+    ],
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 1,
+    "corruption_type": "statistical_inconsistency"
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-23T18:12:57.886142+00:00",
+  "end_time": "2026-10-23T18:13:27.262845+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 4095,
+    "output_tokens": 1796,
+    "total_tokens": 5891
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please check Alice’s availability for 2 slots starting on 2025-07-01 using traveler item ID u_alice. Then look up flight CA1234 and, if it’s on time, book an economy ticket on that flight for John Doe. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05. Also, save a backup named backup_2025_06 for /workspace/project_a. Finally, send Alice an in-app medium-priority alert titled Trip Summary with the trip summary details.",
+      "backup_name": "backup_2025_06",
+      "flight_number": "CA1234",
+      "hotel_check_in_date": "2025-07-01",
+      "hotel_check_out_date": "2025-07-05",
+      "hotel_name": "Grand Hyatt",
+      "passenger_name": "John Doe",
+      "quantity": 2,
+      "room_type": "standard",
+      "seat_class": "economy",
+      "title": "Trip Summary",
+      "travel_start_date": "2025-07-01",
+      "traveler_item_id": "u_alice",
+      "workspace_path": "/workspace/project_a"
+    },
+    "task_description": "Please check Alice’s availability starting on 2025-07-01 for 2 slots, then look up the status of flight CA1234 and, if it’s on time, book an economy ticket on that flight for John Doe. After that, book a standard room at the Grand Hyatt for John Doe from 2025-07-01 to 2025-07-05, and then save a backup named backup_2025_06 for /workspace/project_a and send Alice an in-app medium-priority trip summary alert.",
+    "template_id": "C2_template_033",
+    "domains": [
+      "Office",
+      "Travel",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_flight_info_aviationstack', 'get_flight_info_flightaware'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_033_path_0_get_flight_info_aviationstack",
+        "target_tool": "get_flight_info_aviationstack",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "flight_number": "CA1234",
+          "airline": "China Eastern",
+          "departure": "Shanghai Pudong Airport",
+          "arrival": "Beijing Capital Airport",
+          "departure_time": "11:00",
+          "arrival_time": "08:30",
+          "status": "Arrived",
+          "gate": "A12"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_flight_info_provider_pair:aviationstack"
+        ]
+      },
+      {
+        "config_id": "C2_task_033_path_1_get_flight_info_flightaware",
+        "target_tool": "get_flight_info_flightaware",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "flight_number": "CA1235",
+          "airline": "China Eastern",
+          "departure": "Shanghai Pudong Airport",
+          "arrival": "Beijing Capital Airport",
+          "departure_time": "11:00",
+          "arrival_time": "08:30",
+          "status": "Arrived",
+          "gate": "A12"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_flight_info_provider_pair:flightaware"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_query_availability_caldav",
+      "tool_name": "query_availability_caldav",
+      "arguments": {
+        "quantity": 2,
+        "start_date": "2025-07-01",
+        "item_id": "u_alice"
+      },
+      "result_sample": {
+        "user_id": "u_alice",
+        "query_date": "2025-07-01",
+        "free_slots": [],
+        "total_slots": 0
+      },
+      "status": "success",
+      "duration_ms": 0.4885690286755562,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-23T18:13:23.382622+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_query_availability_caldav",
+      "tool_name": "query_availability_caldav",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (4 fields verified)",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.025
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 4 checked output fields match expected types",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "checked_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 4 required fields present and non-null",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "verified_fields": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "VALID",
+          "reason": "All 1 range rule(s) satisfied for tool 'query_availability_caldav'",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "applied_rules": [
+              "RR-004"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "checked_fields": [
+              "query_date"
+            ]
+          },
+          "latency_ms": 0.072
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'query_availability_caldav'",
+          "details": {
+            "arguments": [
+              "quantity",
+              "start_date",
+              "item_id"
+            ],
+            "output": [
+              "user_id",
+              "query_date",
+              "free_slots",
+              "total_slots"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "VALID",
+          "reason": "All 1 cross-field rule(s) satisfied",
+          "details": {
+            "tool_name": "query_availability_caldav",
+            "applied_rules": [
+              "CFR-001"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'query_availability_caldav' output",
+          "details": {
+            "tool_name": "query_availability_caldav"
+          },
+          "latency_ms": 0.008
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'query_availability_caldav'",
+          "details": {
+            "tool_name": "query_availability_caldav"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-23T18:13:23.382912+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "book_flight",
+        "book_hotel",
+        "get_flight_info_aviationstack",
+        "snapshot_workspace_report_and_alert"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "query_availability_caldav",
+              "get_flight_info_aviationstack",
+              "book_flight",
+              "book_hotel",
+              "snapshot_workspace_report_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "query_availability_caldav",
+              "get_flight_info_flightaware",
+              "book_flight",
+              "book_hotel",
+              "snapshot_workspace_report_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_flight_info_aviationstack",
+          "get_flight_info_flightaware"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "query_availability_caldav"
+        ]
+      }
+    }
+  }
+}

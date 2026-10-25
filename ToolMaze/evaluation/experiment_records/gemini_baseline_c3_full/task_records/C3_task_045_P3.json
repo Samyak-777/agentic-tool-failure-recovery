@@ -1,0 +1,721 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c3_full",
+  "task_id": "C3_task_045",
+  "mode": "P3",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_045",
+    "template_id": "C3_template_045",
+    "complexity": "C3",
+    "task_description": "Please check the stock price for AAPL and get a conversion quote for it in EUR. Then, check my investment account balance for user u_david_99, look up the current market window for the NASDAQ exchange, publish those market window details to my app with high priority, and finally send me a push notification about the NASDAQ session status and its next transition time.",
+    "user_input": {
+      "query": "Could you please check the current stock price for AAPL and give me a conversion quote for it in EUR? While you're at it, I need you to check the investment account balance for user u_david_99. I also need to look up the current market window for the NASDAQ exchange and have those market window details published to my app with high priority. Finally, please send me a push notification regarding the current NASDAQ session status and include the time for its next transition.",
+      "currency": "EUR",
+      "exchange_name": "NASDAQ",
+      "ticker": "AAPL",
+      "user_id": "u_david_99"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_stock_yahoo_finance",
+          "get_fx_quote_ticket_native",
+          "get_broker_balance_ledger_native",
+          "get_alpha_market_window_native",
+          "publish_alpha_market_window_native",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_market_notice_native_2to2:alpha_market_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": "fxt_aapl",
+              "ticker_code": "AAPL",
+              "local_last": 156.63,
+              "settlement_ccy": "EUR",
+              "usd_reference": 170.25,
+              "fx_rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "u_david_99",
+              "account_type": "investment"
+            },
+            "output": {
+              "ledger_ref": "broker_u_david_99_investment",
+              "principal_id": "u_david_99",
+              "equity_value": 34383,
+              "currency_code": "USD",
+              "account_bucket": "investment"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_alpha_market_window_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "market_live": null,
+              "phase_label": "invalid_state",
+              "transition_mark": "00:00 NULL"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_alpha_market_window_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "alpha_window_id": "alpha_nasdaq",
+              "venue_code": "NASDAQ",
+              "market_live": true,
+              "phase_label": "regular",
+              "transition_mark": "16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_alpha_market_window_native",
+            "arguments": {
+              "market_window": {
+                "alpha_window_id": "alpha_nasdaq",
+                "venue_code": "NASDAQ",
+                "market_live": true,
+                "phase_label": "regular",
+                "transition_mark": "16:00 EST"
+              },
+              "user_id": "u_david_99",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "alpha_market_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_david_99",
+              "market_ref": "alpha_nasdaq",
+              "content": "NASDAQ session regular, next transition 16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "NASDAQ session regular, next transition 16:00 EST",
+              "user_id": "u_david_99",
+              "priority": "medium"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_david_99",
+              "content": "NASDAQ session regular, next transition 16:00 EST",
+              "priority": "medium"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 156.63,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "u_david_99",
+                "account_type": "investment"
+              },
+              "output": {
+                "ledger_ref": "broker_u_david_99_investment",
+                "principal_id": "u_david_99",
+                "equity_value": 34383,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_alpha_market_window_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "market_live": null,
+                "phase_label": "invalid_state",
+                "transition_mark": "00:00 NULL"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_alpha_market_window_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "alpha_window_id": "alpha_nasdaq",
+                "venue_code": "NASDAQ",
+                "market_live": true,
+                "phase_label": "regular",
+                "transition_mark": "16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_alpha_market_window_native",
+              "arguments": {
+                "market_window": {
+                  "alpha_window_id": "alpha_nasdaq",
+                  "venue_code": "NASDAQ",
+                  "market_live": true,
+                  "phase_label": "regular",
+                  "transition_mark": "16:00 EST"
+                },
+                "user_id": "u_david_99",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "alpha_market_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_david_99",
+                "market_ref": "alpha_nasdaq",
+                "content": "NASDAQ session regular, next transition 16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "NASDAQ session regular, next transition 16:00 EST",
+                "user_id": "u_david_99",
+                "priority": "medium"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_david_99",
+                "content": "NASDAQ session regular, next transition 16:00 EST",
+                "priority": "medium"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_stock_yahoo_finance",
+          "get_fx_quote_ticket_native",
+          "get_broker_balance_ledger_native",
+          "get_polygon_market_board_native",
+          "publish_polygon_market_board_native",
+          "push_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_market_notice_native_2to2:polygon_market_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_stock_yahoo_finance",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "price_usd": 170.25,
+              "currency": "USD"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": "fxt_aapl",
+              "ticker_code": "AAPL",
+              "local_last": 156.63,
+              "settlement_ccy": "EUR",
+              "usd_reference": 170.25,
+              "fx_rate": 0.92
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_broker_balance_ledger_native",
+            "arguments": {
+              "user_id": "u_david_99",
+              "account_type": "investment"
+            },
+            "output": {
+              "ledger_ref": "broker_u_david_99_investment",
+              "principal_id": "u_david_99",
+              "equity_value": 34383,
+              "currency_code": "USD",
+              "account_bucket": "investment"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_polygon_market_board_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "polygon_board_id": "polygon_nasdaq_total_listings_50_active_500",
+              "market_code": "NASDAQ_avg_volume_1M_max_volume_10K",
+              "board_live": false,
+              "session_band": "regular_120_percent_complete",
+              "next_mark": "16:00 EST_event_5_of_2"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "get_polygon_market_board_native",
+            "arguments": {
+              "exchange": "NASDAQ"
+            },
+            "output": {
+              "polygon_board_id": "polygon_nasdaq",
+              "market_code": "NASDAQ",
+              "board_live": true,
+              "session_band": "regular",
+              "next_mark": "16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 6,
+            "tool_name": "publish_polygon_market_board_native",
+            "arguments": {
+              "market_board": {
+                "polygon_board_id": "polygon_nasdaq",
+                "market_code": "NASDAQ",
+                "board_live": true,
+                "session_band": "regular",
+                "next_mark": "16:00 EST"
+              },
+              "user_id": "u_david_99",
+              "priority": "high",
+              "channel": "app"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "polygon_market_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_david_99",
+              "market_ref": "polygon_nasdaq",
+              "content": "NASDAQ band regular, next mark 16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 7,
+            "tool_name": "push_alert",
+            "arguments": {
+              "message": "NASDAQ band regular, next mark 16:00 EST",
+              "user_id": "u_david_99",
+              "priority": "medium"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_david_99",
+              "content": "NASDAQ band regular, next mark 16:00 EST",
+              "priority": "medium"
+            },
+            "status": "success"
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_stock_yahoo_finance",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "price_usd": 170.25,
+                "currency": "USD"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 156.63,
+                "settlement_ccy": "EUR",
+                "usd_reference": 170.25,
+                "fx_rate": 0.92
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_broker_balance_ledger_native",
+              "arguments": {
+                "user_id": "u_david_99",
+                "account_type": "investment"
+              },
+              "output": {
+                "ledger_ref": "broker_u_david_99_investment",
+                "principal_id": "u_david_99",
+                "equity_value": 34383,
+                "currency_code": "USD",
+                "account_bucket": "investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_polygon_market_board_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "polygon_board_id": "polygon_nasdaq_total_listings_50_active_500",
+                "market_code": "NASDAQ_avg_volume_1M_max_volume_10K",
+                "board_live": false,
+                "session_band": "regular_120_percent_complete",
+                "next_mark": "16:00 EST_event_5_of_2"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "get_polygon_market_board_native",
+              "arguments": {
+                "exchange": "NASDAQ"
+              },
+              "output": {
+                "polygon_board_id": "polygon_nasdaq",
+                "market_code": "NASDAQ",
+                "board_live": true,
+                "session_band": "regular",
+                "next_mark": "16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "publish_polygon_market_board_native",
+              "arguments": {
+                "market_board": {
+                  "polygon_board_id": "polygon_nasdaq",
+                  "market_code": "NASDAQ",
+                  "board_live": true,
+                  "session_band": "regular",
+                  "next_mark": "16:00 EST"
+                },
+                "user_id": "u_david_99",
+                "priority": "high",
+                "channel": "app"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "polygon_market_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_david_99",
+                "market_ref": "polygon_nasdaq",
+                "content": "NASDAQ band regular, next mark 16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "push_alert",
+              "arguments": {
+                "message": "NASDAQ band regular, next mark 16:00 EST",
+                "user_id": "u_david_99",
+                "priority": "medium"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_david_99",
+                "content": "NASDAQ band regular, next mark 16:00 EST",
+                "priority": "medium"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_alpha_market_window_native",
+      "get_polygon_market_board_native",
+      "publish_alpha_market_window_native",
+      "publish_polygon_market_board_native"
+    ],
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P3",
+    "perturbation_point": 3,
+    "corruption_type": "missing_required_fields"
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-25T04:11:25.024052+00:00",
+  "end_time": "2026-10-25T04:13:05.329517+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P3 failed: no perturbed C3 entry tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Could you please check the current stock price for AAPL and give me a conversion quote for it in EUR? While you're at it, I need you to check the investment account balance for user u_david_99. I also need to look up the current market window for the NASDAQ exchange and have those market window details published to my app with high priority. Finally, please send me a push notification regarding the current NASDAQ session status and include the time for its next transition.",
+      "currency": "EUR",
+      "exchange_name": "NASDAQ",
+      "ticker": "AAPL",
+      "user_id": "u_david_99"
+    },
+    "task_description": "Please check the stock price for AAPL and get a conversion quote for it in EUR. Then, check my investment account balance for user u_david_99, look up the current market window for the NASDAQ exchange, publish those market window details to my app with high priority, and finally send me a push notification about the NASDAQ session status and its next transition time.",
+    "template_id": "C3_template_045",
+    "domains": [
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P3 configured for tools ['get_alpha_market_window_native', 'get_polygon_market_board_native'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_045_path_0_get_alpha_market_window_native",
+        "target_tool": "get_alpha_market_window_native",
+        "step": 4,
+        "mode": "P3",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "market_live": null,
+          "phase_label": "invalid_state",
+          "transition_mark": "00:00 NULL"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_market_notice_native_2to2:alpha_market_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_045_path_1_get_polygon_market_board_native",
+        "target_tool": "get_polygon_market_board_native",
+        "step": 4,
+        "mode": "P3",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "polygon_board_id": "polygon_nasdaq_total_listings_50_active_500",
+          "market_code": "NASDAQ_avg_volume_1M_max_volume_10K",
+          "board_live": false,
+          "session_band": "regular_120_percent_complete",
+          "next_mark": "16:00 EST_event_5_of_2"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_market_notice_native_2to2:polygon_market_notice_native"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P3 failed: no perturbed C3 entry tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "matched_paths": [],
+      "missing_tools": [
+        "get_alpha_market_window_native",
+        "get_broker_balance_ledger_native",
+        "get_fx_quote_ticket_native",
+        "get_stock_yahoo_finance",
+        "publish_alpha_market_window_native",
+        "push_alert"
+      ],
+      "insufficient_calls": {
+        "get_stock_yahoo_finance": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_fx_quote_ticket_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_broker_balance_ledger_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "get_alpha_market_window_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "publish_alpha_market_window_native": {
+          "expected": 1,
+          "actual": 0
+        },
+        "push_alert": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_stock_yahoo_finance",
+              "get_fx_quote_ticket_native",
+              "get_broker_balance_ledger_native",
+              "get_alpha_market_window_native",
+              "publish_alpha_market_window_native",
+              "push_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_stock_yahoo_finance",
+              "get_fx_quote_ticket_native",
+              "get_broker_balance_ledger_native",
+              "get_polygon_market_board_native",
+              "publish_polygon_market_board_native",
+              "push_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_alpha_market_window_native",
+          "get_polygon_market_board_native",
+          "publish_alpha_market_window_native",
+          "publish_polygon_market_board_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}

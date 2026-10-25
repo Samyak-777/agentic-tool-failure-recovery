@@ -1,0 +1,310 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_baseline_c1_full",
+  "task_id": "C1_task_028",
+  "mode": "P2",
+  "complexity": "C1",
+  "task_definition": {
+    "task_id": "C1_task_028",
+    "template_id": "C1_template_028",
+    "complexity": "C1",
+    "task_description": "Please check whether this item is in stock, then place a hold for 2 units on the best recommendation for me, and after that confirm the held order for 2 units. Then check the status of my main lock and lock it using PIN 1234.",
+    "user_input": {
+      "query": "Hi, I’m user_001. Please first check whether product p_sony_xm5_blk is in stock. Then, based on the best recommendation for me in the books category, place a hold for quantity 2, and after that confirm the held order for 2 units. Also, please check the status of my main lock, lock_main, and if needed lock it so its state is lock using PIN 1234.",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "1234",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "recommendation_category": "books",
+      "user_id": "user_001"
+    },
+    "execution_trace": [
+      {
+        "step": 1,
+        "tool_name": "get_stock_level",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk"
+        },
+        "output": {
+          "product_id": "p_sony_xm5_blk",
+          "name": "Sony WH-1000XM5 Headphones (Black)",
+          "stock": 10,
+          "status": "in_stock",
+          "low_stock_warning": false
+        },
+        "status": "success"
+      },
+      {
+        "step": 2,
+        "tool_name": "hold_best_recommendation",
+        "arguments": {
+          "product_id": "p_sony_xm5_blk",
+          "quantity": 2,
+          "user_id": "user_001",
+          "category": "books"
+        },
+        "output": {
+          "reservation_id": "RESV-14729548",
+          "expires_in": 300,
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2,
+          "total_price": 798.0,
+          "expiry_time": 1710000300,
+          "reservation_details": {
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0
+          },
+          "original_product_id": "p_sony_xm5_blk",
+          "recommended_product_id": "p_sony_xm5_slv",
+          "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+          "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+          "selected_relevance_score": 3
+        },
+        "status": "success"
+      },
+      {
+        "step": 3,
+        "tool_name": "confirm_held_recommendation_order",
+        "arguments": {
+          "reservation_id": "RESV-14729548",
+          "product_id": "p_sony_xm5_slv",
+          "quantity": 2
+        },
+        "output": {
+          "error": "API Version Deprecated"
+        },
+        "status": "error",
+        "error_message": "410 APIDeprecated",
+        "is_perturbed": true
+      },
+      {
+        "step": 4,
+        "tool_name": "get_iot_device_status",
+        "arguments": {
+          "device_id": "lock_main"
+        },
+        "output": {
+          "device_id": "lock_main",
+          "online_status": "online",
+          "power_state": "on",
+          "locked": true,
+          "battery_level": 85
+        },
+        "status": "success",
+        "is_optional": true
+      },
+      {
+        "step": 5,
+        "tool_name": "apply_lock_state",
+        "arguments": {
+          "lock_id": "lock_main",
+          "state": "lock",
+          "pin_code": "1234"
+        },
+        "output": {
+          "device_id": "lock_main",
+          "new_state": "locked",
+          "status": "executed"
+        },
+        "status": "success",
+        "is_optional": true
+      }
+    ],
+    "expected_result": {
+      "tool_calls": [
+        {
+          "tool_name": "get_stock_level",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk"
+          },
+          "output": {
+            "product_id": "p_sony_xm5_blk",
+            "name": "Sony WH-1000XM5 Headphones (Black)",
+            "stock": 10,
+            "status": "in_stock",
+            "low_stock_warning": false
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "hold_best_recommendation",
+          "arguments": {
+            "product_id": "p_sony_xm5_blk",
+            "quantity": 2,
+            "user_id": "user_001",
+            "category": "books"
+          },
+          "output": {
+            "reservation_id": "RESV-14729548",
+            "expires_in": 300,
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2,
+            "total_price": 798.0,
+            "expiry_time": 1710000300,
+            "reservation_details": {
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0
+            },
+            "original_product_id": "p_sony_xm5_blk",
+            "recommended_product_id": "p_sony_xm5_slv",
+            "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+            "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+            "selected_relevance_score": 3
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "confirm_held_recommendation_order",
+          "arguments": {
+            "reservation_id": "RESV-14729548",
+            "product_id": "p_sony_xm5_slv",
+            "quantity": 2
+          },
+          "output": {
+            "error": "API Version Deprecated"
+          },
+          "status": "error",
+          "is_perturbed": true
+        },
+        {
+          "tool_name": "get_iot_device_status",
+          "arguments": {
+            "device_id": "lock_main"
+          },
+          "output": {
+            "device_id": "lock_main",
+            "online_status": "online",
+            "power_state": "on",
+            "locked": true,
+            "battery_level": 85
+          },
+          "status": "success"
+        },
+        {
+          "tool_name": "apply_lock_state",
+          "arguments": {
+            "lock_id": "lock_main",
+            "state": "lock",
+            "pin_code": "1234"
+          },
+          "output": {
+            "device_id": "lock_main",
+            "new_state": "locked",
+            "status": "executed"
+          },
+          "status": "success"
+        }
+      ]
+    },
+    "domains": [
+      "Shopping",
+      "IoT"
+    ],
+    "perturbation_mode": "P2",
+    "perturbation_point": 2
+  },
+  "agent_type": "baseline",
+  "model": "gemini-3.8-flash",
+  "start_time": "2026-10-23T09:05:38.902010+00:00",
+  "end_time": "2026-10-23T09:07:18.589107+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P2 failed: 'confirm_held_recommendation_order' was never called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, I’m user_001. Please first check whether product p_sony_xm5_blk is in stock. Then, based on the best recommendation for me in the books category, place a hold for quantity 2, and after that confirm the held order for 2 units. Also, please check the status of my main lock, lock_main, and if needed lock it so its state is lock using PIN 1234.",
+      "lock_id": "lock_main",
+      "lock_state": "lock",
+      "pin_code": "1234",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "recommendation_category": "books",
+      "user_id": "user_001"
+    },
+    "task_description": "Please check whether this item is in stock, then place a hold for 2 units on the best recommendation for me, and after that confirm the held order for 2 units. Then check the status of my main lock and lock it using PIN 1234.",
+    "template_id": "C1_template_028",
+    "domains": [
+      "Shopping",
+      "IoT"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3.8-flash",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P2 configured for tools ['confirm_held_recommendation_order'], but agent never invoked victim tool.",
+    "configured_count": 1,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C1_task_028_step_3_confirm_held_recommendation_order",
+        "target_tool": "confirm_held_recommendation_order",
+        "step": 3,
+        "mode": "P2",
+        "complexity": "C1",
+        "expected_status": "error",
+        "ground_truth_output": {
+          "error": "API Version Deprecated"
+        },
+        "error_message": "410 APIDeprecated",
+        "trigger_condition": "all_calls",
+        "category": "syntactic",
+        "source_path": null
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P2 failed: 'confirm_held_recommendation_order' was never called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "confirm_held_recommendation_order",
+      "missing_tools": [
+        "hold_best_recommendation",
+        "confirm_held_recommendation_order",
+        "get_stock_level"
+      ],
+      "forbidden_tools_called": [],
+      "ground_truth": {
+        "execution_trace": [
+          "get_stock_level",
+          "hold_best_recommendation",
+          "confirm_held_recommendation_order",
+          "get_iot_device_status",
+          "apply_lock_state"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      },
+      "reasoning": "Victim tool was never called"
+    }
+  }
+}

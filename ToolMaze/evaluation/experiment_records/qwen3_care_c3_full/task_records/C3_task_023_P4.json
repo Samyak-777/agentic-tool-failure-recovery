@@ -1,0 +1,1808 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "qwen3_care_c3_full",
+  "task_id": "C3_task_023",
+  "mode": "P4",
+  "complexity": "C3",
+  "task_definition": {
+    "task_id": "C3_task_023",
+    "template_id": "C3_template_023",
+    "complexity": "C3",
+    "task_description": "Please find Alice's contact card and retrieve her investment bank balance sheet. Then, check the NYSE market board, get the current quote snapshot for AAPL, and publish that quote to her via email with high priority. After that, analyze the text of the AAPL quote. Finally, snapshot the workspace at '/var/backups/finance' using the backup name 'finance_backup_01', and send her a high-priority alert about it via email.",
+    "user_input": {
+      "query": "Please find alice's contact card and retrieve her investment bank balance sheet. After that, check the NYSE market board to get the current quote snapshot for AAPL, ensuring the target_currency is set to EUR. Please publish that quote to her via email with high priority and then analyze the text of the AAPL quote for me. Finally, please snapshot the workspace at /var/backups/finance using the backup name finance_backup_01 and send her a high priority alert about this backup via email.",
+      "account_type": "investment",
+      "backup_name": "finance_backup_01",
+      "channel": "email",
+      "colleague_name": "alice",
+      "exchange": "NYSE",
+      "priority": "high",
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "workspace_path": "/var/backups/finance"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "get_directory_contact_card_native",
+          "get_bank_balance_sheet_native",
+          "get_polygon_market_board_native",
+          "get_quote_snapshot_native",
+          "publish_quote_snapshot_native",
+          "analyze_text",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4a1",
+          "s4a2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_directory_contact_card_native",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "card_id": "dir_u_alice",
+              "display_name": "Alice",
+              "primary_email": "alice@company.com",
+              "org_unit": "Engineering",
+              "directory_user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "investment"
+            },
+            "output": {
+              "sheet_id": "bank_u_alice_investment",
+              "owner_id": "u_alice",
+              "balance_amount": 17826,
+              "denomination": "USD",
+              "bucket_name": "investment"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_polygon_market_board_native",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "polygon_board_id": "polygon_nyse",
+              "market_code": "NYSE",
+              "board_live": true,
+              "session_band": "regular",
+              "next_mark": "16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_quote_snapshot_native",
+            "arguments": {
+              "ticker": "AAPL"
+            },
+            "output": {
+              "snapshot_ref": "qs_aapl_valid_from_2026-03-15_to_2024-03-10",
+              "symbol": "AAPL_expires_2024-01-01",
+              "usd_last": 0,
+              "venue": "yahoo_native_archived_2023",
+              "quoted_at": "2027-05-10T08:00:00Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_quote_snapshot_native",
+            "arguments": {
+              "quote_snapshot": {
+                "snapshot_ref": "qs_aapl",
+                "symbol": "AAPL",
+                "usd_last": 170.25,
+                "venue": "yahoo_native",
+                "quoted_at": "2026-02-22T15:04:54Z"
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "direct_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "instrument_ref": "qs_aapl",
+              "content": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 170.25 USD @ yahoo_native"
+            },
+            "output": {
+              "raw_content": "AAPL: 170.25 USD @ yahoo_native",
+              "character_count": 31,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 18,
+              "digit_count": 5,
+              "whitespace_count": 4,
+              "longest_word": "yahoo_native",
+              "longest_word_length": 12,
+              "average_word_length": 5.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/backups/finance",
+              "backup_name": "finance_backup_01",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/backups/finance",
+              "backup_name": "finance_backup_01",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_directory_contact_card_native",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "card_id": "dir_u_alice",
+                "display_name": "Alice",
+                "primary_email": "alice@company.com",
+                "org_unit": "Engineering",
+                "directory_user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "investment"
+              },
+              "output": {
+                "sheet_id": "bank_u_alice_investment",
+                "owner_id": "u_alice",
+                "balance_amount": 17826,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_polygon_market_board_native",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "polygon_board_id": "polygon_nyse",
+                "market_code": "NYSE",
+                "board_live": true,
+                "session_band": "regular",
+                "next_mark": "16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_quote_snapshot_native",
+              "arguments": {
+                "ticker": "AAPL"
+              },
+              "output": {
+                "snapshot_ref": "qs_aapl_valid_from_2026-03-15_to_2024-03-10",
+                "symbol": "AAPL_expires_2024-01-01",
+                "usd_last": 0,
+                "venue": "yahoo_native_archived_2023",
+                "quoted_at": "2027-05-10T08:00:00Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_quote_snapshot_native",
+              "arguments": {
+                "quote_snapshot": {
+                  "snapshot_ref": "qs_aapl",
+                  "symbol": "AAPL",
+                  "usd_last": 170.25,
+                  "venue": "yahoo_native",
+                  "quoted_at": "2026-02-22T15:04:54Z"
+                },
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "direct_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_alice",
+                "instrument_ref": "qs_aapl",
+                "content": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "analyze_text",
+              "arguments": {
+                "text": "AAPL: 170.25 USD @ yahoo_native"
+              },
+              "output": {
+                "raw_content": "AAPL: 170.25 USD @ yahoo_native",
+                "character_count": 31,
+                "word_count": 5,
+                "line_count": 1,
+                "alphabetic_count": 18,
+                "digit_count": 5,
+                "whitespace_count": 4,
+                "longest_word": "yahoo_native",
+                "longest_word_length": 12,
+                "average_word_length": 5.4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/backups/finance",
+                "backup_name": "finance_backup_01",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/backups/finance",
+                "backup_name": "finance_backup_01",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "get_directory_contact_card_native",
+          "get_bank_balance_sheet_native",
+          "get_polygon_market_board_native",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "analyze_text",
+          "snapshot_workspace_and_alert"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2",
+          "s3",
+          "s4b1",
+          "s4b2",
+          "s5",
+          "s6"
+        ],
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "get_directory_contact_card_native",
+            "arguments": {
+              "name": "alice"
+            },
+            "output": {
+              "card_id": "dir_u_alice",
+              "display_name": "Alice",
+              "primary_email": "alice@company.com",
+              "org_unit": "Engineering",
+              "directory_user_id": "u_alice"
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_bank_balance_sheet_native",
+            "arguments": {
+              "user_id": "u_alice",
+              "account_type": "investment"
+            },
+            "output": {
+              "sheet_id": "bank_u_alice_investment",
+              "owner_id": "u_alice",
+              "balance_amount": 17826,
+              "denomination": "USD",
+              "bucket_name": "investment"
+            },
+            "status": "success"
+          },
+          {
+            "step": 3,
+            "tool_name": "get_polygon_market_board_native",
+            "arguments": {
+              "exchange": "NYSE"
+            },
+            "output": {
+              "polygon_board_id": "polygon_nyse",
+              "market_code": "NYSE",
+              "board_live": true,
+              "session_band": "regular",
+              "next_mark": "16:00 EST"
+            },
+            "status": "success"
+          },
+          {
+            "step": 4,
+            "tool_name": "get_fx_quote_ticket_native",
+            "arguments": {
+              "ticker": "AAPL",
+              "target_currency": "EUR"
+            },
+            "output": {
+              "ticket_ref": "fxt_aapl_20240501",
+              "ticker_code": "AAPL",
+              "local_last": 164.22,
+              "settlement_ccy": "EUR",
+              "usd_reference": 178.5,
+              "fx_rate": 0,
+              "created_at": "2024-05-15T10:00:00Z",
+              "updated_at": "2024-05-10T08:30:00Z",
+              "quote_start": "2024-05-12T12:00:00Z",
+              "quote_expiry": "2024-05-11T12:00:00Z"
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 5,
+            "tool_name": "publish_fx_quote_ticket_native",
+            "arguments": {
+              "fx_quote_ticket": {
+                "ticket_ref": "fxt_aapl",
+                "ticker_code": "AAPL",
+                "local_last": 164.22,
+                "settlement_ccy": "EUR",
+                "usd_reference": 178.5,
+                "fx_rate": 0.92
+              },
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "status": "published",
+              "strategy": "fx_quote_notice_native",
+              "notification_id": "NOTIFEE84C",
+              "target_user": "u_alice",
+              "instrument_ref": "fxt_aapl",
+              "content": "AAPL: 164.22 EUR (fx 0.92)"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 6,
+            "tool_name": "analyze_text",
+            "arguments": {
+              "text": "AAPL: 164.22 EUR (fx 0.92)"
+            },
+            "output": {
+              "raw_content": "AAPL: 164.22 EUR (fx 0.92)",
+              "character_count": 26,
+              "word_count": 5,
+              "line_count": 1,
+              "alphabetic_count": 9,
+              "digit_count": 8,
+              "whitespace_count": 4,
+              "longest_word": "164.22",
+              "longest_word_length": 6,
+              "average_word_length": 4.4
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 7,
+            "tool_name": "snapshot_workspace_and_alert",
+            "arguments": {
+              "workspace_path": "/var/backups/finance",
+              "backup_name": "finance_backup_01",
+              "user_id": "u_alice",
+              "priority": "high",
+              "channel": "email"
+            },
+            "output": {
+              "message": "Notification sent successfully",
+              "notification_id": "NOTIFEE84C",
+              "user_id": "u_alice",
+              "content": "BACKUPA3B2C",
+              "priority": "high",
+              "backup_id": "BACKUPA3B2C",
+              "workspace_path": "/var/backups/finance",
+              "backup_name": "finance_backup_01",
+              "size_mb": 300,
+              "backup_status": "completed",
+              "backup_timestamp": "2024-12-08 12:00:00"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "get_directory_contact_card_native",
+              "arguments": {
+                "name": "alice"
+              },
+              "output": {
+                "card_id": "dir_u_alice",
+                "display_name": "Alice",
+                "primary_email": "alice@company.com",
+                "org_unit": "Engineering",
+                "directory_user_id": "u_alice"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_bank_balance_sheet_native",
+              "arguments": {
+                "user_id": "u_alice",
+                "account_type": "investment"
+              },
+              "output": {
+                "sheet_id": "bank_u_alice_investment",
+                "owner_id": "u_alice",
+                "balance_amount": 17826,
+                "denomination": "USD",
+                "bucket_name": "investment"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_polygon_market_board_native",
+              "arguments": {
+                "exchange": "NYSE"
+              },
+              "output": {
+                "polygon_board_id": "polygon_nyse",
+                "market_code": "NYSE",
+                "board_live": true,
+                "session_band": "regular",
+                "next_mark": "16:00 EST"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_fx_quote_ticket_native",
+              "arguments": {
+                "ticker": "AAPL",
+                "target_currency": "EUR"
+              },
+              "output": {
+                "ticket_ref": "fxt_aapl_20240501",
+                "ticker_code": "AAPL",
+                "local_last": 164.22,
+                "settlement_ccy": "EUR",
+                "usd_reference": 178.5,
+                "fx_rate": 0,
+                "created_at": "2024-05-15T10:00:00Z",
+                "updated_at": "2024-05-10T08:30:00Z",
+                "quote_start": "2024-05-12T12:00:00Z",
+                "quote_expiry": "2024-05-11T12:00:00Z"
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "publish_fx_quote_ticket_native",
+              "arguments": {
+                "fx_quote_ticket": {
+                  "ticket_ref": "fxt_aapl",
+                  "ticker_code": "AAPL",
+                  "local_last": 164.22,
+                  "settlement_ccy": "EUR",
+                  "usd_reference": 178.5,
+                  "fx_rate": 0.92
+                },
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "status": "published",
+                "strategy": "fx_quote_notice_native",
+                "notification_id": "NOTIFEE84C",
+                "target_user": "u_alice",
+                "instrument_ref": "fxt_aapl",
+                "content": "AAPL: 164.22 EUR (fx 0.92)"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "analyze_text",
+              "arguments": {
+                "text": "AAPL: 164.22 EUR (fx 0.92)"
+              },
+              "output": {
+                "raw_content": "AAPL: 164.22 EUR (fx 0.92)",
+                "character_count": 26,
+                "word_count": 5,
+                "line_count": 1,
+                "alphabetic_count": 9,
+                "digit_count": 8,
+                "whitespace_count": 4,
+                "longest_word": "164.22",
+                "longest_word_length": 6,
+                "average_word_length": 4.4
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "snapshot_workspace_and_alert",
+              "arguments": {
+                "workspace_path": "/var/backups/finance",
+                "backup_name": "finance_backup_01",
+                "user_id": "u_alice",
+                "priority": "high",
+                "channel": "email"
+              },
+              "output": {
+                "message": "Notification sent successfully",
+                "notification_id": "NOTIFEE84C",
+                "user_id": "u_alice",
+                "content": "BACKUPA3B2C",
+                "priority": "high",
+                "backup_id": "BACKUPA3B2C",
+                "workspace_path": "/var/backups/finance",
+                "backup_name": "finance_backup_01",
+                "size_mb": 300,
+                "backup_status": "completed",
+                "backup_timestamp": "2024-12-08 12:00:00"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_fx_quote_ticket_native",
+      "get_quote_snapshot_native",
+      "publish_fx_quote_ticket_native",
+      "publish_quote_snapshot_native"
+    ],
+    "domains": [
+      "Office",
+      "Financial",
+      "General"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 3,
+    "corruption_type": "temporal_contradiction"
+  },
+  "agent_type": "care",
+  "model": "qwen3:8b",
+  "start_time": "2026-10-24T00:58:34.880706+00:00",
+  "end_time": "2026-10-24T01:00:02.621718+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_fx_quote_ticket_native' failed permanently but agent did not complete another valid path",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 21720,
+    "output_tokens": 4303,
+    "total_tokens": 26023
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Please find alice's contact card and retrieve her investment bank balance sheet. After that, check the NYSE market board to get the current quote snapshot for AAPL, ensuring the target_currency is set to EUR. Please publish that quote to her via email with high priority and then analyze the text of the AAPL quote for me. Finally, please snapshot the workspace at /var/backups/finance using the backup name finance_backup_01 and send her a high priority alert about this backup via email.",
+      "account_type": "investment",
+      "backup_name": "finance_backup_01",
+      "channel": "email",
+      "colleague_name": "alice",
+      "exchange": "NYSE",
+      "priority": "high",
+      "target_currency": "EUR",
+      "ticker": "AAPL",
+      "workspace_path": "/var/backups/finance"
+    },
+    "task_description": "Please find Alice's contact card and retrieve her investment bank balance sheet. Then, check the NYSE market board, get the current quote snapshot for AAPL, and publish that quote to her via email with high priority. After that, analyze the text of the AAPL quote. Finally, snapshot the workspace at '/var/backups/finance' using the backup name 'finance_backup_01', and send her a high-priority alert about it via email.",
+    "template_id": "C3_template_023",
+    "domains": [
+      "Office",
+      "Financial",
+      "General"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "qwen3:8b",
+      "temperature": 1,
+      "max_tokens": 4096
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_changed_failure_attribution_uncertain",
+    "confidence": "LOW",
+    "evidence": "Perturbation was injected and task failed, but causal chain lacks definitive link.",
+    "configured_count": 2,
+    "activated_count": 1,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C3_task_023_path_0_get_quote_snapshot_native",
+        "target_tool": "get_quote_snapshot_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "snapshot_ref": "qs_aapl_valid_from_2026-03-15_to_2024-03-10",
+          "symbol": "AAPL_expires_2024-01-01",
+          "usd_last": 0,
+          "venue": "yahoo_native_archived_2023",
+          "quoted_at": "2027-05-10T08:00:00Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:direct_quote_notice_native"
+        ]
+      },
+      {
+        "config_id": "C3_task_023_path_1_get_fx_quote_ticket_native",
+        "target_tool": "get_fx_quote_ticket_native",
+        "step": 4,
+        "mode": "P4",
+        "complexity": "C3",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "ticket_ref": "fxt_aapl_20240501",
+          "ticker_code": "AAPL",
+          "local_last": 164.22,
+          "settlement_ccy": "EUR",
+          "usd_reference": 178.5,
+          "fx_rate": 0,
+          "created_at": "2024-05-15T10:00:00Z",
+          "updated_at": "2024-05-10T08:30:00Z",
+          "quote_start": "2024-05-12T12:00:00Z",
+          "quote_expiry": "2024-05-11T12:00:00Z"
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_quote_notice_native_2to2:fx_quote_notice_native"
+        ]
+      }
+    ],
+    "activations": [
+      {
+        "activation_id": "act_1_get_fx_quote_ticket_native",
+        "tool_name": "get_fx_quote_ticket_native",
+        "step": 3,
+        "timestamp": "2026-10-24T00:59:19.754267+00:00",
+        "config_id": "C3_task_023_path_1_get_fx_quote_ticket_native",
+        "configured_mode": "P4",
+        "changed_execution": true,
+        "modified_status": "success",
+        "arguments_sample": {
+          "ticker": "AAPL",
+          "target_currency": "EUR"
+        },
+        "modified_output_sample": {
+          "ticket_ref": "fxt_aapl_20240501",
+          "ticker_code": "AAPL",
+          "local_last": 164.22,
+          "settlement_ccy": "EUR",
+          "usd_reference": 178.5,
+          "fx_rate": 0,
+          "created_at": "2024-05-15T10:00:00Z",
+          "updated_at": "2024-05-10T08:30:00Z",
+          "quote_start": "2024-05-12T12:00:00Z",
+          "quote_expiry": "2024-05-11T12:00:00Z"
+        },
+        "subsequent_tool_failed": false,
+        "recovered": false
+      }
+    ]
+  },
+  "tool_calls": [
+    {
+      "call_id": "tc_1_1_get_directory_contact_card_native",
+      "tool_name": "get_directory_contact_card_native",
+      "arguments": {
+        "name": "alice"
+      },
+      "result_sample": {
+        "card_id": "dir_u_alice",
+        "display_name": "Alice",
+        "primary_email": "alice@company.com",
+        "org_unit": "Engineering",
+        "directory_user_id": "u_alice"
+      },
+      "status": "success",
+      "duration_ms": 0.3473249962553382,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:04.153201+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_bank_balance_sheet_native",
+      "tool_name": "get_bank_balance_sheet_native",
+      "arguments": {
+        "user_id": "u_alice",
+        "account_type": "investment"
+      },
+      "result_sample": {
+        "sheet_id": "bank_u_alice_investment",
+        "owner_id": "u_alice",
+        "balance_amount": 17826,
+        "denomination": "USD",
+        "bucket_name": "investment"
+      },
+      "status": "success",
+      "duration_ms": 0.39555609691888094,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:10.184065+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_fx_quote_ticket_native",
+      "tool_name": "get_fx_quote_ticket_native",
+      "arguments": {
+        "ticker": "AAPL",
+        "target_currency": "EUR"
+      },
+      "result_sample": {
+        "ticket_ref": "fxt_aapl_20240501",
+        "ticker_code": "AAPL",
+        "local_last": 164.22,
+        "settlement_ccy": "EUR",
+        "usd_reference": 178.5,
+        "fx_rate": 0,
+        "created_at": "2024-05-15T10:00:00Z",
+        "updated_at": "2024-05-10T08:30:00Z",
+        "quote_start": "2024-05-12T12:00:00Z",
+        "quote_expiry": "2024-05-11T12:00:00Z"
+      },
+      "status": "success",
+      "duration_ms": 0.3934380365535617,
+      "perturbation_status": "perturbed",
+      "is_perturbed": true,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:19.754267+00:00"
+    },
+    {
+      "call_id": "tc_4_4_publish_fx_quote_ticket_native",
+      "tool_name": "publish_fx_quote_ticket_native",
+      "arguments": {
+        "channel": "email",
+        "priority": "high",
+        "fx_quote_ticket": {
+          "created_at": "2024-05-15T10:00:00Z",
+          "fx_rate": 0,
+          "local_last": 164.22,
+          "quote_expiry": "2024-05-11T12:00:00Z",
+          "quote_start": "2024-05-12T12:00:00Z",
+          "settlement_ccy": "EUR",
+          "ticker_code": "AAPL",
+          "ticket_ref": "fxt_aapl_20240501",
+          "updated_at": "2024-05-10T08:30:00Z",
+          "usd_reference": 178.5
+        },
+        "user_id": "u_alice"
+      },
+      "result_sample": {
+        "status": "published",
+        "strategy": "fx_quote_notice_native",
+        "notification_id": "NOTIFEE84C",
+        "target_user": "u_alice",
+        "instrument_ref": "fxt_aapl_20240501",
+        "content": "AAPL: 164.22 EUR (fx 0)"
+      },
+      "status": "success",
+      "duration_ms": 22.284894017502666,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:46.354981+00:00"
+    },
+    {
+      "call_id": "tc_5_5_analyze_text",
+      "tool_name": "analyze_text",
+      "arguments": {
+        "text": "AAPL: 164.22 EUR (fx 0)"
+      },
+      "result_sample": {
+        "raw_content": "AAPL: 164.22 EUR (fx 0)",
+        "character_count": 23,
+        "word_count": 5,
+        "line_count": 1,
+        "alphabetic_count": 9,
+        "digit_count": 6,
+        "whitespace_count": 4,
+        "longest_word": "164.22",
+        "longest_word_length": 6,
+        "average_word_length": 3.8
+      },
+      "status": "success",
+      "duration_ms": 0.38546696305274963,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:53.364351+00:00"
+    },
+    {
+      "call_id": "tc_6_6_snapshot_workspace_and_alert",
+      "tool_name": "snapshot_workspace_and_alert",
+      "arguments": {
+        "channel": "email",
+        "priority": "high",
+        "user_id": "u_alice",
+        "workspace_path": "/var/backups/finance",
+        "backup_name": "finance_backup_01"
+      },
+      "result_sample": {
+        "message": "Notification sent successfully",
+        "notification_id": "NOTIFEE84C",
+        "user_id": "u_alice",
+        "content": "BACKUPA3B2C",
+        "priority": "high",
+        "backup_id": "BACKUPA3B2C",
+        "workspace_path": "/var/backups/finance",
+        "backup_name": "finance_backup_01",
+        "size_mb": 300,
+        "backup_status": "completed",
+        "backup_timestamp": "2024-12-08 12:00:00"
+      },
+      "status": "success",
+      "duration_ms": 0.42236491572111845,
+      "perturbation_status": "clean",
+      "is_perturbed": false,
+      "validation_status": "VALID",
+      "validation_passed": true,
+      "has_error": false,
+      "error_message": null,
+      "timestamp": "2026-10-24T00:59:57.181546+00:00"
+    }
+  ],
+  "validations": [
+    {
+      "call_id": "tc_1_1_get_directory_contact_card_native",
+      "tool_name": "get_directory_contact_card_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_directory_contact_card_native",
+            "verified_fields": [
+              "card_id",
+              "display_name",
+              "primary_email",
+              "org_unit",
+              "directory_user_id"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_directory_contact_card_native",
+            "checked_fields": [
+              "card_id",
+              "display_name",
+              "primary_email",
+              "org_unit",
+              "directory_user_id"
+            ]
+          },
+          "latency_ms": 0.008
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_directory_contact_card_native",
+            "verified_fields": [
+              "card_id",
+              "display_name",
+              "primary_email",
+              "org_unit",
+              "directory_user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_directory_contact_card_native'",
+          "details": {
+            "tool_name": "get_directory_contact_card_native"
+          },
+          "latency_ms": 0.011
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_directory_contact_card_native'",
+          "details": {
+            "tool_name": "get_directory_contact_card_native"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_directory_contact_card_native'",
+          "details": {
+            "arguments": [
+              "name"
+            ],
+            "output": [
+              "card_id",
+              "display_name",
+              "primary_email",
+              "org_unit",
+              "directory_user_id"
+            ]
+          },
+          "latency_ms": 0.003
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_directory_contact_card_native'",
+          "details": {
+            "tool_name": "get_directory_contact_card_native"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_directory_contact_card_native' output",
+          "details": {
+            "tool_name": "get_directory_contact_card_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_directory_contact_card_native'",
+          "details": {
+            "tool_name": "get_directory_contact_card_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:04.153431+00:00"
+    },
+    {
+      "call_id": "tc_2_2_get_bank_balance_sheet_native",
+      "tool_name": "get_bank_balance_sheet_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (5 fields verified)",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native",
+            "verified_fields": [
+              "sheet_id",
+              "owner_id",
+              "balance_amount",
+              "denomination",
+              "bucket_name"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.012
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 5 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native",
+            "checked_fields": [
+              "sheet_id",
+              "owner_id",
+              "balance_amount",
+              "denomination",
+              "bucket_name"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 5 required fields present and non-null",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native",
+            "verified_fields": [
+              "sheet_id",
+              "owner_id",
+              "balance_amount",
+              "denomination",
+              "bucket_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.012
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'get_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.043
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_bank_balance_sheet_native'",
+          "details": {
+            "arguments": [
+              "user_id",
+              "account_type"
+            ],
+            "output": [
+              "sheet_id",
+              "owner_id",
+              "balance_amount",
+              "denomination",
+              "bucket_name"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_bank_balance_sheet_native' output",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_bank_balance_sheet_native'",
+          "details": {
+            "tool_name": "get_bank_balance_sheet_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:10.184299+00:00"
+    },
+    {
+      "call_id": "tc_3_3_get_fx_quote_ticket_native",
+      "tool_name": "get_fx_quote_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native",
+            "verified_fields": [
+              "ticket_ref",
+              "ticker_code",
+              "local_last",
+              "settlement_ccy",
+              "usd_reference",
+              "fx_rate"
+            ],
+            "unexpected_fields": [
+              "created_at",
+              "updated_at",
+              "quote_start",
+              "quote_expiry"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native",
+            "checked_fields": [
+              "ticket_ref",
+              "ticker_code",
+              "local_last",
+              "settlement_ccy",
+              "usd_reference",
+              "fx_rate"
+            ]
+          },
+          "latency_ms": 0.01
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native",
+            "verified_fields": [
+              "ticket_ref",
+              "ticker_code",
+              "local_last",
+              "settlement_ccy",
+              "usd_reference",
+              "fx_rate"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'get_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 2 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native",
+            "checked_fields": [
+              "created_at",
+              "updated_at"
+            ]
+          },
+          "latency_ms": 0.104
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'get_fx_quote_ticket_native'",
+          "details": {
+            "arguments": [
+              "ticker",
+              "target_currency"
+            ],
+            "output": [
+              "ticket_ref",
+              "ticker_code",
+              "local_last",
+              "settlement_ccy",
+              "usd_reference",
+              "fx_rate",
+              "created_at",
+              "updated_at",
+              "quote_start",
+              "quote_expiry"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'get_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.007
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'get_fx_quote_ticket_native' output",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'get_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "get_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.004
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:19.754712+00:00"
+    },
+    {
+      "call_id": "tc_4_4_publish_fx_quote_ticket_native",
+      "tool_name": "publish_fx_quote_ticket_native",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (6 fields verified)",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "instrument_ref",
+              "content"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.011
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 6 checked output fields match expected types",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native",
+            "checked_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "instrument_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.009
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 6 required fields present and non-null",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native",
+            "verified_fields": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "instrument_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'publish_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.083
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'publish_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.048
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'publish_fx_quote_ticket_native'",
+          "details": {
+            "arguments": [
+              "channel",
+              "priority",
+              "fx_quote_ticket",
+              "user_id"
+            ],
+            "output": [
+              "status",
+              "strategy",
+              "notification_id",
+              "target_user",
+              "instrument_ref",
+              "content"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'publish_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'publish_fx_quote_ticket_native' output",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.01
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'publish_fx_quote_ticket_native'",
+          "details": {
+            "tool_name": "publish_fx_quote_ticket_native"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:46.355247+00:00"
+    },
+    {
+      "call_id": "tc_5_5_analyze_text",
+      "tool_name": "analyze_text",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (10 fields verified)",
+          "details": {
+            "tool_name": "analyze_text",
+            "verified_fields": [
+              "raw_content",
+              "character_count",
+              "word_count",
+              "line_count",
+              "alphabetic_count",
+              "digit_count",
+              "whitespace_count",
+              "longest_word",
+              "longest_word_length",
+              "average_word_length"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.013
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 10 checked output fields match expected types",
+          "details": {
+            "tool_name": "analyze_text",
+            "checked_fields": [
+              "raw_content",
+              "character_count",
+              "word_count",
+              "line_count",
+              "alphabetic_count",
+              "digit_count",
+              "whitespace_count",
+              "longest_word",
+              "longest_word_length",
+              "average_word_length"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 10 required fields present and non-null",
+          "details": {
+            "tool_name": "analyze_text",
+            "verified_fields": [
+              "raw_content",
+              "character_count",
+              "word_count",
+              "line_count",
+              "alphabetic_count",
+              "digit_count",
+              "whitespace_count",
+              "longest_word",
+              "longest_word_length",
+              "average_word_length"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'analyze_text'",
+          "details": {
+            "tool_name": "analyze_text"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "NOT_APPLICABLE",
+          "reason": "No temporal fields found in output for tool 'analyze_text'",
+          "details": {
+            "tool_name": "analyze_text"
+          },
+          "latency_ms": 0.074
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "NOT_APPLICABLE",
+          "reason": "No matching entity fields between arguments and output for tool 'analyze_text'",
+          "details": {
+            "arguments": [
+              "text"
+            ],
+            "output": [
+              "raw_content",
+              "character_count",
+              "word_count",
+              "line_count",
+              "alphabetic_count",
+              "digit_count",
+              "whitespace_count",
+              "longest_word",
+              "longest_word_length",
+              "average_word_length"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'analyze_text'",
+          "details": {
+            "tool_name": "analyze_text"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'analyze_text' output",
+          "details": {
+            "tool_name": "analyze_text"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'analyze_text'",
+          "details": {
+            "tool_name": "analyze_text"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:53.364604+00:00"
+    },
+    {
+      "call_id": "tc_6_6_snapshot_workspace_and_alert",
+      "tool_name": "snapshot_workspace_and_alert",
+      "pipeline_status": "VALID",
+      "checks": {
+        "schema": {
+          "checker_name": "schema",
+          "status": "VALID",
+          "reason": "Output satisfies schema contract (11 fields verified)",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ],
+            "unexpected_fields": []
+          },
+          "latency_ms": 0.014
+        },
+        "type": {
+          "checker_name": "type",
+          "status": "VALID",
+          "reason": "All 11 checked output fields match expected types",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "checked_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.013
+        },
+        "required": {
+          "checker_name": "required",
+          "status": "VALID",
+          "reason": "All 11 required fields present and non-null",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "verified_fields": [
+              "message",
+              "notification_id",
+              "user_id",
+              "content",
+              "priority",
+              "backup_id",
+              "workspace_path",
+              "backup_name",
+              "size_mb",
+              "backup_status",
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.004
+        },
+        "range": {
+          "checker_name": "range",
+          "status": "NOT_APPLICABLE",
+          "reason": "No range rules registered for tool 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.015
+        },
+        "temporal": {
+          "checker_name": "temporal",
+          "status": "VALID",
+          "reason": "All 1 temporal field(s) validated successfully",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "checked_fields": [
+              "backup_timestamp"
+            ]
+          },
+          "latency_ms": 0.106
+        },
+        "entity": {
+          "checker_name": "entity",
+          "status": "VALID",
+          "reason": "Entity consistency confirmed (1 entity field(s) matched)",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert",
+            "compared_pairs": [
+              {
+                "arg_key": "user_id",
+                "res_key": "user_id",
+                "requested": "u_alice",
+                "returned": "u_alice",
+                "match": true
+              }
+            ]
+          },
+          "latency_ms": 0.005
+        },
+        "cross_field": {
+          "checker_name": "cross_field",
+          "status": "NOT_APPLICABLE",
+          "reason": "No applicable cross-field rules for tool 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.008
+        },
+        "state": {
+          "checker_name": "state",
+          "status": "NOT_APPLICABLE",
+          "reason": "No tracked stateful entity fields in 'snapshot_workspace_and_alert' output",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.013
+        },
+        "cross_tool": {
+          "checker_name": "cross_tool",
+          "status": "NOT_APPLICABLE",
+          "reason": "No cross-tool consistency rules apply to 'snapshot_workspace_and_alert'",
+          "details": {
+            "tool_name": "snapshot_workspace_and_alert"
+          },
+          "latency_ms": 0.003
+        }
+      },
+      "failed_checks": [],
+      "timestamp": "2026-10-24T00:59:57.181845+00:00"
+    }
+  ],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no complete valid path executed successfully; 'get_fx_quote_ticket_native' failed permanently but agent did not complete another valid path",
+    "trace_check": {
+      "match": false,
+      "victim_tool": "get_fx_quote_ticket_native",
+      "matched_paths": [],
+      "switched_paths": [],
+      "missing_tools": [
+        "get_polygon_market_board_native"
+      ],
+      "insufficient_calls": {
+        "get_polygon_market_board_native": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "get_directory_contact_card_native",
+              "get_bank_balance_sheet_native",
+              "get_polygon_market_board_native",
+              "get_quote_snapshot_native",
+              "publish_quote_snapshot_native",
+              "analyze_text",
+              "snapshot_workspace_and_alert"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "get_directory_contact_card_native",
+              "get_bank_balance_sheet_native",
+              "get_polygon_market_board_native",
+              "get_fx_quote_ticket_native",
+              "publish_fx_quote_ticket_native",
+              "analyze_text",
+              "snapshot_workspace_and_alert"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_fx_quote_ticket_native",
+          "get_quote_snapshot_native",
+          "publish_fx_quote_ticket_native",
+          "publish_quote_snapshot_native"
+        ]
+      },
+      "actual": {
+        "execution_trace": [
+          "get_directory_contact_card_native",
+          "get_bank_balance_sheet_native",
+          "get_fx_quote_ticket_native",
+          "publish_fx_quote_ticket_native",
+          "analyze_text",
+          "snapshot_workspace_and_alert"
+        ]
+      }
+    }
+  }
+}

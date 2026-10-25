@@ -1,0 +1,853 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "gemini_care_c2_full",
+  "task_id": "C2_task_050",
+  "mode": "P4",
+  "complexity": "C2",
+  "task_definition": {
+    "task_id": "C2_task_050",
+    "template_id": "C2_template_050",
+    "complexity": "C2",
+    "task_description": "Please hold 2 Sony XM5 black headphones for me, then check for alternative electronics in the same category. If there’s a suitable alternative, switch me to 2 of the silver Sony XM5 instead, then generate an invoice for $798 and send it to user@example.com so I can pay with Stripe, and after that confirm the order.",
+    "user_input": {
+      "query": "Hi, I’m user_001. Please hold 2 black Sony XM5 headphones for me using product_id p_sony_xm5_blk in the electronics category. Then check whether there’s a suitable alternative in electronics, and if there is, switch my hold to 2 of the silver Sony XM5 instead. After that, please generate an invoice for $798 and send it to user@example.com so I can pay with stripe. Once that’s done, please confirm the order for quantity 2.",
+      "category": "electronics",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "user_id": "user_001"
+    },
+    "valid_paths": [
+      {
+        "path_id": "path_0",
+        "tools": [
+          "hold_best_recommendation",
+          "get_recommendations",
+          "build_cart_items_from_selection",
+          "generate_invoice_from_hold",
+          "confirm_order"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2a",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_recommendation_default_content:default_provider"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+              "selected_relevance_score": 3
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_recommendations",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "user_001"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm5_silver",
+              "count": -4,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found 4 alternatives in the same category, listed above are 2."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "generate_invoice_from_hold",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 798.0,
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "reservation_id": "RESV-14729548"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 798.0,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "reservation_id": "RESV-14729548",
+              "invoice_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "confirm_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics"
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2,
+                  "total_price": 798.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+                "selected_relevance_score": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "user_001"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm5_silver",
+                "count": -4,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found 4 alternatives in the same category, listed above are 2."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2,
+                  "total_price": 798.0
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_invoice_from_hold",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 798.0,
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "reservation_id": "RESV-14729548"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 798.0,
+                "currency": "USD",
+                "billing_email": "user@example.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link.",
+                "reservation_id": "RESV-14729548",
+                "invoice_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "confirm_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      },
+      {
+        "path_id": "path_1",
+        "tools": [
+          "hold_best_recommendation",
+          "get_recommendations_content",
+          "build_cart_items_from_selection",
+          "generate_invoice_from_hold",
+          "confirm_order"
+        ],
+        "node_sequence": [
+          "s1",
+          "s2b",
+          "s3",
+          "s4",
+          "s5"
+        ],
+        "group_choices": [
+          "alt_recommendation_default_content:content"
+        ],
+        "execution_trace": [
+          {
+            "step": 1,
+            "tool_name": "hold_best_recommendation",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "quantity": 2,
+              "user_id": "user_001",
+              "category": "electronics"
+            },
+            "output": {
+              "reservation_id": "RESV-14729548",
+              "expires_in": 300,
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "total_price": 798.0,
+              "expiry_time": 1710000300,
+              "reservation_details": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0
+              },
+              "original_product_id": "p_sony_xm5_blk",
+              "recommended_product_id": "p_sony_xm5_slv",
+              "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+              "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+              "selected_relevance_score": 3
+            },
+            "status": "success"
+          },
+          {
+            "step": 2,
+            "tool_name": "get_recommendations_content",
+            "arguments": {
+              "product_id": "p_sony_xm5_blk",
+              "category": "electronics",
+              "user_id": "user_001"
+            },
+            "output": {
+              "original_product_id": "p_sony_xm4_blk",
+              "count": -4,
+              "similar_products": [
+                {
+                  "name": "Sony WH-1000XM5 Headphones (Silver)",
+                  "price": 399.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "sony",
+                    "headphone"
+                  ],
+                  "stock": 10,
+                  "id": "p_sony_xm5_slv",
+                  "relevance_score": 3
+                },
+                {
+                  "name": "Apple AirPods Pro 2",
+                  "price": 249.0,
+                  "category": "electronics",
+                  "tags": [
+                    "audio",
+                    "apple",
+                    "earbuds"
+                  ],
+                  "stock": 50,
+                  "id": "p_apple_airpods",
+                  "relevance_score": 1
+                }
+              ],
+              "message": "Found 4 alternatives in the same category, but only 2 are listed."
+            },
+            "status": "success",
+            "is_perturbed": true
+          },
+          {
+            "step": 3,
+            "tool_name": "build_cart_items_from_selection",
+            "arguments": {
+              "selected_product": {
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0
+              },
+              "quantity": 2
+            },
+            "output": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 4,
+            "tool_name": "generate_invoice_from_hold",
+            "arguments": {
+              "items": [
+                {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2
+                }
+              ],
+              "payment_amount": 798.0,
+              "user_id": "user_001",
+              "email": "user@example.com",
+              "payment_gateway": "stripe",
+              "reservation_id": "RESV-14729548"
+            },
+            "output": {
+              "invoice_id": "INV-F685ABC9",
+              "status": "generated",
+              "total_due": 798.0,
+              "currency": "USD",
+              "billing_email": "user@example.com",
+              "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+              "message": "Invoice generated. Please complete payment via the link.",
+              "reservation_id": "RESV-14729548",
+              "invoice_strategy": "held_recommendation"
+            },
+            "status": "success",
+            "is_optional": true
+          },
+          {
+            "step": 5,
+            "tool_name": "confirm_order",
+            "arguments": {
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2
+            },
+            "output": {
+              "order_id": "ORD-5C8E2A1B",
+              "reservation_id": "RESV-14729548",
+              "product_id": "p_sony_xm5_slv",
+              "quantity": 2,
+              "status": "confirmed",
+              "estimated_delivery": "3-5 business days"
+            },
+            "status": "success",
+            "is_optional": true
+          }
+        ],
+        "expected_result": {
+          "tool_calls": [
+            {
+              "tool_name": "hold_best_recommendation",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "quantity": 2,
+                "user_id": "user_001",
+                "category": "electronics"
+              },
+              "output": {
+                "reservation_id": "RESV-14729548",
+                "expires_in": 300,
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "total_price": 798.0,
+                "expiry_time": 1710000300,
+                "reservation_details": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2,
+                  "total_price": 798.0
+                },
+                "original_product_id": "p_sony_xm5_blk",
+                "recommended_product_id": "p_sony_xm5_slv",
+                "recommended_product_name": "Sony WH-1000XM5 Headphones (Silver)",
+                "selection_reason": "Highest relevance recommendation with enough stock for quantity 2",
+                "selected_relevance_score": 3
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "get_recommendations_content",
+              "arguments": {
+                "product_id": "p_sony_xm5_blk",
+                "category": "electronics",
+                "user_id": "user_001"
+              },
+              "output": {
+                "original_product_id": "p_sony_xm4_blk",
+                "count": -4,
+                "similar_products": [
+                  {
+                    "name": "Sony WH-1000XM5 Headphones (Silver)",
+                    "price": 399.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 10,
+                    "id": "p_sony_xm5_slv",
+                    "relevance_score": 3
+                  },
+                  {
+                    "name": "Apple AirPods Pro 2",
+                    "price": 249.0,
+                    "category": "electronics",
+                    "tags": [
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>",
+                      "<max_depth_exceeded>"
+                    ],
+                    "stock": 50,
+                    "id": "p_apple_airpods",
+                    "relevance_score": 1
+                  }
+                ],
+                "message": "Found 4 alternatives in the same category, but only 2 are listed."
+              },
+              "status": "success",
+              "is_perturbed": true
+            },
+            {
+              "tool_name": "build_cart_items_from_selection",
+              "arguments": {
+                "selected_product": {
+                  "product_id": "p_sony_xm5_slv",
+                  "quantity": 2,
+                  "total_price": 798.0
+                },
+                "quantity": 2
+              },
+              "output": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "generate_invoice_from_hold",
+              "arguments": {
+                "items": [
+                  {
+                    "product_id": "p_sony_xm5_slv",
+                    "quantity": 2
+                  }
+                ],
+                "payment_amount": 798.0,
+                "user_id": "user_001",
+                "email": "user@example.com",
+                "payment_gateway": "stripe",
+                "reservation_id": "RESV-14729548"
+              },
+              "output": {
+                "invoice_id": "INV-F685ABC9",
+                "status": "generated",
+                "total_due": 798.0,
+                "currency": "USD",
+                "billing_email": "user@example.com",
+                "payment_link": "https://pay.example.com/stripe/INV-F685ABC9",
+                "message": "Invoice generated. Please complete payment via the link.",
+                "reservation_id": "RESV-14729548",
+                "invoice_strategy": "held_recommendation"
+              },
+              "status": "success"
+            },
+            {
+              "tool_name": "confirm_order",
+              "arguments": {
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2
+              },
+              "output": {
+                "order_id": "ORD-5C8E2A1B",
+                "reservation_id": "RESV-14729548",
+                "product_id": "p_sony_xm5_slv",
+                "quantity": 2,
+                "status": "confirmed",
+                "estimated_delivery": "3-5 business days"
+              },
+              "status": "success"
+            }
+          ]
+        }
+      }
+    ],
+    "alternative_tools": [
+      "get_recommendations",
+      "get_recommendations_content"
+    ],
+    "domains": [
+      "Shopping"
+    ],
+    "perturbation_mode": "P4",
+    "perturbation_point": 1,
+    "corruption_type": "statistical_inconsistency"
+  },
+  "agent_type": "care",
+  "model": "gemini-3-flash-preview",
+  "start_time": "2026-10-24T21:27:21.247016+00:00",
+  "end_time": "2026-10-24T21:29:03.108098+00:00",
+  "status": "completed",
+  "passed": false,
+  "error": null,
+  "failure_reason": "P4 failed: no alternative tool was called",
+  "failed_tools": [],
+  "tokens": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0
+  },
+  "parameters": {
+    "user_input": {
+      "query": "Hi, I’m user_001. Please hold 2 black Sony XM5 headphones for me using product_id p_sony_xm5_blk in the electronics category. Then check whether there’s a suitable alternative in electronics, and if there is, switch my hold to 2 of the silver Sony XM5 instead. After that, please generate an invoice for $798 and send it to user@example.com so I can pay with stripe. Once that’s done, please confirm the order for quantity 2.",
+      "category": "electronics",
+      "email": "user@example.com",
+      "payment_gateway": "stripe",
+      "product_id": "p_sony_xm5_blk",
+      "quantity": 2,
+      "user_id": "user_001"
+    },
+    "task_description": "Please hold 2 Sony XM5 black headphones for me, then check for alternative electronics in the same category. If there’s a suitable alternative, switch me to 2 of the silver Sony XM5 instead, then generate an invoice for $798 and send it to user@example.com so I can pay with Stripe, and after that confirm the order.",
+    "template_id": "C2_template_050",
+    "domains": [
+      "Shopping"
+    ],
+    "execution": {
+      "max_rounds": 25,
+      "timeout_per_round": 1000
+    },
+    "agent_config": {
+      "model": "gemini-3-flash-preview",
+      "temperature": 1,
+      "max_tokens": 10240
+    }
+  },
+  "causal_attribution": {
+    "attribution": "perturbation_not_activated",
+    "confidence": "HIGH",
+    "evidence": "Mode P4 configured for tools ['get_recommendations', 'get_recommendations_content'], but agent never invoked victim tool.",
+    "configured_count": 2,
+    "activated_count": 0,
+    "recovered_count": 0
+  },
+  "perturbation_tracking": {
+    "configured": [
+      {
+        "config_id": "C2_task_050_path_0_get_recommendations",
+        "target_tool": "get_recommendations",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm5_silver",
+          "count": -4,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 249.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 1
+            }
+          ],
+          "message": "Found 4 alternatives in the same category, listed above are 2."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_0",
+        "group_choices": [
+          "alt_recommendation_default_content:default_provider"
+        ]
+      },
+      {
+        "config_id": "C2_task_050_path_1_get_recommendations_content",
+        "target_tool": "get_recommendations_content",
+        "step": 2,
+        "mode": "P4",
+        "complexity": "C2",
+        "expected_status": "success",
+        "ground_truth_output": {
+          "original_product_id": "p_sony_xm4_blk",
+          "count": -4,
+          "similar_products": [
+            {
+              "name": "Sony WH-1000XM5 Headphones (Silver)",
+              "price": 399.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "sony",
+                "headphone"
+              ],
+              "stock": 10,
+              "id": "p_sony_xm5_slv",
+              "relevance_score": 3
+            },
+            {
+              "name": "Apple AirPods Pro 2",
+              "price": 249.0,
+              "category": "electronics",
+              "tags": [
+                "audio",
+                "apple",
+                "earbuds"
+              ],
+              "stock": 50,
+              "id": "p_apple_airpods",
+              "relevance_score": 1
+            }
+          ],
+          "message": "Found 4 alternatives in the same category, but only 2 are listed."
+        },
+        "error_message": null,
+        "trigger_condition": "first_touch_path",
+        "category": "semantic",
+        "source_path": "path_1",
+        "group_choices": [
+          "alt_recommendation_default_content:content"
+        ]
+      }
+    ],
+    "activations": []
+  },
+  "tool_calls": [],
+  "validations": [],
+  "diagnoses": [],
+  "recovery_events": [],
+  "dag_decisions": [],
+  "judgement": {
+    "pass": false,
+    "failure_reason": "P4 failed: no alternative tool was called",
+    "trace_check": {
+      "match": false,
+      "victim_tool": null,
+      "missing_tools": [
+        "build_cart_items_from_selection",
+        "confirm_order",
+        "generate_invoice_from_hold",
+        "get_recommendations",
+        "hold_best_recommendation"
+      ],
+      "ground_truth": {
+        "valid_paths": [
+          {
+            "path_id": "path_0",
+            "execution_trace": [
+              "hold_best_recommendation",
+              "get_recommendations",
+              "build_cart_items_from_selection",
+              "generate_invoice_from_hold",
+              "confirm_order"
+            ]
+          },
+          {
+            "path_id": "path_1",
+            "execution_trace": [
+              "hold_best_recommendation",
+              "get_recommendations_content",
+              "build_cart_items_from_selection",
+              "generate_invoice_from_hold",
+              "confirm_order"
+            ]
+          }
+        ],
+        "alternative_tools": [
+          "get_recommendations",
+          "get_recommendations_content"
+        ]
+      },
+      "actual": {
+        "execution_trace": []
+      }
+    }
+  }
+}
