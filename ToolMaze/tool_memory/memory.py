@@ -99,6 +99,17 @@ class ToolMemory:
             return valid_entries[-1].get("output")
         return None
 
+    def get_available_outputs(self) -> Dict[str, Any]:
+        """Return the latest valid output for every successfully executed tool."""
+        available_outputs = {}
+
+        for tool_name in self.cached_outputs:
+            output = self.get_latest_valid_output(tool_name)
+            if output is not None:
+                available_outputs[tool_name] = output
+
+        return available_outputs
+    
     def get_executed_tools(self) -> List[str]:
         """Return list of distinct tool names executed so far in chronological order."""
         seen = set()
