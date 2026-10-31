@@ -1761,14 +1761,12 @@ class JudgeSystem:
 
                 if result_msg:
 
-                    output = result_msg.get("content", {})
-
-                    # Check if this call succeeded (no error)
-
+                    # A result is not successful merely because it lacks an
+                    # "error" key. Missing/None outputs must not satisfy a path.
+                    output = result_msg.get("content")
                     has_error = isinstance(output, dict) and "error" in output
 
-                    if not has_error:
-
+                    if output is not None and not has_error:
                         successful_tools.add(tool_name)
 
         return successful_tools
@@ -1803,12 +1801,11 @@ class JudgeSystem:
 
                 continue
 
-            output = result_msg.get("content", {})
-
+            # Require an actual result; a missing/None output is not success.
+            output = result_msg.get("content")
             has_error = isinstance(output, dict) and "error" in output
 
-            if not has_error:
-
+            if output is not None and not has_error:
                 successful_counts[tool_name] += 1
 
         return successful_counts
@@ -2552,8 +2549,10 @@ class JudgeSystem:
             if msg.get("role") != "tool":
 
                 continue
+            # Support both common result-ID field names.
+            result_call_id = msg.get("tool_call_id") or msg.get("call_id")
 
-            if call_id and msg.get("call_id") == call_id:
+            if call_id and result_call_id == call_id:
 
                 return msg
 

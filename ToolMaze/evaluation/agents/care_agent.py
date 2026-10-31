@@ -18,7 +18,9 @@ import uuid
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Set
 
+
 from .base_agent import BaseAgent, AgentAction, TokenUsage, ToolCall
+from dag_rerouting.prerequisite_checker import PrerequisiteChecker
 
 try:
     from .openai_agent import OpenAIAgent
@@ -122,6 +124,7 @@ class CAREAgent(BaseAgent):
 
         # 4. Layer 4: DAG Path Selector
         self.path_selector = DAGPathSelector()
+        self.prerequisite_checker = None
 
         # 5. Layer 6: Loop Detector
         self.loop_detector = LoopDetector()
@@ -156,9 +159,19 @@ class CAREAgent(BaseAgent):
         self.recovery_prompts_injected: int = 0
         self.force_abort: bool = False
 
-    def initialize(self, task_description: str, tool_definitions: Dict[str, Any], task_json: Optional[Dict[str, Any]] = None) -> None:
+    def initialize(
+    self,
+    task_description: str,
+    tool_definitions: Dict[str, Any],
+    task_json: Optional[Dict[str, Any]] = None
+    ) -> None:
         """Initialize the CARE Agent with task definitions."""
-        self.task_json = task_json or {}
+
+        if task_json is not None:
+            self.task_json = task_json
+
+        self.task_json = self.task_json or {}
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
         self.tool_definitions = tool_definitions
         self.execution_id = str(uuid.uuid4())
         task_id = self.task_json.get("task_id", "task_care")
@@ -207,6 +220,7 @@ class CAREAgent(BaseAgent):
     def set_task_json(self, task_json: Dict[str, Any]) -> None:
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
 
     def _find_tool_definition(self, tool_name: str) -> Optional[Dict[str, Any]]:
         if not self.tool_definitions:
@@ -262,7 +276,8 @@ class CAREAgent(BaseAgent):
                     failed_tool=action.tool_name,
                     task_json=self.task_json,
                     blacklisted_tools=self.health_registry.get_blacklisted_tools(),
-                    executed_tools=self.tool_memory.get_executed_tools()
+                    executed_tools=self.tool_memory.get_executed_tools(),
+                    available_outputs=self.tool_memory.get_available_outputs()
                 )
                 if self.telemetry_recorder:
                     try:
@@ -295,9 +310,7 @@ class CAREAgent(BaseAgent):
 
     def receive_tool_result(self, tool_name: str, result: Dict[str, Any], tool_call_index: int = 0) -> None:
         """Process tool results through the 7-layer validation and recovery pipeline."""
-        if not self.enable_sov:
-            self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
-            return
+        
 
         tool_args = (self.last_action.arguments if self.last_action and self.last_action.tool_name == tool_name else {})
         query = self.task_json.get("task_description", "")
@@ -308,7 +321,7 @@ class CAREAgent(BaseAgent):
         is_clean = True
         val_res_dict = None
 
-        if self.sov is not None and PipelineStatus is not None:
+        if self.enable_sov and self.sov is not None and PipelineStatus is not None:
             try:
                 val_result = self.sov.validate(
                     tool_name=tool_name,
@@ -365,7 +378,9 @@ class CAREAgent(BaseAgent):
                 ),
                 arguments=tool_args,
                 step_num=self.step_counter,
-                task_json=self.task_json
+                task_json=self.task_json,
+                tool_output=result,
+                available_outputs=self.tool_memory.get_available_outputs()
             )
             self.budget_tracker.record_step_completed()  # Fix #13: PRP tracking
             self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
@@ -412,6 +427,24 @@ class CAREAgent(BaseAgent):
             )
             if verif.is_valid:
                 logger.info(f"Layer 7: Borderline output for '{tool_name}' verified valid by LLM.")
+
+                self.recovery_controller.decide_recovery(
+                    diagnosis=StructuredDiagnosis(
+                        tool_name=tool_name,
+                        is_valid=True,
+                        category=FailureCategory.SYNTAX_SCHEMA_ERROR,
+                        persistence=PersistenceType.TRANSIENT,
+                        root_cause="Output verified by selective verifier",
+                        severity="LOW",
+                        recommended_action=RecoveryDirective.CONTINUE
+                    ),
+                 arguments=tool_args,
+                 step_num=self.step_counter,
+                 task_json=self.task_json,
+                 tool_output=result,
+                 vailable_outputs=self.tool_memory.get_available_outputs()
+                )
+                self.budget_tracker.record_step_completed()
                 self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
                 return
 
@@ -423,7 +456,9 @@ class CAREAgent(BaseAgent):
             arguments=tool_args,
             step_num=self.step_counter,
             task_json=self.task_json,
-            executed_tools=self.tool_memory.get_executed_tools()
+            executed_tools=self.tool_memory.get_executed_tools(),
+            tool_output=result,
+            available_outputs=self.tool_memory.get_available_outputs()
         )
         self.last_recovery_directive = recovery_decision.get("action")
 
