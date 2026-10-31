@@ -110,6 +110,20 @@ class ToolMemory:
 
         return available_outputs
     
+    def get_successful_tools(self) -> List[str]:
+        """Return tool names with at least one valid successful invocation."""
+        seen = set()
+        successful = []
+        for entry in self.call_log:
+            if not isinstance(entry, dict):
+                continue
+            tool_name = entry.get("tool_name")
+            is_valid = entry.get("is_valid", False)
+            if tool_name and is_valid and tool_name not in seen:
+                seen.add(tool_name)
+                successful.append(tool_name)
+        return successful
+
     def get_executed_tools(self) -> List[str]:
         """Return list of distinct tool names executed so far in chronological order."""
         seen = set()

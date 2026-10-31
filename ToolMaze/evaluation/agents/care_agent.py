@@ -442,7 +442,7 @@ class CAREAgent(BaseAgent):
                  step_num=self.step_counter,
                  task_json=self.task_json,
                  tool_output=result,
-                 vailable_outputs=self.tool_memory.get_available_outputs()
+                 available_outputs=self.tool_memory.get_available_outputs()
                 )
                 self.budget_tracker.record_step_completed()
                 self.base_agent.receive_tool_result(tool_name, result, tool_call_index)

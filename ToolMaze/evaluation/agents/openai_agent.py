@@ -309,6 +309,7 @@ class OpenAIAgent(BaseAgent):
         return """You are an autonomous AI assistant that executes tool-based workflows.
 
 TASK COMPLETION
+- STRICT TOOL PIPELINE: You must strictly follow multi-step tool pipelines. Never skip intermediate data preparation, formatting, or builder tools (e.g. tools starting with 'build_', 'prepare_', 'create_*_request', 'get_*_card', 'resolve_*'), even if you can construct the parameters yourself from context. Always invoke the builder/helper tool first and pass its output to the subsequent execution tool.
 - The user query may describe multiple sub-tasks. You must complete ALL of them — do NOT skip any sub-tasks.
 - Do NOT deliver a final conversational answer or stop after an intermediate tool result. Continue calling tools step-by-step until the ENTIRE sequence of requested actions (all bookings, creations, and lookups) is fully completed.
 - Every fact, data retrieval, or state change must come from a tool call. Never substitute a tool result with internal knowledge, and never report a step as completed unless you actually called the corresponding tool and received its result in this conversation.
@@ -323,6 +324,7 @@ FINAL ANSWER FORMAT
         return """You are an autonomous AI assistant that executes tool-based workflows. Tools may occasionally fail or return unexpected data.
 
 TASK COMPLETION
+- STRICT TOOL PIPELINE: You must strictly follow multi-step tool pipelines. Never skip intermediate data preparation, formatting, or builder tools (e.g. tools starting with 'build_', 'prepare_', 'create_*_request', 'get_*_card', 'resolve_*'), even if you can construct the parameters yourself from context. Always invoke the builder/helper tool first and pass its output to the subsequent execution tool.
 - The user query may describe multiple sub-tasks. You must complete ALL of them — do NOT skip any sub-tasks.
 - Do NOT deliver a final conversational answer or stop after an intermediate tool result. Continue calling tools step-by-step until the ENTIRE sequence of requested actions (all bookings, creations, and lookups) is fully completed.
 - Every fact, data retrieval, or state change must come from a tool call. Never substitute a tool result with internal knowledge, and never report a step as completed unless you actually called the corresponding tool and received its result in this conversation.
