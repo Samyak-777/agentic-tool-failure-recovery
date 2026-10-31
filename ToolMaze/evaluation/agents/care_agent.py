@@ -155,6 +155,20 @@ class CAREAgent(BaseAgent):
         self.last_recovery_directive: Optional[str] = None
         self.recovery_prompts_injected: int = 0
         self.force_abort: bool = False
+        # DAG-enforced execution state.
+        self.active_path: Optional[List[str]] = None
+        self.active_path_index: int = 0
+
+        # Successful execution state. These must not be populated by failed calls.
+        self.completed_tools: Set[str] = set()
+        self.completed_outputs: Dict[str, Any] = {}
+
+        # Associate a dispatched invocation with the DAG step it represents.
+        self.last_dispatched_tool: Optional[str] = None
+        self.last_dispatched_node_index: Optional[int] = None
+
+        # Preserve the existing recovery decision; do not introduce a new retry counter.
+        self.pending_retry_tool: Optional[str] = None
 
     def initialize(self, task_description: str, tool_definitions: Dict[str, Any], task_json: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the CARE Agent with task definitions."""
@@ -173,6 +187,7 @@ class CAREAgent(BaseAgent):
         self.last_recovery_directive = None
         self.recovery_prompts_injected = 0
         self.force_abort = False
+        
 
         # Fix #12: Apply topology-aware budget
         topology = self.task_json.get("topology", "c1") or "c1"
@@ -193,11 +208,18 @@ class CAREAgent(BaseAgent):
         self.budget_tracker.reset()
         self.loop_detector.reset()
         self.recovery_controller.reset()
-
+        self.active_path = None
+        self.active_path_index = 0
+        self.completed_tools.clear()
+        self.completed_outputs.clear()
+        self.last_dispatched_tool = None
+        self.last_dispatched_node_index = None
+        self.pending_retry_tool = None
         # Restore after reset
         if expected_steps:
             self.budget_tracker.set_total_steps(expected_steps)
 
+        self._initialize_active_path()
         self.base_agent.initialize(task_description, tool_definitions)
 
     def set_telemetry_recorder(self, recorder: Optional[Any]) -> None:
@@ -238,6 +260,70 @@ class CAREAgent(BaseAgent):
             return False
         return True
 
+
+    def _initialize_active_path(self) -> None:
+        """Initialize a permitted task path when one is explicitly available."""
+        raw_paths = (
+            self.task_json.get("valid_paths")
+            or self.task_json.get("valid_solution_paths")
+            or []
+        )
+
+        if not raw_paths:
+            self.active_path = None
+            self.active_path_index = 0
+            return
+
+        normalized = []
+
+        for path in raw_paths:
+            if isinstance(path, dict):
+                tools = path.get("tools")
+                if not tools and isinstance(path.get("execution_trace"), list):
+                    tools = [
+                        step.get("tool_name")
+                        for step in path["execution_trace"]
+                        if isinstance(step, dict) and step.get("tool_name")
+                    ]
+            elif isinstance(path, (list, tuple)):
+                tools = list(path)
+            else:
+                continue
+
+            if (
+                isinstance(tools, list)
+                and tools
+                and all(isinstance(tool, str) and tool for tool in tools)
+            ):
+                normalized.append(tools)
+
+        if not normalized:
+            self.active_path = None
+            self.active_path_index = 0
+            return
+
+        self.active_path = normalized[0]
+        self.active_path_index = 0
+        logger.info(
+            "CARE DAG: initialized active path with %d steps",
+            len(self.active_path),
+        )
+
+
+    def _expected_tool_for_current_step(self) -> Optional[str]:
+        """Return the controller-required next tool, if an active path exists."""
+        if not self.active_path:
+            return None
+
+        if self.active_path_index < 0:
+            return None
+
+        if self.active_path_index >= len(self.active_path):
+            return None
+
+        return self.active_path[self.active_path_index]
+
+
     def step(self, user_message: Optional[str] = None) -> AgentAction:
         """Execute one reasoning step with proactive loop & abort guards."""
         self.step_counter += 1
@@ -254,6 +340,75 @@ class CAREAgent(BaseAgent):
         action = self.base_agent.step(user_message=user_message)
         self.last_action = action
 
+        expected_tool = self._expected_tool_for_current_step()
+
+        if expected_tool:
+            max_corrections = 3
+            corrections = 0
+
+            while corrections < max_corrections:
+
+                # A final answer is also premature if required path steps remain.
+                is_wrong_tool = (
+                    action.type == "tool_call"
+                    and action.tool_name != expected_tool
+                )
+
+                is_early_final = action.type == "final_answer"
+
+                if not is_wrong_tool and not is_early_final:
+                    break
+
+                if is_wrong_tool:
+                    logger.warning(
+                        "CARE DAG: rejected proposed tool '%s'; expected '%s'.",
+                        action.tool_name,
+                        expected_tool,
+                    )
+                else:
+                    logger.warning(
+                        "CARE DAG: rejected early final answer; expected '%s'.",
+                        expected_tool,
+                    )
+
+                corrections += 1
+
+                correction_message = (
+                    "IMPORTANT: The task execution controller requires the next "
+                    f"tool to be '{expected_tool}'. "
+                    "Do not provide a final answer yet. "
+                    "Do not call another tool. "
+                    f"Produce a tool call for '{expected_tool}' using the "
+                    "available task information and verified outputs."
+                )
+
+                action = self.base_agent.step(
+                    user_message=correction_message
+                )
+                self.last_action = action
+
+            # Never allow a wrong tool call or early final answer to escape.
+            if (
+                action.type == "tool_call"
+                and action.tool_name != expected_tool
+            ) or action.type == "final_answer":
+
+                logger.error(
+                    "CARE DAG: unable to obtain required tool '%s' after %d "
+                    "correction attempts. Blocking off-path action.",
+                    expected_tool,
+                    corrections,
+                )
+
+                return AgentAction(
+                    type="final_answer",
+                    content=(
+                        "[CARE EXECUTION BLOCKED] The required next tool "
+                        f"'{expected_tool}' was not produced. "
+                        "The task is incomplete and must not be counted as "
+                        "a successful execution."
+                    ),
+                )        
         # Guard: Check if agent is attempting to call a blacklisted tool
         if action.type == "tool_call" and action.tool_name:
             if self.health_registry.is_blacklisted(action.tool_name):
@@ -293,10 +448,81 @@ class CAREAgent(BaseAgent):
 
         return action
 
+    def _basic_result_is_successful(self, result: Any) -> bool:
+        """Check explicit execution failure signals when SOV is disabled."""
+
+        if result is None:
+            return False
+
+        if isinstance(result, dict):
+            if result.get("status") == "error":
+                return False
+
+            if result.get("success") is False:
+                return False
+
+            if result.get("is_error") is True:
+                return False
+
+            if result.get("error"):
+                return False
+
+        return True    
+    
+    def _record_successful_path_step(
+        self,
+        tool_name: str,
+        result: Dict[str, Any],
+    ) -> None:
+        """Record a successful tool result and advance the active route once."""
+
+        expected_tool = self._expected_tool_for_current_step()
+
+        if expected_tool != tool_name:
+            logger.warning(
+                "CARE DAG: result for '%s' does not match expected tool '%s'. "
+                "Path index unchanged.",
+                tool_name,
+                expected_tool,
+            )
+            return
+
+        # Do not advance the same path step twice.
+        self.completed_tools.add(tool_name)
+        self.completed_outputs[tool_name] = result
+
+        self.active_path_index += 1
+
+        if self.pending_retry_tool == tool_name:
+            self.pending_retry_tool = None
+
+        logger.info(
+            "CARE DAG: completed '%s'; next path index=%d",
+            tool_name,
+            self.active_path_index,
+        )
+
     def receive_tool_result(self, tool_name: str, result: Dict[str, Any], tool_call_index: int = 0) -> None:
         """Process tool results through the 7-layer validation and recovery pipeline."""
         if not self.enable_sov:
-            self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
+            if self._basic_result_is_successful(result):
+                self._record_successful_path_step(tool_name, result)
+            else:
+                logger.warning(
+                    "CARE DAG: SOV disabled, but result for '%s' contains "
+                    "an explicit execution failure. Path index unchanged.",
+                    tool_name,
+                )
+
+                # Do not mark the node complete.
+                # Preserve the existing SOV-disabled behavior: forward the result
+                # without invoking a new diagnosis/retry policy here.
+
+            self.base_agent.receive_tool_result(
+                tool_name,
+                result,
+                tool_call_index
+            )
             return
 
         tool_args = (self.last_action.arguments if self.last_action and self.last_action.tool_name == tool_name else {})
@@ -351,6 +577,8 @@ class CAREAgent(BaseAgent):
                     if isinstance(v, (int, float)) and v < 0:
                         is_clean = False
 
+        
+
         # If clean, record success and return unmodified output
         if is_clean:
             self.recovery_controller.decide_recovery(
@@ -368,6 +596,9 @@ class CAREAgent(BaseAgent):
                 task_json=self.task_json
             )
             self.budget_tracker.record_step_completed()  # Fix #13: PRP tracking
+
+            self._record_successful_path_step(tool_name, result)
+           
             self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
             return
 
@@ -410,9 +641,22 @@ class CAREAgent(BaseAgent):
                 output=result,
                 task_query=query
             )
+
             if verif.is_valid:
-                logger.info(f"Layer 7: Borderline output for '{tool_name}' verified valid by LLM.")
-                self.base_agent.receive_tool_result(tool_name, result, tool_call_index)
+                logger.info(
+                    "Layer 7: Borderline output for '%s' verified valid by LLM.",
+                    tool_name,
+                )
+
+                # Verification has accepted this result, so it can count as
+                # successful progress on the active DAG path.
+                self._record_successful_path_step(tool_name, result)
+
+                self.base_agent.receive_tool_result(
+                    tool_name,
+                    result,
+                    tool_call_index
+                )
                 return
 
         # ----------------------------------------------------
@@ -426,6 +670,44 @@ class CAREAgent(BaseAgent):
             executed_tools=self.tool_memory.get_executed_tools()
         )
         self.last_recovery_directive = recovery_decision.get("action")
+        
+        action_name = recovery_decision.get("action")
+
+        if action_name == "retry":
+            self.pending_retry_tool = tool_name
+
+        elif action_name == "reroute":
+            target_path = recovery_decision.get("target_path")
+
+            if isinstance(target_path, list) and target_path:
+                # The selector has already selected a permitted alternate path.
+                self.active_path = target_path
+                self.active_path_index = 0
+
+                # Reuse only the consecutive completed prefix.
+                while self.active_path_index < len(self.active_path):
+                    next_tool = self.active_path[self.active_path_index]
+
+                    if next_tool not in self.completed_tools:
+                        break
+
+                    self.active_path_index += 1
+
+                self.pending_retry_tool = None
+
+                logger.info(
+                    "CARE DAG: committed alternate path. "
+                    "Next tool=%s, path index=%d",
+                    self._expected_tool_for_current_step(),
+                    self.active_path_index,
+                )
+
+            else:
+                logger.error(
+                    "CARE DAG: reroute selected without a valid target path."
+                )
+                self.force_abort = True
+
 
         if self.telemetry_recorder:
             try:
@@ -497,3 +779,10 @@ class CAREAgent(BaseAgent):
         self.force_abort = False
         self.last_action = None
         self.last_recovery_directive = None
+        self.active_path = None
+        self.active_path_index = 0
+        self.completed_tools.clear()
+        self.completed_outputs.clear()
+        self.last_dispatched_tool = None
+        self.last_dispatched_node_index = None
+        self.pending_retry_tool = None

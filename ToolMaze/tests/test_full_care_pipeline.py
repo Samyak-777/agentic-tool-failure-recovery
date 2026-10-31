@@ -525,3 +525,121 @@ def test_care_agent_does_not_silently_remap_tool_arguments():
         action.tool_name == "get_flight_info_aviationstack"
         and action.arguments == {"flight_number": "AI101"}
     ), "CARE must not silently pass incompatible arguments to a replacement"
+
+def test_reroute_selects_next_tool_on_alternate_path():
+    selector = DAGPathSelector()
+
+    task_json = {
+        "valid_paths": [
+            {"path_id": "A", "tools": ["tool_a", "tool_b", "tool_d"]},
+            {"path_id": "B", "tools": ["tool_a", "tool_c", "tool_d"]},
+        ]
+    }
+
+    candidate = selector.find_reroute(
+        failed_tool="tool_b",
+        task_json=task_json,
+        blacklisted_tools={"tool_b"},
+        executed_tools=["tool_a"],
+    )
+
+    assert candidate.is_viable
+    assert candidate.selected_tool == "tool_c"
+    assert candidate.target_path == ["tool_a", "tool_c", "tool_d"]
+
+
+def test_successful_result_advances_active_path_once():
+    mock_agent = MockBaseAgent()
+    care = CAREAgent(base_agent=mock_agent, enable_sov=True)
+
+    task = {
+        "task_id": "path_progress_test",
+        "valid_paths": [
+            {"path_id": "A", "tools": ["tool_a", "tool_b"]}
+        ],
+    }
+
+    care.initialize("Test task", {}, task_json=task)
+
+    assert care.active_path_index == 0
+    assert care._expected_tool_for_current_step() == "tool_a"
+
+    mock_agent.action_queue.append(
+        AgentAction(
+            type="tool_call",
+            tool_name="tool_a",
+            arguments={}
+        )
+    )
+
+    action = care.step()
+    assert action.tool_name == "tool_a"
+
+    care.receive_tool_result(
+        "tool_a",
+        {"status": "success", "value": 123}
+    )
+
+    assert care.active_path_index == 1
+    assert care._expected_tool_for_current_step() == "tool_b"
+
+def test_failed_result_does_not_advance_active_path():
+    mock_agent = MockBaseAgent()
+    care = CAREAgent(base_agent=mock_agent, enable_sov=True)
+
+    task = {
+        "task_id": "failed_progress_test",
+        "valid_paths": [
+            {"path_id": "A", "tools": ["tool_a", "tool_b"]}
+        ],
+    }
+
+    care.initialize("Test task", {}, task_json=task)
+
+    care.receive_tool_result(
+        "tool_a",
+        {"status": "error", "error": "Tool failed"}
+    )
+
+    assert care.active_path_index == 0
+    assert "tool_a" not in care.completed_tools
+    assert care._expected_tool_for_current_step() == "tool_a"
+
+
+def test_off_path_tool_is_not_returned():
+    mock_agent = MockBaseAgent()
+    care = CAREAgent(base_agent=mock_agent, enable_sov=False)
+
+    task = {
+        "task_id": "off_path_test",
+        "valid_paths": [
+            {"path_id": "A", "tools": ["tool_a", "tool_b"]}
+        ],
+    }
+
+    care.initialize("Test task", {}, task_json=task)
+
+    # First proposal is incorrect.
+    mock_agent.action_queue.append(
+        AgentAction(
+            type="tool_call",
+            tool_name="tool_c",
+            arguments={}
+        )
+    )
+
+    # Correction proposal is correct.
+    mock_agent.action_queue.append(
+        AgentAction(
+            type="tool_call",
+            tool_name="tool_a",
+            arguments={}
+        )
+    )
+
+    action = care.step()
+
+    assert action.type == "tool_call"
+    assert action.tool_name == "tool_a"
+    assert care.active_path_index == 0
+

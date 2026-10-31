@@ -109,6 +109,28 @@ class ToolMemory:
                 seen.add(t)
                 ordered.append(t)
         return ordered
+    
+    def get_successful_tools(self) -> List[str]:
+        """Return tool names with at least one valid successful invocation.
+
+        This is still tool-name-level history. Use CARE's node-level completion
+        state when deciding whether a specific DAG node has completed.
+        """
+        seen = set()
+        successful = []
+
+        for entry in self.call_log:
+            if not isinstance(entry, dict):
+                continue
+
+            tool_name = entry.get("tool_name")
+            is_valid = entry.get("is_valid", False)
+
+            if tool_name and is_valid and tool_name not in seen:
+                seen.add(tool_name)
+                successful.append(tool_name)
+
+        return successful
 
     def get_tool_history(self, tool_name: str) -> List[Dict[str, Any]]:
         """Return full history of calls for a specific tool."""

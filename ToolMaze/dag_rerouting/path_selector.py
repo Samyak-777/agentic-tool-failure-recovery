@@ -109,7 +109,16 @@ class DAGPathSelector:
             )
             if candidate and candidate.is_viable:
                 return candidate
-
+            # If valid solution paths were explicitly supplied, do not invent a
+            # replacement from the general alternatives catalogue.
+            return RerouteCandidate(
+                failed_tool=failed_tool,
+                candidate_tools=[],
+                selected_tool=None,
+                target_path=None,
+                reason="No viable permitted alternative solution path exists.",
+                is_viable=False,
+            )
         # 1b. Strategy A.2: Check explicit task_json["alternative_tools"]
         task_alts = task_json.get("alternative_tools", [])
         if failed_tool in task_alts:
@@ -214,70 +223,160 @@ class DAGPathSelector:
         if not candidate_paths:
             return None
 
-        # Prefer paths that share the most tools already executed.
+        # Prefer paths that preserve the longest successfully completed prefix.
         exec_set = set(executed_tools)
+
+        def completed_prefix_length(path):
+            count = 0
+
+            for tool in path:
+                if tool in exec_set:
+                    count += 1
+                else:
+                    break
+
+            return count
+
         candidate_paths.sort(
-            key=lambda path: len(set(path).intersection(exec_set)),
-            reverse=True
+            key=lambda path: (
+                -completed_prefix_length(path),
+                len(path),
+                tuple(path),
+            )
         )
 
-        # Check each path for a next tool whose prerequisites are satisfied.
+        # Select the first unfinished tool on the highest-ranked valid path.
         for chosen_path in candidate_paths:
+
+            next_tool = None
+
             for tool in chosen_path:
-                if tool in exec_set or tool in blacklisted_tools:
+                if tool in blacklisted_tools:
+                    next_tool = None
+                    break
+
+                if tool not in exec_set:
+                    next_tool = tool
+                    break
+
+            if next_tool is None:
+                continue
+
+            if task_json is not None:
+                selected = self._pick_dependency_satisfied_tool(
+                    candidates=[next_tool],
+                    task_json=task_json,
+                    executed_tools=executed_tools
+                )
+
+                if selected is None:
                     continue
 
-                if task_json is not None:
-                    selected = self._pick_dependency_satisfied_tool(
-                        candidates=[tool],
-                        task_json=task_json,
-                        executed_tools=executed_tools
-                    )
-                    if selected is None:
-                        break
-
-                return RerouteCandidate(
-                    failed_tool=failed_tool,
-                    candidate_tools=[tool],
-                    selected_tool=tool,
-                    target_path=chosen_path,
-                    reason=(
-                        "Switched to an alternative valid solution path; "
-                        f"selected '{tool}' after checking its prerequisites."
-                    ),
-                    is_viable=True
-                )
+            return RerouteCandidate(
+                failed_tool=failed_tool,
+                candidate_tools=[next_tool],
+                selected_tool=next_tool,
+                target_path=chosen_path,
+                reason=(
+                    "Selected the first unfinished tool on the highest-ranked "
+                    "permitted alternative path."
+                ),
+                is_viable=True
+            )
 
         return None
 
+    
     def _pick_dependency_satisfied_tool(
         self,
         candidates: List[str],
         task_json: Dict[str, Any],
         executed_tools: List[str]
     ) -> Optional[str]:
-        """Select a candidate whose upstream DAG prerequisites are satisfied."""
+        """Select a candidate whose known DAG prerequisites are satisfied.
+
+        Backward-compatible helper: executed_tools is historical tool-name data,
+        not proof that a specific node invocation succeeded.
+        """
         dag = task_json.get("dag", {})
-        nodes = dag.get("nodes", [])
-        dep_map: Dict[str, List[str]] = {}
+        nodes = dag.get("nodes", []) if isinstance(dag, dict) else []
+
+        # Preserve the previous behavior for tasks that do not declare a DAG.
+        if not nodes:
+            for candidate in candidates:
+                if candidate:
+                    return candidate
+            return None
+
+        node_by_id: Dict[str, Dict[str, Any]] = {}
+        nodes_by_tool: Dict[str, List[Dict[str, Any]]] = {}
 
         for node in nodes:
-            name = node.get("tool_name")
-            deps = node.get("dependencies", [])
-            if name:
-                dep_map[name] = deps
-
-        exec_set = set(executed_tools)
-        dag_declared = bool(nodes)
-
-        for candidate in candidates:
-            # With an explicit DAG, don't assume an unlisted tool is ready.
-            # Without a DAG, preserve legacy behavior.
-            if dag_declared and candidate not in dep_map:
+            if not isinstance(node, dict):
                 continue
 
-            prerequisites = dep_map.get(candidate, [])
-            if all(prerequisite in exec_set for prerequisite in prerequisites):
-                return candidate
+            node_id = node.get("node_id", node.get("id"))
+            tool_name = node.get("tool_name", node.get("name"))
+
+            if node_id is not None:
+                node_by_id[str(node_id)] = node
+
+            if tool_name:
+                nodes_by_tool.setdefault(str(tool_name), []).append(node)
+
+        executed = set(executed_tools)
+
+        for candidate in candidates:
+            matching_nodes = nodes_by_tool.get(candidate, [])
+
+            # An explicitly declared DAG must contain the candidate.
+            if not matching_nodes:
+                continue
+
+            for node in matching_nodes:
+                dependencies = node.get(
+                    "dependencies",
+                    node.get("depends_on", [])
+                ) or []
+
+                if not isinstance(dependencies, list):
+                    continue
+
+                prerequisites_satisfied = True
+
+                for dependency in dependencies:
+                    dependency_key = str(dependency)
+
+                    # Prefer an exact node-ID match.
+                    dependency_node = node_by_id.get(dependency_key)
+
+                    if dependency_node is not None:
+                        prerequisite_tool = dependency_node.get(
+                            "tool_name",
+                            dependency_node.get("name")
+                        )
+
+                        # This compatibility helper has no node-level success
+                        # state. It can only approximate completion by tool name.
+                        if not prerequisite_tool or prerequisite_tool not in executed:
+                            prerequisites_satisfied = False
+                            break
+
+                        continue
+
+                    # Otherwise accept a tool-name dependency only if the DAG
+                    # actually declares that tool name.
+                    if dependency_key in nodes_by_tool:
+                        if dependency_key not in executed:
+                            prerequisites_satisfied = False
+                            break
+                        continue
+
+                    # Unknown dependencies must never be treated as satisfied.
+                    prerequisites_satisfied = False
+                    break
+
+                if prerequisites_satisfied:
+                    return candidate
 
         return None
