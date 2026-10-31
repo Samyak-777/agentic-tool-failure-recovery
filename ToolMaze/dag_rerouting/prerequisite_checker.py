@@ -4,8 +4,9 @@ from typing import Any, Dict, List, Optional, Set
 class PrerequisiteChecker:
     """
     Checks whether a requested tool is eligible for execution
-    according to the task's declared valid execution paths.
-    Supports C2-C4 valid_paths, valid_solution_paths, and C1 execution_trace.
+    according to the task's declared valid execution paths or template DAG.
+    Supports C2-C4 valid_paths, valid_solution_paths, C1 execution_trace,
+    and task_template DAG nodes.
     """
 
     def __init__(self, task_json: Dict[str, Any]):
@@ -37,6 +38,20 @@ class PrerequisiteChecker:
                         tools.append(step)
                 if tools:
                     raw_paths = [{"path_id": "path_0", "tools": tools}]
+
+        if not raw_paths:
+            dag = self.task_json.get("dag") or task_def.get("dag")
+            if isinstance(dag, dict):
+                nodes = dag.get("nodes", [])
+                if isinstance(nodes, list):
+                    tools = []
+                    for node in nodes:
+                        if isinstance(node, dict) and node.get("tool_name"):
+                            tools.append(str(node["tool_name"]))
+                        elif isinstance(node, str) and node:
+                            tools.append(node)
+                    if tools:
+                        raw_paths = [{"path_id": "path_0", "tools": tools}]
 
         # Ignore malformed path entries.
         self.valid_paths = [

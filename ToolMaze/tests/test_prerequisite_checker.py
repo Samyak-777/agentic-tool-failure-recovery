@@ -230,3 +230,30 @@ def test_valid_solution_paths_extraction():
 
     res2 = checker.check("tool_c", executed_tools={"tool_a", "tool_b"})
     assert res2["allowed"] is True
+
+
+def test_task_template_dag_extraction():
+    template = {
+        "template_id": "C1_template_001",
+        "dag": {
+            "nodes": [
+                {"id": "s1", "tool_name": "get_flight_info"},
+                {"id": "s2", "tool_name": "build_flight_booking_request"},
+                {"id": "s3", "tool_name": "book_flight_with_status_check"},
+                {"id": "s4", "tool_name": "get_hotel_info_expedia"},
+                {"id": "s5", "tool_name": "book_hotel"},
+            ]
+        },
+    }
+    checker = PrerequisiteChecker(template)
+    assert len(checker.valid_paths) == 1
+    assert checker.valid_paths[0]["tools"] == [
+        "get_flight_info",
+        "build_flight_booking_request",
+        "book_flight_with_status_check",
+        "get_hotel_info_expedia",
+        "book_hotel",
+    ]
+    res = checker.check("book_flight_with_status_check", {"get_flight_info"})
+    assert res["allowed"] is False
+    assert res["missing_prerequisites"] == ["build_flight_booking_request"]

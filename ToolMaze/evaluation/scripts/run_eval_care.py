@@ -20,7 +20,41 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import yaml
+import json
 from openai import OpenAI
+
+def load_task_template(task_json, config):
+    """Load the original task template, never evaluator ground truth."""
+    template_dir = config.get("data", {}).get("template_dir")
+
+    if not template_dir:
+        return None
+
+    template_id = task_json.get("template_id")
+    complexity = task_json.get("complexity", "")
+
+    if not template_id or not complexity:
+        return None
+
+    template_path = (
+        Path(template_dir) / complexity.lower() / f"{template_id}.json"
+    )
+
+    if not template_path.is_file():
+        logger.warning(
+            "Task template unavailable for %s: %s",
+            task_json.get("task_id"),
+            template_path,
+        )
+        return None
+
+    try:
+        with template_path.open("r", encoding="utf-8") as file:
+            return json.load(file)
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("Could not load task template: %s", exc)
+        return None
+
 
 # Add project root to sys.path
 project_root = Path(__file__).resolve().parent.parent.parent
@@ -281,6 +315,11 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
         agent = create_eval_agent(agent_type, config, shared_pool)
         if hasattr(agent, "set_task_json"):
             agent.set_task_json(task_json)
+
+        task_template = load_task_template(task_json, config)
+        if hasattr(agent, "set_task_template"):
+            agent.set_task_template(task_template)
+
         if hasattr(agent, "set_telemetry_recorder") and recorder:
             agent.set_telemetry_recorder(recorder)
 
