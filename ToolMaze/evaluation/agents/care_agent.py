@@ -306,6 +306,37 @@ class CAREAgent(BaseAgent):
                             f"not present in '{original_tool}' call. Bypassing silent substitution."
                         )
 
+        # Guard: Check DAG prerequisites before executing tool
+        if self.prerequisite_checker is None and self.task_json:
+            self.prerequisite_checker = PrerequisiteChecker(self.task_json)
+
+        if self.prerequisite_checker and action.type == "tool_call" and action.tool_name:
+            max_prereq_retries = 2
+            prereq_attempt = 0
+            while prereq_attempt < max_prereq_retries:
+                executed_tools = set(self.tool_memory.get_successful_tools())
+                prereq = self.prerequisite_checker.check(action.tool_name, executed_tools)
+                if prereq.get("allowed", True):
+                    break
+                missing = prereq.get("missing_prerequisites", [])
+                if not missing:
+                    break
+                first_missing = missing[0]
+                logger.warning(
+                    f"CARE Prerequisite Guard: Tool '{action.tool_name}' requires '{first_missing}' "
+                    f"which has not executed yet (missing: {missing}). Prompting base agent."
+                )
+                directive = (
+                    f"[PREREQUISITE DIRECTIVE]: Tool '{action.tool_name}' cannot be executed yet because "
+                    f"mandatory preceding tool '{first_missing}' in the workflow has not executed. "
+                    f"You MUST call '{first_missing}' now using data from previous steps and the task instructions."
+                )
+                action = self.base_agent.step(user_message=directive)
+                self.last_action = action
+                prereq_attempt += 1
+                if action.type != "tool_call" or not action.tool_name:
+                    break
+
         return action
 
     def receive_tool_result(self, tool_name: str, result: Dict[str, Any], tool_call_index: int = 0) -> None:

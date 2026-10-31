@@ -174,3 +174,59 @@ def test_invalid_path_entry_is_ignored():
     )
 
     assert result["allowed"] is True
+
+
+def test_execution_trace_c1_extraction():
+    task = {
+        "task_id": "C1_task_001_P0",
+        "execution_trace": [
+            {"step": 1, "tool_name": "get_flight_info"},
+            {"step": 2, "tool_name": "build_flight_booking_request"},
+            {"step": 3, "tool_name": "book_flight_with_status_check"},
+            {"step": 4, "tool_name": "get_hotel_info_expedia"},
+            {"step": 5, "tool_name": "book_hotel"},
+        ],
+    }
+    checker = PrerequisiteChecker(task)
+    assert len(checker.valid_paths) == 1
+    assert checker.valid_paths[0]["tools"] == [
+        "get_flight_info",
+        "build_flight_booking_request",
+        "book_flight_with_status_check",
+        "get_hotel_info_expedia",
+        "book_hotel",
+    ]
+
+    # Calling step 3 directly after step 1 should fail with missing step 2
+    res = checker.check(
+        requested_tool="book_flight_with_status_check",
+        executed_tools={"get_flight_info"},
+    )
+    assert res["allowed"] is False
+    assert res["missing_prerequisites"] == ["build_flight_booking_request"]
+
+    # Calling step 2 after step 1 should be allowed
+    res2 = checker.check(
+        requested_tool="build_flight_booking_request",
+        executed_tools={"get_flight_info"},
+    )
+    assert res2["allowed"] is True
+    assert res2["missing_prerequisites"] == []
+
+
+def test_valid_solution_paths_extraction():
+    task = {
+        "task_id": "task_sol",
+        "valid_solution_paths": [
+            ["tool_a", "tool_b", "tool_c"],
+            ["tool_a", "tool_d", "tool_c"],
+        ],
+    }
+    checker = PrerequisiteChecker(task)
+    assert len(checker.valid_paths) == 2
+    res = checker.check("tool_c", executed_tools={"tool_a"})
+    assert res["allowed"] is False
+    assert res["missing_prerequisites"] in [["tool_b"], ["tool_d"]]
+
+    res2 = checker.check("tool_c", executed_tools={"tool_a", "tool_b"})
+    assert res2["allowed"] is True
