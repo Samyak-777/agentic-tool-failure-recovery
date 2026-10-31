@@ -18,7 +18,9 @@ import uuid
 from pathlib import Path
 from typing import Dict, Any, Optional, List, Set
 
+
 from .base_agent import BaseAgent, AgentAction, TokenUsage, ToolCall
+from dag_rerouting.prerequisite_checker import PrerequisiteChecker
 
 try:
     from .openai_agent import OpenAIAgent
@@ -122,6 +124,7 @@ class CAREAgent(BaseAgent):
 
         # 4. Layer 4: DAG Path Selector
         self.path_selector = DAGPathSelector()
+        self.prerequisite_checker = None
 
         # 5. Layer 6: Loop Detector
         self.loop_detector = LoopDetector()
@@ -156,9 +159,19 @@ class CAREAgent(BaseAgent):
         self.recovery_prompts_injected: int = 0
         self.force_abort: bool = False
 
-    def initialize(self, task_description: str, tool_definitions: Dict[str, Any], task_json: Optional[Dict[str, Any]] = None) -> None:
+    def initialize(
+    self,
+    task_description: str,
+    tool_definitions: Dict[str, Any],
+    task_json: Optional[Dict[str, Any]] = None
+    ) -> None:
         """Initialize the CARE Agent with task definitions."""
-        self.task_json = task_json or {}
+
+        if task_json is not None:
+            self.task_json = task_json
+
+        self.task_json = self.task_json or {}
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
         self.tool_definitions = tool_definitions
         self.execution_id = str(uuid.uuid4())
         task_id = self.task_json.get("task_id", "task_care")
@@ -207,6 +220,7 @@ class CAREAgent(BaseAgent):
     def set_task_json(self, task_json: Dict[str, Any]) -> None:
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
 
     def _find_tool_definition(self, tool_name: str) -> Optional[Dict[str, Any]]:
         if not self.tool_definitions:
