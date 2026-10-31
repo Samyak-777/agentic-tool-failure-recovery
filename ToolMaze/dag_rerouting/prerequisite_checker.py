@@ -4,9 +4,9 @@ from typing import Any, Dict, List, Optional, Set
 class PrerequisiteChecker:
     """
     Checks whether a requested tool is eligible for execution
-    according to the task's declared valid execution paths or template DAG.
-    Supports C2-C4 valid_paths, valid_solution_paths, C1 execution_trace,
-    and task_template DAG nodes.
+    according to declared valid execution paths (for C2-C4 DAG tasks).
+    Operates strictly on legitimate candidate paths without accessing
+    evaluator ground-truth execution traces or offline template files.
     """
 
     def __init__(self, task_json: Dict[str, Any]):
@@ -26,32 +26,6 @@ class PrerequisiteChecker:
                         raw_paths.append({"path_id": f"path_{idx}", "tools": p})
                     elif isinstance(p, dict) and "tools" in p:
                         raw_paths.append(p)
-
-        if not raw_paths:
-            trace = self.task_json.get("execution_trace") or task_def.get("execution_trace")
-            if isinstance(trace, list):
-                tools = []
-                for step in trace:
-                    if isinstance(step, dict) and step.get("tool_name"):
-                        tools.append(str(step["tool_name"]))
-                    elif isinstance(step, str) and step:
-                        tools.append(step)
-                if tools:
-                    raw_paths = [{"path_id": "path_0", "tools": tools}]
-
-        if not raw_paths:
-            dag = self.task_json.get("dag") or task_def.get("dag")
-            if isinstance(dag, dict):
-                nodes = dag.get("nodes", [])
-                if isinstance(nodes, list):
-                    tools = []
-                    for node in nodes:
-                        if isinstance(node, dict) and node.get("tool_name"):
-                            tools.append(str(node["tool_name"]))
-                        elif isinstance(node, str) and node:
-                            tools.append(node)
-                    if tools:
-                        raw_paths = [{"path_id": "path_0", "tools": tools}]
 
         # Ignore malformed path entries.
         self.valid_paths = [

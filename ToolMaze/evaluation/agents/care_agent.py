@@ -221,14 +221,7 @@ class CAREAgent(BaseAgent):
     def set_task_json(self, task_json: Dict[str, Any]) -> None:
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
-        if not getattr(self, "task_template", None):
-            self.prerequisite_checker = PrerequisiteChecker(self.task_json)
-
-    def set_task_template(self, template: Optional[Dict[str, Any]]) -> None:
-        """Store the original task template for runtime dependency analysis."""
-        self.task_template = template or {}
-        if self.task_template:
-            self.prerequisite_checker = PrerequisiteChecker(self.task_template)
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
 
     def _find_tool_definition(self, tool_name: str) -> Optional[Dict[str, Any]]:
         if not self.tool_definitions:
