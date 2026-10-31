@@ -79,10 +79,15 @@ class LoopDetector:
         # If all recent calls are the same tool
         if len(set(tool_names)) == 1:
             tool_name = tool_names[0]
-            # If at least one failed or args are identical
             args_hashes = [call[1] for call in recent]
-            has_failures = any(not call[2] for call in recent)
             identical_args = len(set(args_hashes)) == 1
+
+            # A successful retry after an earlier failure is recovery, not a loop
+            if recent[-1][2] is True and any(not call[2] for call in recent[:-1]):
+                return LoopCheckResult()
+
+            # If at least one failed or args are identical
+            has_failures = any(not call[2] for call in recent)
 
             if has_failures or identical_args:
                 return LoopCheckResult(

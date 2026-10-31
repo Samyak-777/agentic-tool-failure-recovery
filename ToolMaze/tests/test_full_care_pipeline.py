@@ -176,6 +176,14 @@ def test_layer_6_loop_detector():
     assert r2.loop_type == "immediate"
     print("   [PASS] Immediate loop detected.")
 
+    # 1b. Successful retry after a transient failure is NOT an immediate loop
+    detector.reset()
+    r_fail = detector.record_call("tool_retry", {"id": 1}, is_valid=False)
+    assert not r_fail.is_loop
+    r_success = detector.record_call("tool_retry", {"id": 1}, is_valid=True)
+    assert not r_success.is_loop, "Successful retry after failure must not be flagged as a loop"
+    print("   [PASS] Successful retry correctly identified as non-loop.")
+
     # 2. Ping-Pong loop: A -> B -> A -> B
     detector.reset()
     detector.record_call("tool_a", {"x": 1}, is_valid=True)
