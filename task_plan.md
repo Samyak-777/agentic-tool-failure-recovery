@@ -79,3 +79,18 @@
   - Confirmed $P_1$ PRR = 100.0% and $P_3$ PRR = 66.67%.
   - Analyzed 8B LLM context truncation bottleneck on 10–15 tool mesh tasks.
 - [x] Synchronized code and experiment records across local repo and college GPU server (`10.18.1.16`).
+
+## Phase 9: Multi-Model Infrastructure & VRAM Breakthrough (Completed)
+- [x] Configured Ollama secondary model directory (`/mnt/data/ollama_models`) on 3.3TB partition.
+- [x] Pulled and validated `qwen2.5:14b` and `qwen2.5:32b` on local TITAN RTX 24GB GPU.
+- [x] Resolved 45s gateway timeout by tuning `override.conf` (`OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1`), achieving 100% GPU VRAM residency (0% CPU offload) and 17x throughput speedup (25.62 tok/s on 32B).
+- [x] Implemented DAG-Aware Goal Completion Guard in `care_agent.py` to prevent premature task termination on deep meshes.
+
+## Phase 10: 200-Task Empirical Scaling Benchmark (Completed)
+- [x] Built and deployed master benchmark runner `run_50_c3_c4_both.py`.
+- [x] Executed 50 tasks of Category $\mathcal{C}_3$ on `qwen2.5:14b` (`qwen14b_care_c3_50`): **72.0% TSR**, **67.5% PRR**.
+- [x] Executed 50 tasks of Category $\mathcal{C}_4$ on `qwen2.5:14b` (`qwen14b_care_c4_50`): **44.0% TSR**, **35.0% PRR**.
+- [x] Executed 50 tasks of Category $\mathcal{C}_3$ on `qwen2.5:32b` (`qwen32b_care_c3_50`): **66.0% TSR**, **62.5% PRR**.
+- [x] Executed 50 tasks of Category $\mathcal{C}_4$ on `qwen2.5:32b` (`qwen32b_care_c4_50`): **60.0% TSR**, **55.0% PRR** (+16% TSR, +20% PRR over 14B).
+- [x] Harvested, verified, and recorded all 200 task execution traces.
+
