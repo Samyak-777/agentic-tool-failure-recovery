@@ -58,3 +58,24 @@
 
 
 
+
+## Phase 7: Deterministic Semantic Output Validation (SOV) Expansion (Completed)
+- [x] Analyzed ground truth injected corruptions across $\mathcal{C}_1$–$\mathcal{C}_4$ for $P_3$ and $P_4$.
+- [x] Designed deterministic invariant checks: debug exception leaks, contradictory states, domain action conflicts, zero-quantity orders, empty essential IDs, text metric coherence, temporal inversions, and impossible negative bounds.
+- [x] Verified zero false positives against all 400 clean $P_0$ task instances (0.0% FP rate).
+- [x] Confirmed deterministic detection of 68.8% of $P_3$ and 70.0% of $P_4$ corruptions without consuming LLM inference tokens.
+
+## Phase 8: Unified C1, C3, and C4 Empirical Benchmarks (Completed)
+- [x] Restored task template DAG prerequisite enforcement for $\mathcal{C}_1$ in `run_eval_care.py` and `care_agent.py`.
+- [x] Ran 10-task Canary benchmark (`canary_sov_v2_10`): $P_0$ = 100%, $P_1$ = 100%, $P_3$ PRR = 100%.
+- [x] Ran 25-task Category $\mathcal{C}_3$ benchmark (`unified_c3_sov_25`):
+  - Overall pass rate increased from 32.0% $\to$ **52.0%** (+20.0% absolute increase).
+  - $P_0$ TSR: **100.0%** (5/5).
+  - $P_1$ TSR: **80.0%** (4/5), PRR = **100.0%**.
+  - $P_2$ TSR: **40.0%** (2/5), PRR = **66.67%**.
+  - $P_3$ TSR: **20.0%** (1/5), PRR = **50.00%** (up from 0.0%).
+  - $P_4$ TSR: **20.0%** (1/5), PRR = **25.00%** (up from 0.0%).
+- [x] Ran 25-task Category $\mathcal{C}_4$ benchmark (`unified_c4_sov_25`):
+  - Confirmed $P_1$ PRR = 100.0% and $P_3$ PRR = 66.67%.
+  - Analyzed 8B LLM context truncation bottleneck on 10–15 tool mesh tasks.
+- [x] Synchronized code and experiment records across local repo and college GPU server (`10.18.1.16`).

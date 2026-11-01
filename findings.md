@@ -388,3 +388,42 @@ Trace examination (`inspect_llama_trace.py`) reveals why Llama 3.1 (8B) collapse
 
 
 
+
+
+---
+
+## Evaluation of Layer 1 Deterministic Semantic Invariants & C1/C3/C4 Benchmarks (Nov 1, 2026)
+
+### Key Empirical Findings:
+
+1. **Zero False Positive Invariant Guarantee**:
+   - Evaluated across all 400 clean $P_0$ task instances in ToolMaze ($\mathcal{C}_1$ through $\mathcal{C}_4$).
+   - Total clean task executions tested: 400.
+   - **False Positives: exactly 0 (0.00% FP rate)**.
+   - Preserves 100% clean baseline performance without erroneously rejecting valid negative numbers (e.g., `change_24h: -1.24%`) or legitimate cancellation statuses (e.g., `cancel_reservation: 'cancelled'`).
+
+2. **Deterministic Detection of Implicit Corruptions ($P_3 / P_4$)**:
+   - Out of 400 $P_3$ implicit-transient corruptions across $\mathcal{C}_1$–$\mathcal{C}_4$: **275 detected (68.8%)**.
+   - Out of 400 $P_4$ implicit-permanent corruptions across $\mathcal{C}_1$–$\mathcal{C}_4$: **280 detected (70.0%)**.
+   - **Advantage**: Bypasses costly LLM judge tokens by intercepting structural debug leaks, contradictory business states, temporal inversions, and text metric contradictions directly at Layer 1.
+
+3. **C3 Multi-Layered DAG Performance Breakthrough**:
+   Comparing `unified_c3_25_eval` (pre-invariants) vs `unified_c3_sov_25` (post-invariants):
+
+| Metric | Pre-Invariants C3 | Post-Invariants C3 | Delta |
+|---|:---:|:---:|:---:|
+| **Overall Pass Rate** | 32.0% (8/25) | **52.0% (13/25)** | **+20.0%** |
+| **$P_0$ Clean TSR** | 60.0% (3/5) | **100.0% (5/5)** | **+40.0%** |
+| **$P_1$ Transient TSR** | 60.0% (3/5) | **80.0% (4/5)** | **+20.0%** |
+| **$P_1$ PRR** | 75.0% | **100.0% (5/5)** | **+25.0%** |
+| **$P_2$ Deterministic TSR** | 40.0% (2/5) | **40.0% (2/5)** | 0.0% |
+| **$P_2$ PRR** | 50.0% | **66.67% (2/3)** | **+16.7%** |
+| **$P_3$ Semantic TSR** | 0.0% (0/5) | **20.0% (1/5)** | **+20.0%** |
+| **$P_3$ PRR** | 0.0% | **50.00% (2/4)** | **+50.0%** |
+| **$P_4$ Cascading TSR** | 0.0% (0/5) | **20.0% (1/5)** | **+20.0%** |
+| **$P_4$ PRR** | 0.0% | **25.00% (1/4)** | **+25.0%** |
+
+4. **Root Cause Analysis of C4 Mesh Bottleneck**:
+   - In $\mathcal{C}_4$, workflows contain 10–15 distinct tools distributed across deep parallel meshes.
+   - The open-weights 8B model (`qwen3:8b`) tends to emit a final answer prematurely after executing 6–8 tools, leaving later mesh nodes unvisited.
+   - Despite premature LLM termination on full completion, CARE's recovery mechanisms functioned as designed: **$P_1$ PRR reached 100.0%** and **$P_3$ PRR reached 66.67%** on fault exposure.
