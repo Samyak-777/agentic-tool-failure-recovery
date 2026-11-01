@@ -16,7 +16,7 @@ import json
 import logging
 import uuid
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Set
+from typing import Dict, Any, Optional, List, Set, Tuple
 
 
 from .base_agent import BaseAgent, AgentAction, TokenUsage, ToolCall
@@ -366,6 +366,62 @@ class CAREAgent(BaseAgent):
 
         return action
 
+    def _validate_semantic_invariants(self, tool_name: str, result: Any) -> Tuple[bool, str]:
+        """Layer 1 deterministic semantic invariant validation (zero false positives on clean outputs)."""
+        if not isinstance(result, dict):
+            return True, ""
+
+        DEBUG_PATTERNS = (
+            "nullpointerexception", "sql_query", "select * from",
+            "select id, status from", "select name from", "debug_level",
+            "debug_log", "internal_endpoint", "unknown-err",
+            "internalmappingservice", "flighttracker.getstate",
+            "db_connection_pool_exhausted", "traceback (most recent call last)"
+        )
+        CONTRADICTORY_PATTERNS = (
+            "confirmed and cancelled", "confirmed_failed", "completed and cancelled",
+            "confirmed without a reservation id"
+        )
+
+        def _check_node(node: Any) -> Tuple[bool, str]:
+            if not isinstance(node, dict):
+                return True, ""
+            raw_str = json.dumps(node).lower()
+            for pat in DEBUG_PATTERNS:
+                if pat in raw_str:
+                    return False, f"Internal debug/exception leak detected: '{pat}'"
+            for pat in CONTRADICTORY_PATTERNS:
+                if pat in raw_str:
+                    return False, f"Contradictory state in payload: '{pat}'"
+
+            c_at = node.get("created_at")
+            u_at = node.get("updated_at")
+            if c_at and u_at and str(c_at) > str(u_at):
+                return False, f"Temporal inversion: created_at ({c_at}) > updated_at ({u_at})"
+
+            s_date = node.get("start_date") or node.get("meeting_start_time")
+            e_date = node.get("end_date") or node.get("meeting_end_time")
+            if s_date and e_date and str(s_date) > str(e_date):
+                return False, f"Date/time range inversion: start ({s_date}) > end ({e_date})"
+
+            for k, v in node.items():
+                if isinstance(v, (int, float)) and v < 0:
+                    if not any(term in k.lower() for term in ["temp", "lat", "lon"]):
+                        return False, f"Impossible negative bound on '{k}': {v}"
+                elif isinstance(v, dict):
+                    valid, reason = _check_node(v)
+                    if not valid:
+                        return False, reason
+                elif isinstance(v, list):
+                    for item in v:
+                        if isinstance(item, dict):
+                            valid, reason = _check_node(item)
+                            if not valid:
+                                return False, reason
+            return True, ""
+
+        return _check_node(result)
+
     def receive_tool_result(self, tool_name: str, result: Dict[str, Any], tool_call_index: int = 0) -> None:
         """Process tool results through the 7-layer validation and recovery pipeline."""
         
@@ -413,14 +469,21 @@ class CAREAgent(BaseAgent):
             except Exception as e:
                 logger.debug(f"SVL validation error: {e}")
 
-        # Semantic corruption checks on payload (e.g. negative balances, errors)
-        if isinstance(result, dict):
-            if result.get("status") == "error" or "error" in result:
+        # Layer 1: Deterministic Semantic Invariant & Corruption Validation (P3/P4)
+        if isinstance(result, dict) and (result.get("status") == "error" or "error" in result):
+            is_clean = False
+
+        if is_clean and isinstance(result, dict):
+            sem_clean, sem_reason = self._validate_semantic_invariants(tool_name, result)
+            if not sem_clean:
                 is_clean = False
-            for k, v in result.items():
-                if any(term in k.lower() for term in ["balance", "price", "count", "age", "qty"]):
-                    if isinstance(v, (int, float)) and v < 0:
-                        is_clean = False
+                logger.warning(f"Layer 1 SOV: Semantic corruption detected in '{tool_name}': {sem_reason}")
+                val_res_dict = {
+                    "pipeline_status": "INVALID",
+                    "failed_checks": ["semantic_range_error" if "negative" in sem_reason.lower() else "syntax_schema_error"],
+                    "violations": [{"checker": "semantic_invariant", "message": sem_reason}],
+                    "reason": sem_reason
+                }
 
         # If clean, record success and return unmodified output
         if is_clean:

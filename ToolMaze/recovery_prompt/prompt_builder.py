@@ -81,10 +81,18 @@ class DynamicRecoveryPromptBuilder:
         lines.append(f"Persistence Assessment: {diagnosis.persistence.value}")
 
         if self.include_detailed_evidence and diagnosis.violations:
-            violation_strs = [
-                f"{v.checker_name}: {v.message}"
-                for v in diagnosis.violations[:3]
-            ]
+            violation_strs = []
+            for v in diagnosis.violations[:3]:
+                if isinstance(v, str):
+                    violation_strs.append(v)
+                elif isinstance(v, dict):
+                    name = v.get("checker_name") or v.get("checker", "checker")
+                    msg = v.get("message", str(v))
+                    violation_strs.append(f"{name}: {msg}")
+                else:
+                    name = getattr(v, "checker_name", getattr(v, "checker", "checker"))
+                    msg = getattr(v, "message", str(v))
+                    violation_strs.append(f"{name}: {msg}")
             lines.append("Violations: " + "; ".join(violation_strs))
 
         # 2. Tool Health & Blacklist Awareness
