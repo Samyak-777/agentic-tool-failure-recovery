@@ -382,7 +382,25 @@ class CAREAgent(BaseAgent):
                 already_complete = False
 
                 for p in valid_paths:
-                    path_tools = p if isinstance(p, list) else p.get("execution_trace", [])
+                    if isinstance(p, list):
+                        raw_tools = p
+                    elif isinstance(p, dict):
+                        if "tools" in p and isinstance(p["tools"], list):
+                            raw_tools = p["tools"]
+                        elif "execution_trace" in p and isinstance(p["execution_trace"], list):
+                            raw_tools = [
+                                step.get("tool_name") if isinstance(step, dict) else step
+                                for step in p["execution_trace"]
+                            ]
+                        else:
+                            raw_tools = []
+                    else:
+                        raw_tools = []
+
+                    path_tools = [str(t) for t in raw_tools if t and isinstance(t, (str, int))]
+                    if not path_tools:
+                        continue
+
                     if any(t in blacklisted for t in path_tools):
                         continue
                     missing = [t for t in path_tools if t not in executed_tools]
