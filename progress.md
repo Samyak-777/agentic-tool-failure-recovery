@@ -295,20 +295,35 @@
   - **$P_0$ Clean Mesh**: **100.0% TSR (PASS)** — completely eliminated the 8B model's 0% truncation barrier on 10-step mesh workflows!
   - **$P_3$ Implicit Semantic Corruption**: Layer 1 SOV caught both injected bugs (NullPointerException and impossible negative temperature bound); Goal Completion Guard actively nudged the model through 5 sequential graph transitions.
 - [x] Launched Category $\mathcal{C}_4$ evaluation on **`qwen2.5:32b`** (`qwen32b_care_c4_guard`) to evaluate scaling performance.
-- [x] **VRAM Architecture Optimization (17x Speedup)**:
-  - Discovered `OLLAMA_NUM_PARALLEL=16` in `/etc/systemd/system/ollama.service.d/override.conf` reserved 16.38 GB VRAM for KV-cache, forcing 35/65 layers of Qwen 2.5 32B to CPU and triggering 45s gateway timeouts.
-  - Reconfigured `override.conf` (`OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_MAX_LOADED_MODELS=1`).
-  - Achieved 100% GPU residency on TITAN RTX: generation speed jumped from 1.5 tok/s to **25.62 tok/s** on 32B and **~45 tok/s** on 14B.
 
-### 2026-11-02 | Phase 11: 200-Task Master Scaling Benchmark Completed (Qwen 2.5 14B vs. 32B on C3 & C4)
-- [x] **200-Task Benchmark Completed Across 4 Stages** (Total wall-clock: 9,853s / 164.2 min):
-  - **Stage 1 (`qwen14b_care_c3_50`)**: 50 tasks, 36 passed (**72.0% TSR**, **67.5% PRR**, $RC_{calls} = +1.57$).
-  - **Stage 2 (`qwen14b_care_c4_50`)**: 50 tasks, 22 passed (**44.0% TSR**, **35.0% PRR**, $RC_{calls} = +2.20$).
-  - **Stage 3 (`qwen32b_care_c3_50`)**: 50 tasks, 33 passed (**66.0% TSR**, **62.5% PRR**, $RC_{calls} = +1.40$).
-  - **Stage 4 (`qwen32b_care_c4_50`)**: 50 tasks, 30 passed (**60.0% TSR**, **55.0% PRR**, $RC_{calls} = +2.35$).
-- [x] **Key Breakthroughs Confirmed**:
-  - Model scaling from 14B to 32B produces a **+16.0% TSR gain** and **+20.0% PRR gain** on Category $\mathcal{C}_4$ complex mesh topologies.
-  - On $\mathcal{C}_4$ $P_1$ (transient explicit), 32B achieves **90.0% TSR** (vs 40.0% for 14B).
-  - On $\mathcal{C}_4$ $P_3$ (transient implicit semantic corruption), 32B achieves **70.0% TSR** (vs 40.0% for 14B).
-  - All experiment records and individual task traces saved to `/mnt/data/toolmaze_project/agentic-tool-failure-recovery/ToolMaze/evaluation/experiment_records/master_50_c3_c4_comparison.json`.
-
+### 2026-11-02 | Phase 11: Full 200-Task Empirical Scaling Benchmark (14B vs 32B across C3 and C4)
+- [x] **VRAM Allocation Optimization (17× Inference Acceleration)**:
+  - Discovered root cause of earlier HTTP 500 timeouts: `OLLAMA_NUM_PARALLEL=16` consumed 16.38 GB VRAM for KV contexts alone, forcing 35/65 layers of `qwen2.5:32b` onto CPU.
+  - Reconfigured `/etc/systemd/system/ollama.service.d/override.conf` with `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`, and `OLLAMA_FLASH_ATTENTION=1`.
+  - Achieved 100% GPU residency on NVIDIA TITAN RTX 24GB (20.1 GB VRAM used, 0% CPU offload).
+  - Generation speed surged from 1.5 tok/s to **25.62 tok/s** on 32B (17× speedup) and **~45 tok/s** on 14B.
+- [x] **200-Task Master Orchestrator Built and Executed**:
+  - Script `ToolMaze/evaluation/scripts/run_50_c3_c4_both.py` (commit `8eee1389`) executed in background PID `421927`.
+  - Total duration: **9,853.0s (164.2 minutes / ~2.74 hours)**. All 4 stages finished with exit code 0.
+- [x] **Stage 1: `qwen14b_care_c3_50` (50 Tasks across P0–P4)**:
+  - Duration: 23.12 minutes (27.74s / task).
+  - Overall Pass Rate: **72.0% (36/50)** (vs 14.4% 8B Baseline — **5.0× improvement**).
+  - Perturbation Recovery Rate (PRR): **67.5% (27/40)** (vs 4.0% 8B Baseline — **16.9× improvement**).
+  - Modes: $P_0$ = 90% (9/10), $P_1$ = 80% (8/10), $P_2$ = 90% (9/10), $P_3$ = 50% (5/10), $P_4$ = 50% (5/10).
+- [x] **Stage 2: `qwen14b_care_c4_50` (50 Tasks across P0–P4)**:
+  - Duration: 44.18 minutes (53.02s / task).
+  - Overall Pass Rate: **44.0% (22/50)** (vs 6.0% 8B Baseline — **7.3× improvement**).
+  - Perturbation Recovery Rate (PRR): **35.0% (14/40)** (vs 3.0% 8B Baseline — **11.7× improvement**).
+  - Modes: $P_0$ = 80% (8/10), $P_1$ = 40% (4/10), $P_2$ = 30% (3/10), $P_3$ = 40% (4/10), $P_4$ = 30% (3/10).
+- [x] **Stage 3: `qwen32b_care_c3_50` (50 Tasks across P0–P4)**:
+  - Duration: 30.83 minutes (37.00s / task).
+  - Overall Pass Rate: **66.0% (33/50)** (vs 14.4% 8B Baseline — **4.6× improvement**).
+  - Perturbation Recovery Rate (PRR): **62.5% (25/40)** (vs 4.0% 8B Baseline — **15.6× improvement**).
+  - Modes: $P_0$ = 80% (8/10), $P_1$ = 90% (9/10), $P_2$ = 80% (8/10), $P_3$ = 30% (3/10), $P_4$ = 50% (5/10).
+- [x] **Stage 4: `qwen32b_care_c4_50` (50 Tasks across P0–P4)**:
+  - Duration: 65.93 minutes (79.12s / task).
+  - Overall Pass Rate: **60.0% (30/50)** (vs 6.0% 8B Baseline — **10.0× improvement**).
+  - Perturbation Recovery Rate (PRR): **55.0% (22/40)** (vs 3.0% 8B Baseline — **18.3× improvement**).
+  - Modes: $P_0$ = 80% (8/10), $P_1$ = 90% (9/10), $P_2$ = 30% (3/10), $P_3$ = 70% (7/10), $P_4$ = 30% (3/10).
+- [x] **Local Synchronization**:
+  - Pulled `master_50_c3_c4_comparison.json`, run summaries, manifests, and failure summaries into local `ToolMaze/evaluation/experiment_records/`.
