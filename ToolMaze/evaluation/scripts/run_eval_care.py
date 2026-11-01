@@ -251,6 +251,27 @@ def create_eval_agent(agent_type: str, config: Dict[str, Any], shared_pool: Opti
         return base_llm
 
 
+
+def load_task_template(task_json: Dict[str, Any], config: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Load the original task template DAG definition, never evaluator ground truth."""
+    template_dir = config.get("data", {}).get("template_dir")
+    if not template_dir:
+        return None
+    template_id = task_json.get("template_id")
+    complexity = task_json.get("complexity", "")
+    if not template_id or not complexity:
+        return None
+    template_path = Path(template_dir) / complexity.lower() / f"{template_id}.json"
+    if not template_path.is_file():
+        template_path = project_root / template_dir / complexity.lower() / f"{template_id}.json"
+        if not template_path.is_file():
+            return None
+    try:
+        with template_path.open("r", encoding="utf-8") as file:
+            return json.load(file)
+    except Exception:
+        return None
+
 def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool, agent_type="care", telemetry_manager=None):
     task_id = task_json["task_id"]
     mode = task_json.get("perturbation_mode", "P0")
@@ -287,6 +308,10 @@ def evaluate_single_task(task_json, config, tools_dir, judge, saver, shared_pool
             # Pure academic boundary: strip ground-truth execution_trace and expected_result
             agent_task_spec = {k: v for k, v in task_json.items() if k not in ("execution_trace", "expected_result")}
             agent.set_task_json(agent_task_spec)
+
+        task_template = load_task_template(task_json, config)
+        if hasattr(agent, "set_task_template") and task_template:
+            agent.set_task_template(task_template)
 
         if hasattr(agent, "set_telemetry_recorder") and recorder:
             agent.set_telemetry_recorder(recorder)

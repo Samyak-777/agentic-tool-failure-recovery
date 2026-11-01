@@ -376,11 +376,14 @@ class CAREAgent(BaseAgent):
             "select id, status from", "select name from", "debug_level",
             "debug_log", "internal_endpoint", "unknown-err",
             "internalmappingservice", "flighttracker.getstate",
-            "db_connection_pool_exhausted", "traceback (most recent call last)"
+            "db_connection_pool_exhausted", "traceback (most recent call last)",
+            "failed to fetch upstream", "service temporarily unavailable",
+            "unexpected token", "error code 500"
         )
         CONTRADICTORY_PATTERNS = (
             "confirmed and cancelled", "confirmed_failed", "completed and cancelled",
-            "confirmed without a reservation id"
+            "confirmed without a reservation id", "rejected after successful",
+            "identifier is missing"
         )
 
         def _check_node(node: Any) -> Tuple[bool, str]:
@@ -394,6 +397,36 @@ class CAREAgent(BaseAgent):
                 if pat in raw_str:
                     return False, f"Contradictory state in payload: '{pat}'"
 
+            # Action contradiction against tool capability
+            action = node.get("action")
+            if isinstance(action, str):
+                if "buy" in tool_name.lower() and action.upper() == "SELL":
+                    return False, f"Action contradiction: buy tool returned SELL in '{tool_name}'"
+                if "sell" in tool_name.lower() and action.upper() == "BUY":
+                    return False, f"Action contradiction: sell tool returned BUY in '{tool_name}'"
+
+            # Trade zero-quantity order
+            if "order" in tool_name.lower() or "trade" in tool_name.lower():
+                qty = node.get("quantity")
+                if isinstance(qty, (int, float)) and qty == 0:
+                    return False, f"Zero quantity order in '{tool_name}'"
+
+            # Essential ID presence
+            if "booking" in tool_name.lower() and "passenger_name" in node and node["passenger_name"] == "":
+                return False, f"Empty passenger_name on booking payload in '{tool_name}'"
+            if "recommendation" in tool_name.lower() and "product_id" in node and node["product_id"] == "":
+                return False, f"Empty product_id on recommendation payload in '{tool_name}'"
+
+            # Text metrics coherence
+            w_cnt = node.get("word_count")
+            c_cnt = node.get("character_count")
+            raw_c = node.get("raw_content")
+            if isinstance(w_cnt, (int, float)) and w_cnt > 0:
+                if isinstance(c_cnt, (int, float)) and c_cnt == 0:
+                    return False, f"Semantic contradiction: word_count ({w_cnt}) > 0 but character_count is 0"
+                if raw_c is not None and isinstance(raw_c, str) and len(raw_c.strip()) == 0:
+                    return False, f"Semantic contradiction: word_count ({w_cnt}) > 0 but raw_content is empty"
+
             c_at = node.get("created_at")
             u_at = node.get("updated_at")
             if c_at and u_at and str(c_at) > str(u_at):
@@ -406,7 +439,7 @@ class CAREAgent(BaseAgent):
 
             for k, v in node.items():
                 if isinstance(v, (int, float)) and v < 0:
-                    if not any(term in k.lower() for term in ["temp", "lat", "lon"]):
+                    if not any(term in k.lower() for term in ["temp", "lat", "lon", "change", "pnl"]):
                         return False, f"Impossible negative bound on '{k}': {v}"
                 elif isinstance(v, dict):
                     valid, reason = _check_node(v)
