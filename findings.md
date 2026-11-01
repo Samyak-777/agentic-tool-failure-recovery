@@ -452,6 +452,9 @@ Verify whether the $\mathcal{C}_4$ mesh topology bottleneck observed in 8B model
    - **$P_2$ Permanent Tool Removal & Layer 4 Dynamic Rerouting**:
      In `C4_task_001_P2`, `get_aviationstack_gate_board_native` failed permanently. CARE blacklisted the tool and Layer 4 `DAGPathSelector` proposed the alternative branch (`get_flightaware_trip_timeline_native` and `publish_trip_timeline_notice_native`). The agent successfully rerouted and executed 14 tools in the alternative branch.
 
-3. **Infrastructure Takeaway**:
-   - The multi-key rotation pool (`SharedKeyPool` with 4 rotating Gemini keys) successfully handled rapid burst queries.
-   - Under deep mesh tasks with $\ge 12$ calls per task, parallel threads hit Google API's 15 RPM per-key free tier quota on subsequent tasks. For scaled runs, adding 10-15 keys or increasing `delay_seconds` to 2.5s guarantees uninterrupted multi-task execution.
+3. **Infrastructure & Rate-Limit Takeaways (Scaled 25-Task Runs)**:
+   - Evaluated 25 tasks each on $\mathcal{C}_3$ (`gemini35_care_c3_25`) and $\mathcal{C}_4$ (`gemini35_care_c4_25`) with `gemini-3.5-flash`.
+   - On $\mathcal{C}_3$, 6 tasks completed before quota exhaustion.
+   - On $\mathcal{C}_4$, workflows require 10–15 tool turns per task. Under 2 concurrent workers, the 4 free-tier Gemini keys rapidly saturated the 15 requests/minute and 1,500 daily requests/project quota ceiling, producing persistent `HTTP 429 Too Many Requests`.
+   - This validates the core invariant in our Project Constitution (`gemini.md` Section 1 & Section 6): **benchmarking must be anchored on local, open-source models self-hosted on the college server**. The server's NVIDIA TITAN RTX (24GB VRAM) provides zero-rate-limit, zero-cost, fully reproducible execution.
+

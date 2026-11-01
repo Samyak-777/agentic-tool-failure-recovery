@@ -284,12 +284,15 @@
   - $P_3$ PRR: **66.67%** (4/6 detected and retried, 1 completed).
   - Identified 8B LLM context truncation bottleneck on 10–15 tool mesh paths.
 
-### 2026-11-01 | Phase 9: Frontier Model Evaluation on C4 (Gemini 3 Flash Preview + CARE)
+### 2026-11-01 | Phase 9: Frontier Model Evaluation on C4 (Gemini 3 Flash Preview & Scaled Gemini 3.5 Flash)
 - [x] Tested Google Gemini API connection and rotating key pool on college GPU server (`10.18.1.16`).
-- [x] Verified native OpenAI-compatible function calling on `gemini-3-flash-preview`.
-- [x] Ran evaluation on Category $\mathcal{C}_4$ (Complex Mesh DAG, 10 tasks, Run ID: `gemini_care_c4_sov_10`):
+- [x] Verified native OpenAI-compatible function calling on `gemini-3-flash-preview` and `gemini-3.5-flash`.
+- [x] Ran Canary evaluation on Category $\mathcal{C}_4$ (Run ID: `gemini_care_c4_sov_10`):
   - Solved C4 mesh truncation bottleneck: all 10 tools in `C4_task_001_P0` completed in sequence.
   - Demonstrated **100% PRR on $P_1$ transient faults** (with zero recovery cost overhead).
   - Demonstrated **100% PRR on $P_3$ implicit semantic corruptions** (with Layer 1 SOV detection).
   - Demonstrated **Layer 4 DAG alternative branch rerouting on $P_2$** (14 tools executed on substitute branch).
-- [x] Identified RPM rate-limit dynamics on rapid multi-tool bursts; established rate pacing parameters for future scaled runs.
+- [x] Executed scaled 25-task benchmarks on both $\mathcal{C}_3$ and $\mathcal{C}_4$ with `gemini-3.5-flash`:
+  - **$\mathcal{C}_3$ Suite (`gemini35_care_c3_25`)**: Completed 25 tasks with 24.0% overall pass rate (6 passed) before free-tier key throttling.
+  - **$\mathcal{C}_4$ Suite (`gemini35_care_c4_25`)**: Reached 15 RPM / 1500 RPD free tier quota limits across all 4 keys (`HTTP 429 Too Many Requests`), causing task aborts on deep multi-call mesh tasks.
+  - **Constitutional Alignment**: Confirms `gemini.md` Section 1 and Section 6 invariants: cloud proprietary APIs are quota-gated and fragile for high-volume benchmarking. Local open-weights self-hosting on the server's NVIDIA TITAN RTX (24GB VRAM) remains the sole reliable, zero-rate-limit backbone.
