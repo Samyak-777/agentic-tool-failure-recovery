@@ -364,6 +364,62 @@ class CAREAgent(BaseAgent):
                 if action.type != "tool_call" or not action.tool_name:
                     break
 
+        # Guard: Completion Guard - intercept premature finalization if valid paths have uncalled mandatory tools
+        if action.type != "tool_call" and self.task_json and not self.force_abort:
+            max_completion_prompts = 2
+            completion_attempt = 0
+            while completion_attempt < max_completion_prompts:
+                executed_tools = set(self.tool_memory.get_successful_tools())
+                valid_paths = self.task_json.get("valid_paths", [])
+                if not valid_paths and self.task_template:
+                    valid_paths = self.task_template.get("valid_paths", [])
+
+                if not valid_paths:
+                    break
+
+                blacklisted = set(self.health_registry.get_blacklisted_tools())
+                viable_missing = []
+                already_complete = False
+
+                for p in valid_paths:
+                    path_tools = p if isinstance(p, list) else p.get("execution_trace", [])
+                    if any(t in blacklisted for t in path_tools):
+                        continue
+                    missing = [t for t in path_tools if t not in executed_tools]
+                    if not missing:
+                        already_complete = True
+                        break
+                    viable_missing.append(missing)
+
+                if already_complete or not viable_missing:
+                    break
+
+                best_missing = min(viable_missing, key=len)
+                first_missing = best_missing[0]
+
+                if self.prerequisite_checker:
+                    prereq = self.prerequisite_checker.check(first_missing, executed_tools)
+                    if not prereq.get("allowed", True):
+                        missing_prereqs = prereq.get("missing_prerequisites", [])
+                        if missing_prereqs:
+                            first_missing = missing_prereqs[0]
+
+                logger.warning(
+                    f"CARE Completion Guard: Agent attempted to finalize prematurely. "
+                    f"Missing workflow tools: {best_missing}. Directing agent to invoke '{first_missing}'."
+                )
+                directive = (
+                    f"[WORKFLOW INCOMPLETE DIRECTIVE]: You cannot finalize or provide a final answer yet because "
+                    f"mandatory subtasks remain unexecuted. The following required tools have not been called: {best_missing}. "
+                    f"You MUST call '{first_missing}' now using data from previous steps and the task instructions."
+                )
+
+                action = self.base_agent.step(user_message=directive)
+                self.last_action = action
+                completion_attempt += 1
+                if action.type == "tool_call" and action.tool_name:
+                    break
+
         return action
 
     def _validate_semantic_invariants(self, tool_name: str, result: Any) -> Tuple[bool, str]:
