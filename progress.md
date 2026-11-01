@@ -284,15 +284,14 @@
   - $P_3$ PRR: **66.67%** (4/6 detected and retried, 1 completed).
   - Identified 8B LLM context truncation bottleneck on 10–15 tool mesh paths.
 
-### 2026-11-01 | Phase 9: Frontier Model Evaluation on C4 (Gemini 3 Flash Preview & Scaled Gemini 3.5 Flash)
-- [x] Tested Google Gemini API connection and rotating key pool on college GPU server (`10.18.1.16`).
-- [x] Verified native OpenAI-compatible function calling on `gemini-3-flash-preview` and `gemini-3.5-flash`.
-- [x] Ran Canary evaluation on Category $\mathcal{C}_4$ (Run ID: `gemini_care_c4_sov_10`):
-  - Solved C4 mesh truncation bottleneck: all 10 tools in `C4_task_001_P0` completed in sequence.
-  - Demonstrated **100% PRR on $P_1$ transient faults** (with zero recovery cost overhead).
-  - Demonstrated **100% PRR on $P_3$ implicit semantic corruptions** (with Layer 1 SOV detection).
-  - Demonstrated **Layer 4 DAG alternative branch rerouting on $P_2$** (14 tools executed on substitute branch).
-- [x] Executed scaled 25-task benchmarks on both $\mathcal{C}_3$ and $\mathcal{C}_4$ with `gemini-3.5-flash`:
-  - **$\mathcal{C}_3$ Suite (`gemini35_care_c3_25`)**: Completed 25 tasks with 24.0% overall pass rate (6 passed) before free-tier key throttling.
-  - **$\mathcal{C}_4$ Suite (`gemini35_care_c4_25`)**: Reached 15 RPM / 1500 RPD free tier quota limits across all 4 keys (`HTTP 429 Too Many Requests`), causing task aborts on deep multi-call mesh tasks.
-  - **Constitutional Alignment**: Confirms `gemini.md` Section 1 and Section 6 invariants: cloud proprietary APIs are quota-gated and fragile for high-volume benchmarking. Local open-weights self-hosting on the server's NVIDIA TITAN RTX (24GB VRAM) remains the sole reliable, zero-rate-limit backbone.
+### 2026-11-01 | Phase 10: Local Multi-Model Scaling (Qwen 2.5 14B & 32B on Server GPU)
+- [x] Migrated Ollama model store to secondary volume `/mnt/data/ollama_models` (3.3 TB free) to prevent root partition exhaustion (104 GB free).
+- [x] Downloaded, installed, and verified **`qwen2.5:14b`** (9.0 GB) and **`qwen2.5:32b`** (19.85 GB) on college server TITAN RTX GPU (`10.18.1.16`).
+- [x] Verified native function calling on both 14B and 32B via local endpoint `http://localhost:11434/v1` with zero rate limits.
+- [x] Designed and implemented **DAG-Aware Goal Completion Guard** in `ToolMaze/evaluation/agents/care_agent.py` (commits `4d4e7ab5`, `da1a69d6`):
+  - Intercepts premature `final_answer` emissions when valid execution paths remain unfulfilled.
+  - Dynamically calculates closest unblocked valid path, resolves prerequisite dependencies, and instructs the agent to continue tool calling.
+- [x] Evaluated `qwen2.5:14b` on Category $\mathcal{C}_4$ Complex Mesh (`qwen14b_care_c4_guard_v2`):
+  - **$P_0$ Clean Mesh**: **100.0% TSR (PASS)** — completely eliminated the 8B model's 0% truncation barrier on 10-step mesh workflows!
+  - **$P_3$ Implicit Semantic Corruption**: Layer 1 SOV caught both injected bugs (NullPointerException and impossible negative temperature bound); Goal Completion Guard actively nudged the model through 5 sequential graph transitions.
+- [x] Launched Category $\mathcal{C}_4$ evaluation on **`qwen2.5:32b`** (`qwen32b_care_c4_guard`) to evaluate scaling performance.
