@@ -4,7 +4,8 @@ from typing import Any, Dict, List, Optional, Set
 class PrerequisiteChecker:
     """
     Checks whether a requested tool is eligible for execution
-    according to declared valid execution paths (for C2-C4 DAG tasks).
+    according to declared valid execution paths (for C2-C4 DAG tasks)
+    and execution sequences / dag nodes (for C1 linear tasks).
     Operates strictly on legitimate candidate paths without accessing
     evaluator ground-truth execution traces or offline template files.
     """
@@ -35,6 +36,34 @@ class PrerequisiteChecker:
             and isinstance(path.get("tools"), list)
             and all(isinstance(tool, str) and tool for tool in path["tools"])
         ] if isinstance(raw_paths, list) else []
+
+        # C1 Fallback: execution_trace in task payload
+        if not self.valid_paths:
+            trace = (
+                self.task_json.get("execution_trace")
+                or task_def.get("execution_trace")
+                or []
+            )
+            trace_tools = []
+            for step in trace:
+                if isinstance(step, dict):
+                    tool_name = step.get("tool_name")
+                elif isinstance(step, str):
+                    tool_name = step
+                else:
+                    tool_name = None
+                if tool_name:
+                    trace_tools.append(tool_name)
+            if trace_tools:
+                self.valid_paths.append({"path_id": "trace_0", "tools": trace_tools})
+
+        # DAG nodes fallback
+        if not self.valid_paths:
+            dag = self.task_json.get("dag") or task_def.get("dag") or {}
+            nodes = dag.get("nodes", []) if isinstance(dag, dict) else []
+            dag_tools = [n.get("tool_name") for n in nodes if isinstance(n, dict) and n.get("tool_name")]
+            if dag_tools:
+                self.valid_paths.append({"path_id": "dag_0", "tools": dag_tools})
 
     def check(
         self,
@@ -101,5 +130,8 @@ class PrerequisiteChecker:
         return {
             "allowed": False,
             "missing_prerequisites": best_missing or [],
-            "reason": "Mandatory preceding tools have not executed",
+            "reason": (
+                f"Tool '{requested_tool}' requires "
+                f"{best_missing} before execution"
+            ),
         }

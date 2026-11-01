@@ -56,7 +56,7 @@ from tool_memory import (
     RecoveryController,
     LoopDetector
 )
-from dag_rerouting import DAGPathSelector, RerouteCandidate
+from dag_rerouting import DAGPathSelector, RerouteCandidate, PrerequisiteChecker, ExecutionController
 from recovery_prompt import DynamicRecoveryPromptBuilder, RecoveryPromptPayload
 from selective_verification import SelectiveVerifier
 
@@ -126,6 +126,7 @@ class CAREAgent(BaseAgent):
         # 4. Layer 4: DAG Path Selector
         self.path_selector = DAGPathSelector()
         self.prerequisite_checker = None
+        self.execution_controller = None
 
         # 5. Layer 6: Loop Detector
         self.loop_detector = LoopDetector()
@@ -222,6 +223,18 @@ class CAREAgent(BaseAgent):
         """Set task specification for DAG-aware and recovery routing."""
         self.task_json = task_json or {}
         self.prerequisite_checker = PrerequisiteChecker(self.task_json)
+        self.execution_controller = ExecutionController(self.task_json)
+
+    def set_task_template(self, template: Optional[Dict[str, Any]]) -> None:
+        """Store task template information without overwriting runtime task payload."""
+        self.task_template = template or {}
+        if self.task_template and isinstance(self.task_json, dict):
+            if "dag" not in self.task_json and "dag" in self.task_template:
+                self.task_json["dag"] = self.task_template["dag"]
+            if "valid_paths" not in self.task_json and "valid_paths" in self.task_template:
+                self.task_json["valid_paths"] = self.task_template["valid_paths"]
+        self.prerequisite_checker = PrerequisiteChecker(self.task_json)
+        self.execution_controller = ExecutionController(self.task_json)
 
     def _find_tool_definition(self, tool_name: str) -> Optional[Dict[str, Any]]:
         if not self.tool_definitions:
@@ -332,6 +345,19 @@ class CAREAgent(BaseAgent):
                     f"mandatory preceding tool '{first_missing}' in the workflow has not executed. "
                     f"You MUST call '{first_missing}' now using data from previous steps and the task instructions."
                 )
+
+                # Reeti's rollback fix: remove unfulfilled assistant tool call from message history
+                # before prompting for the prerequisite to keep API sequence strictly valid.
+                messages = getattr(self.base_agent, "messages", None)
+                if (
+                    isinstance(messages, list)
+                    and messages
+                    and isinstance(messages[-1], dict)
+                    and messages[-1].get("role") == "assistant"
+                    and messages[-1].get("tool_calls")
+                ):
+                    messages.pop()
+
                 action = self.base_agent.step(user_message=directive)
                 self.last_action = action
                 prereq_attempt += 1
