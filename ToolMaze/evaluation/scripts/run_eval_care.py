@@ -377,6 +377,7 @@ def main():
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--max-workers", type=int, default=2)
+    parser.add_argument("--delay-seconds", type=float, default=None, help="Delay pacing in seconds between requests")
     parser.add_argument("--output-dir", type=str, default=None, help="Custom output directory for results")
     parser.add_argument("--run-id", type=str, default=None, help="Custom identifier for telemetry run")
     parser.add_argument("--no-resume", action="store_true", default=False, help="Disable caching and re-run all tasks")
@@ -418,7 +419,8 @@ def main():
             keys = [config["agent"].get("api_key", "dummy")]
         logger.info(f"Loaded {len(keys)} Gemini API keys for rotation.")
 
-    shared_pool = SharedKeyPool(keys, config["agent"]["base_url"], delay_seconds=1.0)
+    delay = args.delay_seconds if args.delay_seconds is not None else (1.5 if args.backend == "gemini" else 0.5)
+    shared_pool = SharedKeyPool(keys, config["agent"]["base_url"], delay_seconds=delay)
     tools_dir = config["data"]["tools_dir"]
 
     judge_client = RotatingOpenAIClient(shared_pool)
