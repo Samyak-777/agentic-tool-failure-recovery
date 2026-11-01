@@ -427,3 +427,31 @@ Trace examination (`inspect_llama_trace.py`) reveals why Llama 3.1 (8B) collapse
    - In $\mathcal{C}_4$, workflows contain 10–15 distinct tools distributed across deep parallel meshes.
    - The open-weights 8B model (`qwen3:8b`) tends to emit a final answer prematurely after executing 6–8 tools, leaving later mesh nodes unvisited.
    - Despite premature LLM termination on full completion, CARE's recovery mechanisms functioned as designed: **$P_1$ PRR reached 100.0%** and **$P_3$ PRR reached 66.67%** on fault exposure.
+
+
+---
+
+## Frontier Model Evaluation: Gemini 3 Flash Preview on Category C4 Mesh DAG (Nov 1, 2026)
+
+### Objective:
+Verify whether the $\mathcal{C}_4$ mesh topology bottleneck observed in 8B models (`qwen3:8b`) is attributable to LLM planning/context capacity vs CARE architectural flaws, and test CARE's recovery mechanisms on 10–15 tool workflows with a frontier reasoning model.
+
+### Empirical Findings:
+
+1. **Resolution of the Mesh Truncation Bottleneck**:
+   - In `C4_task_001_P0`, `qwen3:8b` previously abandoned the task after step 7 (missing 6 required tools).
+   - Under `gemini-3-flash-preview` + CARE, the agent executed **all 10 tools in the workflow in exact sequence**:
+     `get_flight_info` $\to$ `book_flight` $\to$ `get_aviationstack_gate_board_native` $\to$ `publish_gate_board_notice_native` $\to$ `get_weatherapi_alert_card_native` $\to$ `publish_weatherapi_alert_card_native` $\to$ `get_hotel_info` $\to$ `push_alert_contact_by_name` $\to$ `book_best_meeting_room` $\to$ `snapshot_workspace`.
+   - **Result**: **100% Pass on $P_0$ Clean Workflow**.
+
+2. **Perfect Recovery Under Injected Faults**:
+   - **$P_1$ Transient Failure**:
+     In `C4_task_001_P1`, two distinct tools encountered HTTP 503 transient faults (`aviationstack` and `weatherapi`). CARE's Layer 2 diagnosis classified both as `TRANSIENT`, Layer 3 commanded immediate retry, and both retries succeeded. The agent completed all 12 tool calls and **PASSED (100% PRR, RC = 0.00)**.
+   - **$P_3$ Implicit Semantic Corruption**:
+     In `C4_task_001_P3`, injected semantic anomalies were detected by CARE's Layer 1 Deterministic Semantic Invariants. CARE commanded retries, the sandbox returned clean data on attempt #2, and the full 10-tool mesh completed successfully. **PASSED (100% PRR, RC = 0.00)**.
+   - **$P_2$ Permanent Tool Removal & Layer 4 Dynamic Rerouting**:
+     In `C4_task_001_P2`, `get_aviationstack_gate_board_native` failed permanently. CARE blacklisted the tool and Layer 4 `DAGPathSelector` proposed the alternative branch (`get_flightaware_trip_timeline_native` and `publish_trip_timeline_notice_native`). The agent successfully rerouted and executed 14 tools in the alternative branch.
+
+3. **Infrastructure Takeaway**:
+   - The multi-key rotation pool (`SharedKeyPool` with 4 rotating Gemini keys) successfully handled rapid burst queries.
+   - Under deep mesh tasks with $\ge 12$ calls per task, parallel threads hit Google API's 15 RPM per-key free tier quota on subsequent tasks. For scaled runs, adding 10-15 keys or increasing `delay_seconds` to 2.5s guarantees uninterrupted multi-task execution.

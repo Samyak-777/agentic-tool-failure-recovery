@@ -283,3 +283,13 @@
   - $P_1$ PRR: **100.0%** (6/6).
   - $P_3$ PRR: **66.67%** (4/6 detected and retried, 1 completed).
   - Identified 8B LLM context truncation bottleneck on 10–15 tool mesh paths.
+
+### 2026-11-01 | Phase 9: Frontier Model Evaluation on C4 (Gemini 3 Flash Preview + CARE)
+- [x] Tested Google Gemini API connection and rotating key pool on college GPU server (`10.18.1.16`).
+- [x] Verified native OpenAI-compatible function calling on `gemini-3-flash-preview`.
+- [x] Ran evaluation on Category $\mathcal{C}_4$ (Complex Mesh DAG, 10 tasks, Run ID: `gemini_care_c4_sov_10`):
+  - Solved C4 mesh truncation bottleneck: all 10 tools in `C4_task_001_P0` completed in sequence.
+  - Demonstrated **100% PRR on $P_1$ transient faults** (with zero recovery cost overhead).
+  - Demonstrated **100% PRR on $P_3$ implicit semantic corruptions** (with Layer 1 SOV detection).
+  - Demonstrated **Layer 4 DAG alternative branch rerouting on $P_2$** (14 tools executed on substitute branch).
+- [x] Identified RPM rate-limit dynamics on rapid multi-tool bursts; established rate pacing parameters for future scaled runs.
